@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# 파생물 — 언제든 다시 만든다
+.vault-graph.db
+.vault.ttl
