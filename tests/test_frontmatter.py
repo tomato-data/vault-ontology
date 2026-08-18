@@ -1,12 +1,4 @@
-from vault.frontmatter import fm_get, split_frontmatter
-
-SAMPLE = (
-    "type: concept\n"
-    "tags:\n"
-    "  - Stack/Python\n"
-    'summary: "How CIDR works"\n'
-    "created: 2026-08-10"
-)
+from vault.frontmatter import fm_get, fm_list, split_frontmatter
 
 
 def test_splits_frontmatter_from_body():
@@ -37,6 +29,15 @@ def test_ignores_a_delimiter_that_is_not_at_the_start():
     assert body == text
 
 
+SAMPLE = (
+    "type: concept\n"
+    "tags:\n"
+    "  - Stack/Python\n"
+    'summary: "How CIDR works"\n'
+    "created: 2026-08-10"
+)
+
+
 def test_reads_a_scalar_field():
     assert fm_get(SAMPLE, "type") == "concept"
     assert fm_get(SAMPLE, "created") == "2026-08-10"
@@ -63,3 +64,34 @@ def test_ignores_a_key_that_appears_mid_line():
 def test_an_empty_value_does_not_swallow_the_next_line():
     fm = "summary:\ncreated: 2026-08-10"
     assert fm_get(fm, "summary") is None
+
+
+LIST_FM = (
+    "type: concept\n"
+    "builds_on:\n"
+    '  - "[[CIDR]]"\n'
+    '  - "[[Subnet mask]]"\n'
+    "created: 2026-08-10"
+)
+
+
+def test_reads_every_item_of_a_list_block():
+    assert fm_list(LIST_FM, "builds_on") == ["CIDR", "Subnet mask"]
+
+
+def test_returns_an_empty_list_for_a_missing_key():
+    assert fm_list(LIST_FM, "supersedes") == []
+
+
+def test_stops_at_the_next_key():
+    fm = 'builds_on:\n - "[[CIDR]]"\ntags:\n - Stack/Python'
+    assert fm_list(fm, "builds_on") == ["CIDR"]
+
+
+def test_keeps_a_plain_item_that_is_not_a_wikilink():
+    fm = "tags:\n - Stack/Python\n - Topic/Network"
+    assert fm_list(fm, "tags") == ["Stack/Python", "Topic/Network"]
+
+
+def test_an_inline_scalar_is_not_a_list():
+    assert fm_list("builds_on: [[CIDR]]", "builds_on") == []
