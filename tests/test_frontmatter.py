@@ -95,3 +95,7 @@ def test_keeps_a_plain_item_that_is_not_a_wikilink():
 
 def test_an_inline_scalar_is_not_a_list():
     assert fm_list("builds_on: [[CIDR]]", "builds_on") == []
+
+
+def test_a_key_with_no_items_is_an_empty_list():
+    assert fm_list("builds_on:\ncreated: 2026-08-10", "builds_on") == []
