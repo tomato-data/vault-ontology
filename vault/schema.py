@@ -1,8 +1,10 @@
 """The schema of record, expressed as code. A violation is a refusal."""
 
+import re
 from datetime import date
 
 from vault.frontmatter import fm_get, fm_list
+from vault.links import strip_code
 
 # Copied from the vault's `Vault 온톨로지 — 스키마 정본`. That document is
 # the original; changing anything here means changing it there first.
@@ -68,3 +70,29 @@ def validate(fm):
             broken.append(("created invalid", created))
 
     return broken
+
+
+# Obsidian makes `#word` a tag only when the `#` opens a word: the character
+# before it must be whitespace, or nothing at all. That one condition drops
+# every false positive the old detector patched one at a time —
+#     ](#anchor)      markdown link target      before is `(`
+#     …com/a#_oidc    URL fragment              before is a letter
+#     \#5450          escaped hash              before is `\`
+#     [[Docker#설치]]  wikilink heading anchor    before is a letter
+#     C#/FNA          hash inside a word        before is a letter
+#     # 제목           heading                    a space follows, not a word
+BODY_TAG = re.compile(r"(?<![^\s])#([\w/-]+)")
+
+
+def find_body_tags(body):
+    """Return every tag Obsidian would build out of `body`.
+
+    Since the 2026-08-16 migration a tag may only live in the frontmatter
+    `tags:` block, so anything found here is a violation — no difference
+    between one a person typed and a hex colour that became one by accident.
+    """
+    return [
+        match.group(1)
+        for match in BODY_TAG.finditer(strip_code(body))
+        if any(char.isalpha() for char in match.group(1))
+    ]
