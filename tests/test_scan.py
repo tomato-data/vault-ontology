@@ -1,6 +1,6 @@
 import unicodedata
 
-from vault.scan import resolve_link, scan_vault
+from vault.scan import case_collisions, duplicate_names, resolve_link, scan_vault
 
 
 def build(root, *names):
@@ -101,3 +101,30 @@ def test_a_decomposed_target_resolves():
         resolve_link(unicodedata.normalize("NFD", "한글"), INDEX, PATHS)
         == "200 Dev/한글.md"
     )
+
+
+def test_a_clean_index_has_no_duplicate():
+    assert duplicate_names({"CIDR": ["200 Dev/CIDR.md"]}) == {}
+
+
+def test_a_repeated_name_is_reported_with_every_path():
+    assert duplicate_names(INDEX) == {"Hub": ["000 Index/Hub.md", "500 Mind/Hub.md"]}
+
+
+def test_names_that_differ_only_by_case_collide():
+    index = {"Python": ["200 Dev/Python.md"], "python": ["300 Run/python.md"]}
+    assert case_collisions(index) == {"python": ["Python", "python"]}
+
+
+def test_a_name_unique_ignoring_case_does_not_collide():
+    index = {"Python": ["200 Dev/Python.md"], "Ruby": ["200 Dev/Ruby.md"]}
+    assert case_collisions(index) == {}
+
+
+def test_three_spellings_are_reported_as_one_collision():
+    index = {"API": ["a/API.md"], "Api": ["b/Api.md"], "api": ["c/api.md"]}
+    assert case_collisions(index) == {"api": ["API", "Api", "api"]}
+
+
+def test_a_repeated_name_is_not_a_case_collision():
+    assert case_collisions(INDEX) == {}

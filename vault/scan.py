@@ -1,4 +1,9 @@
-"""Walk the vault and index every note by its file name."""
+"""Turn file names into something a link can point at.
+
+Names are what Obsidian links with, and names are not identifiers: they
+repeat, they differ by letter case, and macOS stores them decomposed
+while typed links are composed. Everything here exists to survive that.
+"""
 
 import unicodedata
 from collections import defaultdict
@@ -57,3 +62,23 @@ def resolve_link(target, index, paths):
         if ("/" + path).endswith(tail):
             return path
     return None
+
+
+def duplicate_names(index):
+    """Return every name that more than one file carries."""
+    return {name: paths for name, paths in index.items() if len(paths) > 1}
+
+
+def case_collisions(index):
+    """Return names that differ from each other only by letter case.
+
+    Keyed by the folded form, which is a grouping key and not necessarily
+    a name the vault holds. One entry per problem rather than per pair:
+    three spellings of the same word are one collision, not three.
+    """
+    grouped = defaultdict(list)
+    for name in index:
+        grouped[name.casefold()].append(name)
+    return {
+        folded: sorted(names) for folded, names in grouped.items() if len(names) > 1
+    }
