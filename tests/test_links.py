@@ -1,4 +1,4 @@
-from vault.links import link_target, strip_code
+from vault.links import iter_links, link_target, strip_code
 
 
 def test_a_plain_link_is_the_target():
@@ -70,3 +70,40 @@ def test_inline_code_is_removed():
 
 def test_inline_code_does_not_eat_the_rest_of_the_line():
     assert "[[CIDR]]" in strip_code("`code` then [[CIDR]] then `more`")
+
+
+def test_yields_every_link_in_order():
+    text = "see [[CIDR]] and [[Subnet mask]] here"
+    assert list(iter_links(text)) == ["CIDR", "Subnet mask"]
+
+
+def test_yields_nothing_when_there_are_no_links():
+    assert list(iter_links("plain text")) == []
+
+
+def test_an_alias_is_already_resolved():
+    assert list(iter_links("[[CIDR|what it is]]")) == ["CIDR"]
+
+
+def test_an_embed_is_a_link():
+    assert list(iter_links("![[CIDR]]")) == ["CIDR"]
+
+
+def test_an_escaped_bracket_is_not_a_link():
+    assert list(iter_links(r"write \[[CIRD]] to show the syntax")) == []
+
+
+def test_a_link_inside_code_is_not_a_link():
+    assert list(iter_links("run `[[CIDR]]` now")) == []
+
+
+def test_a_link_inside_a_fenced_block_is_not_a_link():
+    assert list(iter_links("```\n[[CIDR]]\n```")) == []
+
+
+def test_a_heading_only_link_has_no_target():
+    assert list(iter_links("[[#Notation]]")) == []
+
+
+def test_two_links_on_one_line_do_not_merge():
+    assert list(iter_links("[[A]] and [[B]]")) == ["A", "B"]

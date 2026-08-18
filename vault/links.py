@@ -33,7 +33,8 @@ def strip_code(text):
     """Return `text` with code blanked out, line for line.
 
     Lines are replaced, never deleted: line N of the result is line N of the
-    input. Phase 4 reports "file:line", so the numbering has to survive.
+    input. Callers report problems as `file:line`, so the numbering has to
+    survive this pass.
 
     Fences go first. ``` contains `, so peeling inline code off first would
     eat two of the three backticks and the fence would stop being a fence.
@@ -49,3 +50,25 @@ def strip_code(text):
         else:
             out.append(INLINE.sub("", line))
     return "\n".join(out)
+
+
+# `[[target]]` or `![[target]]`. `(?<!\\)` — a backslash in front escapes the
+# whole thing. `[^\[\]]+` — the inside holds no brackets, so two links on one
+# line stay two instead of merging into one greedy match.
+LINK = re.compile(r"(?<!\\)!?\[\[([^\[\]]+)\]\]")
+
+
+def iter_links(text):
+    """Yield the target of every wikilink in `text`, in order.
+
+    Pass the BODY, not the whole document. `builds_on` lives in the
+    frontmatter and is already an edge of its own; counting it here again
+    would put the same relation in the graph twice.
+
+    An empty target means the link points inside the current document
+    (`[[#Heading]]`), so it names no other node and is dropped.
+    """
+    for match in LINK.finditer(strip_code(text)):
+        target = link_target(match.group(1))
+        if target:
+            yield target
