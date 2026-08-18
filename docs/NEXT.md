@@ -31,16 +31,26 @@ vault 경로는 두 Mac 모두 같다.
 
 ## 현재 위치
 
-**Phase 1 (frontmatter 파서) · Step 3 — RED 작성 직전**
+**Phase 2 (위키링크 파서) · Step 1 — RED 작성 직전**
 
-| | 상태 |
+Phase 1 완료. 테스트 16개 통과.
+
+| Phase 1 | 상태 |
 |---|---|
 | Step 1 `split_frontmatter` | ✅ GREEN · REFACTOR 판단 완료(안 고침) |
 | Step 2 `fm_get` | ✅ GREEN · REFACTOR 판단 완료(안 고침) |
-| **Step 3 `fm_list`** | **⬜ 여기부터** |
+| Step 3 `fm_list` | ✅ GREEN · REFACTOR 판단 완료(안 고침) |
+| Step 4 실측 | ✅ `tools/measure_phase01.py` |
+| 회고 | ✅ `learnings/phase01-measure-then-decide.md` |
+
+| Phase 2 | 상태 |
+|---|---|
+| **Step 1 `link_target`** | **⬜ 여기부터** |
+| Step 2 `strip_code` | ⬜ |
+| Step 3 `iter_links` | ⬜ |
 | Step 4 실측 | ⬜ |
 
-테스트 10개 통과 상태. `vault/frontmatter.py`에 `split_frontmatter`, `fm_get` 두 함수가 있다.
+`vault/frontmatter.py`에 함수 셋이 있다. Phase 2는 **새 모듈** `vault/links.py`다.
 
 ### 여기까지 오면서 확정한 것
 
@@ -50,121 +60,119 @@ vault 경로는 두 Mac 모두 같다.
 | `split_frontmatter`는 `re.match` | 앵커링을 정규식(`^`)이 아니라 호출 방식으로 강제 |
 | 빈 값·부재는 `fm_get` → `None` | 호출부가 둘을 구분할 이유가 없다 |
 | 빈 값·부재는 `fm_list` → `[]` | 리스트는 "비어 있음 = 없음". 분기가 사라진다 |
-| 빈 frontmatter·CRLF 대응 안 함 | 실측 0건. 없는 입력에 대비한 코드는 검증할 수 없어 썩는다 |
+| 인라인 리스트 `key: [a, b]` 미지원 | vault가 안 쓴다. 콜론 뒤 `\n`을 요구해 패턴으로 배제 |
+| 빈 frontmatter·CRLF·블록 안 빈 줄 대응 안 함 | 실측 전부 0건. 없는 입력에 대비한 코드는 검증할 수 없어 썩는다 |
+| `tools/`에는 테스트를 안 붙인다 | 일회성 계측. 대신 **출력을 눈으로 검산**하는 게 유일한 방어선 |
+| 실측은 제외 전·후를 둘 다 낸다 | 답안지 숫자가 `GRAPH_EXCLUDE` 적용 후 값이라 그냥 비교하면 안 맞는다 |
 
-### 실측해둔 숫자 (2026-08-16)
+### 실측해둔 숫자 (2026-08-18)
+
+`uv run python -m tools.measure_phase01`
+
+| 항목 | 전체 | 제외 후 | 답안지(08-11) |
+|---|---:|---:|---:|
+| md 파일 | 6,462 | 3,984 | 6,289 |
+| frontmatter | 5,837 (90.3%) | 3,974 (99.7%) | |
+| `type` | 5,796 | 3,974 | |
+| `summary` | 1,126 | 1,126 | |
+| `builds_on` 항목 | 393 | 393 | 387 |
+| `supersedes` 항목 | 3 | 3 | 3 |
 
 ```
-md 파일          6,452
---- 로 시작       5,835  (90.4%)
-빈 frontmatter   0
-CRLF 포함        0
+summary 길이   min 2 · median 60 · p95 76 · max 80 · 초과 0
+type 13값 밖   제외 후 0건
+빈 frontmatter · CRLF · 블록 안 빈 줄   전부 0
 ```
 
-프로젝트 시작 시점(2026-08-10)은 6,289개 / frontmatter 37.7%였다. **마이그레이션이 먹혔고 vault는 계속 자란다.**
+제외 구역 밖에 `type`을 가진 문서가 1,822개 있다 (`완제품` 1,042 · `원재료` 351 ·
+`중간재` 316 · `마물` 101 · `마족` 12). **`800 TRPG`는 같은 키를 게임 아이템
+분류로 쓴다.** 안 빼면 문서 유형 분포 1위가 `완제품`이 된다.
+
+프로젝트 시작 시점(2026-08-10)은 6,289개 / frontmatter 37.7%였다.
+**마이그레이션이 먹혔고 vault는 계속 자란다.**
 
 ---
 
-## 바로 다음 — Step 3 `fm_list` (RED)
+## 바로 다음 — Phase 2 Step 1 `link_target` (RED)
 
 ### 왜 이게 중요한가
 
-| 함수 | 산출물 | 그래프에서 |
-|---|---|---|
-| `fm_get` | `type` · `summary` · `created` | 노드 속성 |
-| **`fm_list`** | **`builds_on` · `supersedes`** | **엣지** |
+Phase 1이 명시적 관계 396개(`builds_on` 393 + `supersedes` 3)를 읽었다면,
+Phase 2는 **나머지 전부**를 읽는다. 답안지 기준 `links_to` 10,702개로 전체
+엣지 12,266개의 대부분이다.
 
-스키마 정본이 "이름 붙이는 관계는 둘뿐"이라고 못박은 그 둘. vault 전체에 `builds_on` 387개, `supersedes` 3개. 위키링크 24,969개가 전부 **무명** 엣지인 것과 대비되는, 유일하게 의미를 가진 관계다. Phase 8~9에서 추론의 재료가 되는 것도 이쪽.
+이쪽 함정은 **크래시를 내지 않는다.** 조용히 숫자를 틀리게 만든다.
+스키마 정본에 실제 사고가 적혀 있다.
+
+> 표 안의 이스케이프된 파이프 `\|`를 반드시 처리해야 한다. 안 하면 표로 정리된
+> 인덱스 문서의 링크를 전부 깨진 것으로 세고, **반대로 그 링크가 가리키는
+> 문서를 고아로 오판한다** (500 Mind Compiler를 45.7% 고아로 오측정한 원인).
+
+파싱 실수 하나가 두 통계를 **반대 방향으로** 망가뜨렸다.
 
 ### 할 일
 
-`tests/test_frontmatter.py`의 import를 고치고
+새 파일 `vault/links.py`와 `tests/test_links.py`를 만든다.
+`link_target(raw)`은 `[[ ]]` **안쪽 문자열**을 받아 링크 대상 이름을 돌려준다.
 
-```python
-from vault.frontmatter import fm_get, fm_list, split_frontmatter
+자를 구분자와 **순서**가 핵심이다.
+
+```
+\|  →  |  →  #  →  ^
 ```
 
-파일 끝에 추가한다.
+`|`를 먼저 자르면 `\|`의 역슬래시가 타깃 끝에 남는다. 답안지 함정 표의 1번이다.
 
-```python
-LIST_FM = (
-    "type: concept\n"
-    "builds_on:\n"
-    '  - "[[CIDR]]"\n'
-    '  - "[[Subnet mask]]"\n'
-    "created: 2026-08-10"
-)
+테스트로 고정할 입력.
 
+| 입력 | 기대 |
+|---|---|
+| `문서` | `문서` |
+| `문서\|별칭` | `문서` |
+| `문서\\|별칭` (표 안) | `문서` — 역슬래시가 남으면 안 된다 |
+| `문서#헤딩` | `문서` |
+| `문서#헤딩\|별칭` | `문서` |
+| `문서^blockid` | `문서` |
+| `폴더/문서` | `폴더/문서` — 경로는 남긴다 |
+| `  문서  ` | `문서` |
 
-def test_reads_every_item_of_a_list_block():
-    assert fm_list(LIST_FM, "builds_on") == ["CIDR", "Subnet mask"]
-
-
-def test_returns_an_empty_list_for_a_missing_key():
-    assert fm_list(LIST_FM, "supersedes") == []
-
-
-def test_stops_at_the_next_key():
-    fm = 'builds_on:\n  - "[[CIDR]]"\ntags:\n  - Stack/Python'
-    assert fm_list(fm, "builds_on") == ["CIDR"]
-
-
-def test_keeps_a_plain_item_that_is_not_a_wikilink():
-    fm = "tags:\n  - Stack/Python\n  - Topic/Network"
-    assert fm_list(fm, "tags") == ["Stack/Python", "Topic/Network"]
-
-
-def test_an_inline_scalar_is_not_a_list():
-    assert fm_list("builds_on: [[CIDR]]", "builds_on") == []
-```
-
-`uv run pytest -v` → 기존 10개 통과, 새 5개 `ImportError` 실패. **실패를 눈으로 본 뒤** GREEN으로 간다.
-
-### 각 테스트가 검증하는 것
-
-| 테스트 | 무엇을 | 왜 |
-|---|---|---|
-| `reads_every_item_of_a_list_block` | 정상 경로 | `[[ ]]`와 따옴표를 벗긴 알맹이를 돌려준다. 필요한 건 대상 이름이지 링크 문법이 아니다 |
-| `returns_an_empty_list_for_a_missing_key` | 부재 | `supersedes`는 vault 전체에 3건. 대부분의 문서에서 대부분의 필드는 없다 |
-| `stops_at_the_next_key` | 블록 경계 | 다음 키 항목까지 먹으면 `builds_on`에 태그가 섞이고 상한 3개 검사가 무의미해진다 |
-| `keeps_a_plain_item_that_is_not_a_wikilink` | 링크 아닌 항목 | `tags:`도 같은 블록 문법인데 값이 링크가 아니다. 함수 하나로 둘 다 읽는다 |
-| `an_inline_scalar_is_not_a_list` | 인라인 배제 | YAML은 `key: [a, b]`도 리스트지만 vault는 그렇게 안 쓴다. **지원하지 않기로 하고 그 결정을 테스트로 고정** |
-
-### GREEN 힌트 (막힐 때만)
-
-리스트 블록은 「키 줄 + 들여쓴 `- ` 줄들」이다. 다음 키를 만나면 끝난다. 정규식 하나로 블록을 통째로 잡고, 줄 단위로 쪼갠 뒤 `- `·따옴표·`[[ ]]`를 벗긴다. `fm_get`과 달리 **`re.M`과 여러 줄 매칭이 같이 필요하다.**
+`uv run pytest -v` → 기존 16개 통과, 새 테스트가 `ImportError`.
+**실패를 눈으로 본 뒤** GREEN으로 간다.
 
 ---
 
-## 그 다음 — Step 4 실측
+## 그 다음 — Phase 2 Step 2~4
 
-Phase 1의 마무리. 실제 vault 6,452개에 파서를 돌려 통계를 낸다.
+| Step | 함수 | 핵심 함정 |
+|---|---|---|
+| 2 | `strip_code` | 펜스(``` / ~~~) 짝 맞추기 · 인라인 코드 · **줄 번호 보존**(삭제가 아니라 빈 줄로 치환) |
+| 3 | `iter_links` | 이스케이프 `\[[` · 임베드 `![[` · 대괄호 중첩 |
+| 4 | 실측 | vault 전체 링크 수 → 답안지 24,969와 대조 |
 
-- frontmatter 보유율 (`--- 로 시작` 90.4%는 근사치였다. `type` 값을 실제로 읽어 정확히 센다)
-- `type` 분포 — 스키마 정본의 13값 밖에 있는 값이 있는가
-- `builds_on` / `supersedes` 개수 — 답안지의 387 / 3과 대조
-- `summary` 길이 분포 — 상한 80자를 넘는 게 몇 건인가
+Step 3에서 **본문만 본다.** `split_frontmatter`가 준 본문을 쓴다.
+frontmatter의 `builds_on`을 링크로 또 세면 같은 관계가 두 번 들어간다.
 
-스크립트는 `tools/measure_phase01.py`에 남긴다. 커밋은 `feat(tools): …`.
-
-이게 끝나면 **Phase 1 회고**를 쓰고(`learnings/phase01-*.md`) Phase 2로 넘어간다.
+Phase 2 완료 기준은 [`phase02.md`](phase02.md) 참조.
 
 ---
 
 ## 커밋 규칙 (Conventional Commits)
 
+**기본은 하나로 담는다.** 구현 · 테스트 · `learnings/` · 문서 갱신까지 커밋 하나.
+Step 하나가 곧 커밋 하나다. 잘게 쪼개면 이력이 오히려 안 읽힌다.
+
 | 시점 | type | 예 |
 |---|---|---|
-| GREEN (테스트+구현 함께) | `feat` | `feat(frontmatter): fm_list — 리스트 블록 파싱` |
+| GREEN (구현·테스트·학습노트 함께) | `feat` | `feat(frontmatter): fm_list — 리스트 블록 파싱` |
+| 실측 (스크립트·결과·회고 함께) | `feat(tools)` | `feat(tools): Phase 1 파서 실측` |
 | REFACTOR | `refactor` | `refactor(frontmatter): 키 매칭 정규식을 헬퍼로 추출` |
 | 기존 동작이 틀렸던 것 | `fix` | `fix(links): 표 안의 \| 가 타깃 끝에 역슬래시를 남기던 문제` |
-| 실측 스크립트 | `feat(tools)` | `feat(tools): Phase 1 파서 실측` |
-| Phase 가이드 | `docs` | `docs: Phase 2 가이드 — 위키링크 파서` |
-| Q&A·회고 | `docs(learnings)` | `docs(learnings): Phase 1 회고` |
+| **코드가 안 바뀐 때만** | `docs` | `docs: Phase 2 가이드 — 위키링크 파서` |
 
 - RED는 커밋하지 않는다 — 실패 상태가 이력에 남으면 `git bisect`를 못 쓴다. GREEN 커밋에 테스트가 같이 들어가므로 명세는 보존된다
 - GREEN과 REFACTOR를 **한 커밋에 섞지 않는다.** 섞으면 diff에서 "기능이 바뀐 건가 정리한 건가"를 읽을 수 없다
 - 본문에는 **밟은 함정과 설계 결정**을 남긴다. 3개월 뒤 `git log`가 학습 노트가 된다
+- `Co-Authored-By` 트레일러는 쓰지 않는다
 
 ### scope
 

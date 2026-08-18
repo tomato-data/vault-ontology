@@ -78,7 +78,9 @@ type: concept
 
 ## 완료 기준
 
-- [ ] `uv run pytest -v` 전부 통과
-- [ ] Step 4 실측이 돌아간다 — vault 전체에서 frontmatter 보유율·`type` 분포가 나온다
-- [ ] `type` 분포가 스키마 정본의 13값 안에 들어온다 (밖의 값이 있으면 그것도 발견)
-- [ ] "정규식 파싱이 깨지는 지점" 목록을 `learnings/phase01-qa.md`에 적었다
+- [x] `uv run pytest -v` 전부 통과 — 16개
+- [x] Step 4 실측이 돌아간다 — `tools/measure_phase01.py`
+- [x] `type` 분포가 스키마 정본의 13값 안에 들어온다 — 제외 후 정확히 13개. 제외 전에는 `800 TRPG`의 5값 1,822건이 섞인다
+- [x] "정규식 파싱이 깨지는 지점" 목록을 `learnings/phase01-qa.md`에 적었다
+
+**Phase 1 완료 (2026-08-18).** 회고는 [`learnings/phase01-measure-then-decide.md`](../learnings/phase01-measure-then-decide.md).
