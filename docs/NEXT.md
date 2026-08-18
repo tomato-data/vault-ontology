@@ -188,6 +188,9 @@ https://…#_oidc         URL 조각
 
 Phase 4 완료 기준은 [`phase04.md`](phase04.md) 참조.
 
+vault 쪽 백로그(어떤 개선을 어느 Phase 에서 처리할지)는
+[`vault-backlog.md`](vault-backlog.md). **Phase 4 에서 처리할 항목이 넷 있다.**
+
 ---
 
 ## 커밋 규칙 (Conventional Commits)
