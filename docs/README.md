@@ -74,9 +74,10 @@ Obsidian vault의 문서 6,452개는 위키링크 24,969개로 이미 연결돼 
 | 1 | 3 `fm_list` | ✅ |
 | 1 | 4 실측 | ✅ |
 | 2 | 1~4 `link_target` · `strip_code` · `iter_links` · 실측 | ✅ |
-| **3** | **1 `scan_vault`** | **⬜ 다음** |
-| 3 | 2~4 | ⬜ |
-| 4~9 | | ⬜ |
+| 3 | 1~5 `scan_vault` · `resolve_link` · 충돌 감지 · 실측 · `source` | ✅ |
+| **4** | **1 `vault/schema.py`** | **⬜ 다음** |
+| 4 | 2~5 | ⬜ |
+| 5~9 | | ⬜ |
 
 ---
 
