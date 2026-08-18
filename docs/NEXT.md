@@ -14,13 +14,12 @@ uv sync
 uv run pytest -v          # 통과해야 정상 출발점
 ```
 
-### 답안지에 대하여
+### 답안지
 
-답안지는 `~/Desktop/Code/vault-cli`다. **막히기 전에는 열지 않는다.**
+`reference/` 에 함께 들어 있다 (vault-cli `21faa91`, 2026-08-11 스냅샷). 별도로 받을 것이 없다.
 
-> ⚠️ **vault-cli는 원격 저장소가 없다.** 이 Mac에만 있다.
-> Phase 1~4는 답안지 없이도 진행할 수 있지만, **Phase 5의 대조 단계에서는 `vault.py`를 직접 돌려야 한다.**
-> 그 전에 vault-cli를 GitHub(private로 충분)에 올리거나, 다른 방법으로 양쪽 Mac에 두어야 한다.
+**막히기 전에는 열지 않는다.** 자세한 사용 규칙은 [`reference/README.md`](../reference/README.md).
+Phase 1~5까지만 답이 있고, **2부(RDF·추론)는 답안지가 없다.**
 
 vault 경로는 두 Mac 모두 같다.
 

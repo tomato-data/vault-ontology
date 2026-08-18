@@ -127,8 +127,8 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 > **Phase 5 대조에서는 답안지를 그날 다시 돌려** 같은 날짜 기준선을 뽑고 비교한다.
 >
 > ```bash
-> python3 ~/Desktop/Code/vault-cli/vault.py build   # 답안지 — 오늘 기준
-> uv run python -m vault build                       # 내 코드
+> python3 reference/vault.py build     # 답안지 — 오늘 기준
+> uv run python -m vault build          # 내 코드
 > ```
 
 ---
@@ -148,5 +148,5 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 
 ## 참고
 
-- `~/Desktop/Code/vault-cli` — 답안지. **막히기 전에는 열지 않는다**
+- [`reference/`](../reference/) — 답안지 (vault-cli `21faa91` 스냅샷). **막히기 전에는 열지 않는다.** Phase 1~5까지만 유효하다
 - vault 안의 `Vault 온톨로지 — 스키마 정본` · `Vault 온톨로지 — 지식베이스 그래프화` — 스키마 SSOT와 프로젝트 배경

@@ -22,6 +22,7 @@ uv run pytest -v
 | [docs/README.md](docs/README.md) | 전체 로드맵 · 대조본 수치 · 성공 기준 |
 | [docs/phase01.md](docs/phase01.md) ~ [phase09.md](docs/phase09.md) | Phase별 가이드 |
 | [learnings/](learnings/) | Q&A · 회고 |
+| [reference/](reference/) | 답안지 — 막히기 전에는 열지 않는다 |
 
 ## 구조
 
@@ -31,6 +32,9 @@ uv run pytest -v
 | `learnings/` | Q&A · 회고. 실제로 배운 것 |
 | `vault/` | 코드 |
 | `tests/` | TDD 테스트 |
+| `reference/` | **답안지.** 기존 `vault-cli`의 고정 스냅샷 (`21faa91`, 2026-08-11) |
+
+`reference/`는 Claude가 짠 기존 도구를 **회귀 대조본으로 고정해둔 것**이다. Phase 5에서 같은 vault에 둘 다 돌려 숫자가 일치하는지 확인한다. **Phase 6~9(RDF·추론)에는 답안지가 없다** — 그쪽 대조본은 Phase 5에서 내가 만든 SQLite 그래프다.
 
 ## 진행 방식
 

@@ -125,8 +125,8 @@ SELECT ?p WHERE { <doc> :builds_on+ ?p }
 **Step 6에서는 답안지를 그날 다시 돌려 같은 날짜 기준선을 뽑는다.**
 
 ```bash
-python3 ~/Desktop/Code/vault-cli/vault.py build   # 답안지 — 오늘 기준
-uv run python -m vault build                       # 내 코드
+python3 reference/vault.py build     # 답안지 — 오늘 기준
+uv run python -m vault build          # 내 코드
 ```
 
 노드·엣지·태그·kind별 개수가 **전부 일치**해야 한다. 하나라도 다르면 파서가 다른 것이고, 어느 Phase에서 갈렸는지 역추적한다.
