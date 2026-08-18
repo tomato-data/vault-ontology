@@ -1,6 +1,6 @@
 import unicodedata
 
-from vault.scan import scan_vault
+from vault.scan import resolve_link, scan_vault
 
 
 def build(root, *names):
@@ -52,3 +52,52 @@ def test_a_name_is_indexed_in_nfc(tmp_path):
     build(tmp_path, unicodedata.normalize("NFD", "한글") + ".md")
     _, index = scan_vault(tmp_path)
     assert "한글" in index
+
+
+PATHS = [
+    "000 Index/Hub.md",
+    "200 Dev/CIDR.md",
+    "200 Dev/Network/Subnet mask.md",
+    "200 Dev/한글.md",
+    "500 Mind/Hub.md",
+]
+INDEX = {
+    "Hub": ["000 Index/Hub.md", "500 Mind/Hub.md"],
+    "CIDR": ["200 Dev/CIDR.md"],
+    "Subnet mask": ["200 Dev/Network/Subnet mask.md"],
+    "한글": ["200 Dev/한글.md"],
+}
+
+
+def test_resolves_a_plain_name():
+    assert resolve_link("CIDR", INDEX, PATHS) == "200 Dev/CIDR.md"
+
+
+def test_returns_none_for_a_name_that_is_not_there():
+    assert resolve_link("nothing here", INDEX, PATHS) is None
+
+
+def test_a_repeated_name_always_picks_the_same_one():
+    assert resolve_link("Hub", INDEX, PATHS) == "000 Index/Hub.md"
+
+
+def test_a_path_tells_the_two_apart():
+    assert resolve_link("500 Mind/Hub", INDEX, PATHS) == "500 Mind/Hub.md"
+
+
+def test_a_partial_path_matches_the_tail():
+    assert (
+        resolve_link("Network/Subnet mask", INDEX, PATHS)
+        == "200 Dev/Network/Subnet mask.md"
+    )
+
+
+def test_a_tail_match_starts_at_a_directory_boundary():
+    assert resolve_link("work/Subnet mask", INDEX, PATHS) is None
+
+
+def test_a_decomposed_target_resolves():
+    assert (
+        resolve_link(unicodedata.normalize("NFD", "한글"), INDEX, PATHS)
+        == "200 Dev/한글.md"
+    )
