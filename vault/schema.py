@@ -53,8 +53,9 @@ def validate(fm):
     elif len(summary) > SUMMARY_MAX:
         broken.append(("summary too long", f"{len(summary)}자"))
 
-    if len(fm_list(fm, "builds_on")) > BUILDS_ON_MAX:
-        broken.append(("builds_on too many", f"{len(fm_list(fm, 'builds_on'))}개"))
+    builds_on = fm_list(fm, "builds_on")
+    if len(builds_on) > BUILDS_ON_MAX:
+        broken.append(("builds_on too many", f"{len(builds_on)}개"))
 
     created = fm_get(fm, "created")
     if not created:
