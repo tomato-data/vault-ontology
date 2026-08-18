@@ -128,3 +128,57 @@ def test_three_spellings_are_reported_as_one_collision():
 
 def test_a_repeated_name_is_not_a_case_collision():
     assert case_collisions(INDEX) == {}
+
+
+NEAR_PATHS = [
+    "500 Mind/Q1/_Patterns.md",
+    "500 Mind/Q1/_Question.md",
+    "500 Mind/Q2/_Patterns.md",
+    "500 Mind/Q3/x.md",
+]
+NEAR_INDEX = {
+    "_Patterns": ["500 Mind/Q1/_Patterns.md", "500 Mind/Q2/_Patterns.md"],
+    "_Question": ["500 Mind/Q1/_Question.md"],
+    "x": ["500 Mind/Q3/x.md"],
+}
+
+
+def test_a_candidate_in_the_source_folder_wins():
+    assert (
+        resolve_link(
+            "_Patterns",
+            NEAR_INDEX,
+            NEAR_PATHS,
+            source="500 Mind/Q1/_Question.md",
+        )
+        == "500 Mind/Q1/_Patterns.md"
+    )
+
+
+def test_a_sibling_folder_is_not_near_enough():
+    assert (
+        resolve_link(
+            "_Patterns", NEAR_INDEX, NEAR_PATHS, source="500 Mind/Q3/x.md"
+        )
+        == "500 Mind/Q1/_Patterns.md"
+    )
+
+
+def test_a_shared_parent_alone_does_not_move_the_answer():
+    index = {"Hub": ["300 Runtime/A/Core/Hub.md", "300 Runtime/B/Core/Hub.md"]}
+    assert (
+        resolve_link(
+            "Hub",
+            index,
+            list(index["Hub"]),
+            source="300 Runtime/B/Ideas/note.md",
+        )
+        == "300 Runtime/A/Core/Hub.md"
+    )
+
+
+def test_no_source_still_picks_the_first():
+    assert (
+        resolve_link("_Patterns", NEAR_INDEX, NEAR_PATHS)
+        == "500 Mind/Q1/_Patterns.md"
+    )

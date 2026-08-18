@@ -41,7 +41,7 @@ def main():
             count["links/all"] += 1
             if zone == "zone":
                 count["links/zone"] += 1
-            if resolve_link(target, index, paths) is None:
+            if resolve_link(target, index, paths, source=relative) is None:
                 count["unresolved/all"] += 1
                 if zone == "zone":
                     count["unresolved/zone"] += 1
@@ -52,7 +52,8 @@ def main():
                 count["edges/all"] += 1
                 if zone == "zone":
                     count["edges/zone"] += 1
-                if resolve_link(link_target(item), index, paths) is None:
+                if resolve_link(link_target(item), index, paths,
+                                source=relative) is None:
                     count["edges unresolved/all"] += 1
                     if zone == "zone":
                         count["edges unresolved/zone"] += 1
