@@ -31,3 +31,8 @@ def test_a_path_stays_in_the_target():
 
 def test_surrounding_space_is_trimmed():
     assert link_target("  CIDR  ") == "CIDR"
+
+
+def test_a_body_that_is_only_a_separator_has_no_target():
+    assert link_target("#Notation") == ""
+    assert link_target("|alias") == ""
