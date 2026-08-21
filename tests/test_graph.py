@@ -1,4 +1,4 @@
-from vault.graph import build, by_tag, by_type, stats
+from vault.graph import build, by_tag, by_type, stats, learning_path
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n{body}\n"
 
@@ -242,3 +242,62 @@ def test_a_tag_prefix_stops_at_a_slash(tmp_path):
 
 def test_results_come_back_sorted(tmp_path):
     assert by_tag(small(tmp_path), "Stack") == sorted(by_tag(small(tmp_path), "Stack"))
+
+
+def graph_of(tmp_path, links):
+    """Build a vault where each key `builds_on` the names listed under it."""
+    files = {}
+    for name, prerequisites in links.items():
+        block = "".join(f'  - "[[{p}]]"\n' for p in prerequisites)
+        files[f"{name}.md"] = (
+            "---\ntype: concept\nsummary: ok\n"
+            + (f"builds_on:\n{block}" if block else "")
+            + "created: 2026-08-10\n---\n본문\n"
+        )
+    return build((make(tmp_path, files)))
+
+
+def test_a_direct_prerequisite_comes_back_at_depth_one(tmp_path):
+    db = graph_of(tmp_path, {"A": ["B"], "B": []})
+    assert learning_path(db, "A.md") == [("B.md", 1)]
+
+
+def test_a_chain_comes_back_deepest_last(tmp_path):
+    db = graph_of(tmp_path, {"A": ["B"], "B": ["C"], "C": ["D"], "D": []})
+    assert learning_path(db, "A.md") == [("B.md", 1), ("C.md", 2), ("D.md", 3)]
+
+
+def test_a_note_with_no_prerequisite_returns_nothing(tmp_path):
+    db = graph_of(tmp_path, {"A": []})
+    assert learning_path(db, "A.md") == []
+
+
+def test_the_start_is_not_its_own_prerequisite(tmp_path):
+    db = graph_of(tmp_path, {"A": ["B"], "B": ["A"]})
+    assert learning_path(db, "A.md") == [("B.md", 1)]
+
+
+def test_a_diamond_reports_each_note_once_at_its_shortest_depth(tmp_path):
+    db = graph_of(tmp_path, {"A": ["B", "C"], "B": ["D"], "C": ["D"], "D": []})
+    assert learning_path(db, "A.md") == [("B.md", 1), ("C.md", 1), ("D.md", 2)]
+
+
+def test_a_long_chain_stops_at_the_limit(tmp_path):
+    db = graph_of(tmp_path, {chr(65 + n): [chr(66 + n)] for n in range(6)} | {"G": []})
+    assert learning_path(db, "A.md", limit=3) == [("B.md", 1), ("C.md", 2), ("D.md", 3)]
+
+
+def test_an_unresolved_prerequisite_is_not_a_step(tmp_path):
+    db = graph_of(tmp_path, {"A": ["없는 문서"]})
+    assert learning_path(db, "A.md") == []
+
+
+def test_only_builds_on_is_followed(tmp_path):
+    make(
+        tmp_path,
+        {
+            "A.md": NOTE.format(body="[[B]] 참조"),
+            "B.md": NOTE.format(body="본문"),
+        },
+    )
+    assert learning_path(build(tmp_path), "A.md") == []

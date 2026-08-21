@@ -182,3 +182,35 @@ def by_tag(connection, tag):
             (tag, len(nested), nested),
         )
     ]
+
+
+def learning_path(connection, path, limit=10):
+    """Return what to read before `path`, as (path, depth) pairs.
+
+    The transitive closure of `builds_on`, shallowest first, each note
+    once at the shortest depth that reaches it.
+
+    `UNION` dedupes whole ROWS, and a row here is (id, depth) — so a cycle
+    keeps producing fresh rows with a bigger depth and does NOT stop on its
+    own. `depth < :limit` is what ends it. Dropping `depth` from the row
+    would let UNION terminate the cycle by itself, at the cost of the one
+    number that makes this a reading ORDER rather than a set.
+    """
+    return list(
+        connection.execute(
+            "WITH RECURSIVE chain(id, depth) AS ("
+            "  SELECT :start, 0"
+            "  UNION"
+            "  SELECT e.dst, chain.depth + 1"
+            "    FROM edge e JOIN chain ON e.src = chain.id"
+            "   WHERE e.kind = 'builds_on'"
+            "     AND e.dst IS NOT NULL"
+            "     AND chain.depth < :limit"
+            ")"
+            " SELECT id, min(depth) FROM chain"
+            "  WHERE id <> :start"
+            "  GROUP BY id"
+            "  ORDER BY 2, 1",
+            {"start": path, "limit": limit},
+        )
+    )
