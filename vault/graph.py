@@ -133,3 +133,52 @@ def build(root, database=":memory:"):
     connection.executemany("INSERT INTO tag VALUES (?,?)", tags)
     connection.commit()
     return connection
+
+
+def stats(connection):
+    """Return the shape of the graph: table sizes and edges by kind."""
+    counts = {
+        # The table name arrives by f-string because SQL cannot parameterise
+        # an identifier — only a value. Which is exactly why nothing from
+        # outside this module may ever reach that position.
+        table: connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+        for table in ("node", "edge", "tag")
+    }
+    counts["unresolved"] = connection.execute(
+        "SELECT count(*) FROM edge WHERE dst IS NULL"
+    ).fetchone()[0]
+    counts["kinds"] = dict(
+        connection.execute("SELECT kind, count(*) FROM edge GROUP BY kind")
+    )
+    return counts
+
+
+def by_type(connection, type_):
+    """Return the path of every note of `type_`, sorted."""
+    return [
+        path
+        for (path,) in connection.execute(
+            "SELECT path FROM node WHERE type = ? ORDER BY path", (type_,)
+        )
+    ]
+
+
+def by_tag(connection, tag):
+    """Return every note carrying `tag` or a tag nested under it, sorted.
+
+    `Stack` finds `Stack/Python`, the way clicking a tag does in Obsidian.
+    The boundary is the slash: `Stack` must not reach `Stacked`.
+
+    Compared with `substr` rather than `LIKE`, because `_` and `%` are
+    wildcards to LIKE and a tag is allowed to contain them.
+    """
+    nested = tag + "/"
+    return [
+        path
+        for (path,) in connection.execute(
+            "SELECT DISTINCT path FROM tag"
+            " WHERE tag = ? OR substr(tag, 1, ?) = ?"
+            " ORDER BY path",
+            (tag, len(nested), nested),
+        )
+    ]

@@ -1,4 +1,4 @@
-from vault.graph import build
+from vault.graph import build, by_tag, by_type, stats
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n{body}\n"
 
@@ -186,3 +186,59 @@ def test_part_of_in_the_frontmatter_is_ignored(tmp_path):
         },
     )
     assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]
+
+
+def small(tmp_path):
+    """A vault with two typed notes, a tag tree and one broken link."""
+    make(
+        tmp_path,
+        {
+            "200 Dev/CIDR.md": NOTE.format(body="[[Subnet mask]] 참조").replace(
+                "type: concept", "type: concept\ntags:\n  - Stack/Python"
+            ),
+            "200 Dev/Subnet mask.md": NOTE.format(body="[[없는 문서]]").replace(
+                "type: concept", "type: procedure\ntags:\n  - Stack\n  - Stacked"
+            ),
+        },
+    )
+    return build(tmp_path)
+
+
+def test_stats_counts_each_table(tmp_path):
+    counts = stats(small(tmp_path))
+    assert (counts["node"], counts["edge"], counts["tag"]) == (2, 2, 3)
+
+
+def test_stats_counts_unresolved_edges(tmp_path):
+    assert stats(small(tmp_path))["unresolved"] == 1
+
+
+def test_stats_counts_each_edge_kind(tmp_path):
+    assert stats(small(tmp_path))["kinds"] == {"links_to": 2}
+
+
+def test_by_type_returns_only_that_type(tmp_path):
+    assert by_type(small(tmp_path), "concept") == ["200 Dev/CIDR.md"]
+
+
+def test_a_type_nothing_carries_returns_nothing(tmp_path):
+    assert by_type(small(tmp_path), "tradeoff") == []
+
+
+def test_by_tag_returns_the_notes_carrying_it(tmp_path):
+    assert by_tag(small(tmp_path), "Stack/Python") == ["200 Dev/CIDR.md"]
+
+
+def test_a_parent_tag_matches_its_children(tmp_path):
+    assert by_tag(small(tmp_path), "Stack") == [
+        "200 Dev/CIDR.md",
+        "200 Dev/Subnet mask.md",
+    ]
+
+
+def test_a_tag_prefix_stops_at_a_slash(tmp_path):
+    assert by_tag(small(tmp_path), "Stacked") == ["200 Dev/Subnet mask.md"]
+
+
+def test_results_come_back_sorted(tmp_path):
+    assert by_tag(small(tmp_path), "Stack") == sorted(by_tag(small(tmp_path), "Stack"))
