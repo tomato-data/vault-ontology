@@ -121,3 +121,68 @@ def test_building_twice_does_not_double_the_rows(tmp_path):
     database = tmp_path / "graph.db"
     build(tmp_path, database)
     assert rows(build(tmp_path, database), "SELECT count(*) FROM node") == [(1,)]
+
+
+def test_a_note_is_part_of_the_folder_note_inside_its_folder(tmp_path):
+    make(
+        tmp_path,
+        {
+            "200 Dev/Network/Network.md": NOTE.format(body="본문"),
+            "200 Dev/Network/CIDR.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT src, dst, raw FROM edge") == [
+        ("200 Dev/Network/CIDR.md", "200 Dev/Network/Network.md", "Network")
+    ]
+
+
+def test_a_note_is_part_of_the_folder_note_beside_its_folder(tmp_path):
+    make(
+        tmp_path,
+        {
+            "200 Dev/Network.md": NOTE.format(body="본문"),
+            "200 Dev/Network/CIDR.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT src, dst FROM edge") == [
+        ("200 Dev/Network/CIDR.md", "200 Dev/Network.md")
+    ]
+
+
+def test_a_folder_note_is_not_part_of_itself(tmp_path):
+    make(tmp_path, {"200 Dev/Network/Network.md": NOTE.format(body="본문")})
+    assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]
+
+
+def test_a_folder_without_a_folder_note_makes_no_edge(tmp_path):
+    make(tmp_path, {"200 Dev/Network/CIDR.md": NOTE.format(body="본문")})
+    assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]
+
+
+def test_a_note_at_the_vault_root_makes_no_edge(tmp_path):
+    make(tmp_path, {"CIDR.md": NOTE.format(body="본문")})
+    assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]
+
+
+def test_a_note_named_after_the_folder_elsewhere_is_not_the_folder_note(tmp_path):
+    make(
+        tmp_path,
+        {
+            "500 Mind/Network.md": NOTE.format(body="본문"),
+            "200 Dev/Network/CIDR.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]
+
+
+def test_part_of_in_the_frontmatter_is_ignored(tmp_path):
+    make(
+        tmp_path,
+        {
+            "a.md": NOTE.format(body="본문").replace(
+                "---\n본문", 'part_of:\n  - "[[CIDR]]"\n---\n본문'
+            ),
+            "CIDR.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT count(*) FROM edge") == [(0,)]

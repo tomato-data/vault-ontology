@@ -51,6 +51,29 @@ def _in_graph(relative):
     )
 
 
+def _folder_note(relative, is_node):
+    r"""The note standing in for this note's folder, if there is one.
+
+    Two conventions, both pinned by PATH rather than by name:
+
+        A/B/B.md    the folder note inside the folder
+        A/B.md      the folder note beside it
+
+    Never a name lookup. The answer key resolves `B` globally, so a note in
+    `200 Dev/Network/` attaches to any `Network.md` anywhere in the vault.
+    A name is not an identifier — that was Phase 3's whole subject.
+    """
+    if "/" not in relative:
+        return None  # the vault root has no folder note
+    directory = relative.rsplit("/", 1)[0]
+    name = directory.rsplit("/", 1)[-1]
+    above = directory.rsplit("/", 1)[0] + "/" if "/" in directory else ""
+    for candidate in (f"{directory}/{name}.md", f"{above}{name}.md"):
+        if candidate != relative and candidate in is_node:
+            return candidate
+    return None
+
+
 def build(root, database=":memory:"):
     """Return a connection holding the vault as node/edge/tag."""
     connection = sqlite3.connect(database)
@@ -64,12 +87,13 @@ def build(root, database=":memory:"):
     for relative in inside:
         path = root / relative
         fm, body = split_frontmatter(path.read_text(encoding="utf-8"))
+        directory = relative.rsplit("/", 1)[0] if "/" in relative else ""
         nodes.append(
             (
                 relative,
                 relative.rsplit("/", 1)[-1].removesuffix(".md"),
                 relative.split("/")[0],
-                relative.rsplit("/", 1)[0] if "/" in relative else "",
+                directory,
                 fm_get(fm, "type"),
                 fm_get(fm, "summary"),
                 fm_get(fm, "created"),
@@ -91,6 +115,15 @@ def build(root, database=":memory:"):
                 continue  # an attachment is neither a node nor a broken link
             edges.append(
                 (relative, landed if landed in is_node else None, raw, "links_to")
+            )
+
+        # Derived, never read: the schema of record dropped `part_of` as a
+        # field because the path already knows. Storing it would drift the
+        # moment a note moves.
+        folder_note = _folder_note(relative, is_node)
+        if folder_note:
+            edges.append(
+                (relative, folder_note, directory.rsplit("/", 1)[-1], "part_of")
             )
 
         tags += [(relative, tag) for tag in fm_list(fm, "tags")]
