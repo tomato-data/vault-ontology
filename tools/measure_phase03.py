@@ -24,8 +24,8 @@ PLACEHOLDERS = {"...", "참조", "파일명", "제목", "경로", "예시"}
 
 def main():
     started = time.perf_counter()
-    paths, index = scan_vault(VAULT)
-    print(f"scan_vault          {len(paths):7,} files   "
+    notes, index, targets = scan_vault(VAULT)
+    print(f"scan_vault          {len(notes):7,} files   "
           f"{time.perf_counter() - started:.2f}s")
 
     # Resolution always sees the whole vault, the way Obsidian does. Only the
@@ -33,7 +33,7 @@ def main():
     count = Counter()
     unresolved = Counter()
     started = time.perf_counter()
-    for relative in paths:
+    for relative in notes:
         zone = "all" if relative.startswith(EXCLUDED) else "zone"
         fm, body = split_frontmatter((VAULT / relative).read_text(encoding="utf-8"))
 
@@ -41,7 +41,7 @@ def main():
             count["links/all"] += 1
             if zone == "zone":
                 count["links/zone"] += 1
-            if resolve_link(target, index, paths, source=relative) is None:
+            if resolve_link(target, index, targets, source=relative) is None:
                 count["unresolved/all"] += 1
                 if zone == "zone":
                     count["unresolved/zone"] += 1
@@ -52,7 +52,7 @@ def main():
                 count["edges/all"] += 1
                 if zone == "zone":
                     count["edges/zone"] += 1
-                if resolve_link(link_target(item), index, paths,
+                if resolve_link(link_target(item), index, targets,
                                 source=relative) is None:
                     count["edges unresolved/all"] += 1
                     if zone == "zone":

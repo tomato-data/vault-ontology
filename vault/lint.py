@@ -6,6 +6,11 @@ that file is committed: what was excluded and why has to be auditable.
 
 import json
 
+from vault.frontmatter import fm_list, split_frontmatter
+from vault.links import iter_links, link_target
+from vault.scan import resolve_link, scan_vault
+from vault.schema import find_body_tags, validate
+
 CONFIG_NAME = ".vault-lint.json"
 
 # Empty on purpose. Without a config the linter checks everything, and a
@@ -46,3 +51,38 @@ def skips_unresolved(rules, source, target):
         or _under(source, rules["skip_unresolved_from"])
         or target in rules["skip_unresolved_to"]
     )
+
+
+def lint_vault(root):
+    """Return every finding in the vault as (path, code, detail).
+
+    Findings, not printed lines: the caller picks the format and the exit
+    code. Same decision as `validate` returning a list instead of raising,
+    one layer up.
+    """
+    rules = load_rules(root)
+    notes, index, targets = scan_vault(root)
+    findings = []
+
+    for relative in notes:
+        fm, body = split_frontmatter((root / relative).read_text(encoding="utf-8"))
+
+        # Schema checks. A zone with a schema of its own answers to nobody
+        # here — including for the tags in its body, which are schema too.
+        if not skips_frontmatter(rules, relative):
+            findings += [(relative, code, detail) for code, detail in validate(fm)]
+            findings += [(relative, "body tag", tag) for tag in find_body_tags(body)]
+            for item in fm_list(fm, "builds_on"):
+                target = link_target(item)
+                if resolve_link(target, index, targets, source=relative) is None:
+                    findings.append((relative, "builds_on unresolved", target))
+
+        # Body links are gated separately, so a zone whose broken links
+        # point at the past still gets its frontmatter checked.
+        for target in iter_links(body):
+            if resolve_link(
+                target, index, targets, source=relative
+            ) is None and not skips_unresolved(rules, relative, target):
+                findings.append((relative, "link unresolved", target))
+
+    return findings

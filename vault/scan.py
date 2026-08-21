@@ -15,30 +15,45 @@ def nfc(text):
 
 
 def scan_vault(root):
-    """Return (relative paths, name -> paths).
+    """Return (notes, index, targets).
 
-    The index maps to a LIST because a name is not an identifier: several
-    files can carry the same one. Collapsing them here would silently drop
-    every note but the last.
+    Three sets, because they are three different things:
+
+        notes    every `.md`, the documents there is text to read
+        index    every FILE by name — a link can point at an attachment,
+                 and `![[가상화.png]]` is a working link, not a broken one
+        targets  every file's path, for the tail match in `resolve_link`
+
+    Treating "documents" and "what a link may hit" as one set reported 582
+    image embeds as broken links against the real vault.
+
+    A name maps to a LIST because a name is not an identifier: several
+    files can carry the same one. Collapsing them would silently drop
+    every file but the last.
     """
-    paths, index = [], defaultdict(list)
-    for path in root.rglob("*.md"):
+    notes, targets, index = [], [], defaultdict(list)
+    for path in root.rglob("*"):
         relative = path.relative_to(root)
-        # `.git` `.obsidian` `.trash` `.claude` — machinery, not notes.
-        if any(part.startswith(".") for part in relative.parts):
+        # `.git` `.obsidian` `.trash` `.claude` — machinery, not the vault.
+        # `.trash` especially: a link into it points at a deleted note and
+        # should stay broken.
+        if not path.is_file() or any(p.startswith(".") for p in relative.parts):
             continue
-        paths.append(nfc(relative.as_posix()))
+        targets.append(nfc(relative.as_posix()))
     # Sorting AFTER normalisation, not before: NFD `한글` starts at U+1112
-    # and NFC at U+D55C, so the two forms sort differently. The index is
-    # built from this list to inherit that one order.
-    paths.sort()
-    for relative in paths:
-        # `removesuffix` rather than `splitext`/`.stem`: both are safe HERE,
-        # because the glob guarantees a `.md`. Neither is safe on a link
-        # target, which carries no extension — `splitext("No.013 stone")`
-        # returns `("No", ".013 stone")`. One explicit method on both sides.
-        index[relative.rsplit("/", 1)[-1].removesuffix(".md")].append(relative)
-    return paths, dict(index)
+    # and NFC at U+D55C, so the two forms sort differently. Both lists below
+    # inherit this one order.
+    targets.sort()
+    for relative in targets:
+        name = relative.rsplit("/", 1)[-1]
+        index[name].append(relative)
+        if name.endswith(".md"):
+            # `removesuffix` rather than `splitext`/`.stem`: both are safe
+            # HERE, but neither is safe on a link target, which carries no
+            # extension — `splitext("No.013 stone")` gives `("No", ".013…")`.
+            index[name.removesuffix(".md")].append(relative)
+            notes.append(relative)
+    return notes, dict(index), targets
 
 
 def _nearest(candidates, source):

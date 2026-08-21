@@ -14,43 +14,43 @@ def build(root, *names):
 
 def test_lists_every_markdown_file(tmp_path):
     build(tmp_path, "CIDR.md", "200 Dev/Subnet mask.md")
-    paths, _ = scan_vault(tmp_path)
-    assert paths == ["200 Dev/Subnet mask.md", "CIDR.md"]
+    notes, _, _ = scan_vault(tmp_path)
+    assert notes == ["200 Dev/Subnet mask.md", "CIDR.md"]
 
 
 def test_ignores_a_file_that_is_not_markdown(tmp_path):
     build(tmp_path, "CIDR.md", "diagram.png", "notes.txt")
-    paths, _ = scan_vault(tmp_path)
-    assert paths == ["CIDR.md"]
+    notes, _, _ = scan_vault(tmp_path)
+    assert notes == ["CIDR.md"]
 
 
 def test_ignores_a_dot_directory(tmp_path):
     build(tmp_path, "CIDR.md", ".obsidian/workspace.md", ".git/COMMIT.md")
-    paths, _ = scan_vault(tmp_path)
-    assert paths == ["CIDR.md"]
+    notes, _, _ = scan_vault(tmp_path)
+    assert notes == ["CIDR.md"]
 
 
 def test_indexes_a_file_by_its_name_without_the_extension(tmp_path):
     build(tmp_path, "200 Dev/CIDR.md")
-    _, index = scan_vault(tmp_path)
+    _, index, _ = scan_vault(tmp_path)
     assert index["CIDR"] == ["200 Dev/CIDR.md"]
 
 
 def test_a_name_maps_to_every_file_that_carries_it(tmp_path):
     build(tmp_path, "000 Index/Hub.md", "500 Mind/Hub.md")
-    _, index = scan_vault(tmp_path)
+    _, index, _ = scan_vault(tmp_path)
     assert index["Hub"] == ["000 Index/Hub.md", "500 Mind/Hub.md"]
 
 
 def test_a_dot_inside_the_name_survives(tmp_path):
     build(tmp_path, "No.013 philosopher stone.md")
-    _, index = scan_vault(tmp_path)
+    _, index, _ = scan_vault(tmp_path)
     assert "No.013 philosopher stone" in index
 
 
 def test_a_name_is_indexed_in_nfc(tmp_path):
     build(tmp_path, unicodedata.normalize("NFD", "한글") + ".md")
-    _, index = scan_vault(tmp_path)
+    _, index, _ = scan_vault(tmp_path)
     assert "한글" in index
 
 
@@ -157,9 +157,7 @@ def test_a_candidate_in_the_source_folder_wins():
 
 def test_a_sibling_folder_is_not_near_enough():
     assert (
-        resolve_link(
-            "_Patterns", NEAR_INDEX, NEAR_PATHS, source="500 Mind/Q3/x.md"
-        )
+        resolve_link("_Patterns", NEAR_INDEX, NEAR_PATHS, source="500 Mind/Q3/x.md")
         == "500 Mind/Q1/_Patterns.md"
     )
 
@@ -179,6 +177,20 @@ def test_a_shared_parent_alone_does_not_move_the_answer():
 
 def test_no_source_still_picks_the_first():
     assert (
-        resolve_link("_Patterns", NEAR_INDEX, NEAR_PATHS)
-        == "500 Mind/Q1/_Patterns.md"
+        resolve_link("_Patterns", NEAR_INDEX, NEAR_PATHS) == "500 Mind/Q1/_Patterns.md"
     )
+
+
+def test_an_attachment_is_a_link_target_though_not_a_note(tmp_path):
+    build(tmp_path, "CIDR.md", "그림/가상화.png")
+    notes, index, targets = scan_vault(tmp_path)
+    assert notes == ["CIDR.md"]
+    assert index["가상화.png"] == ["그림/가상화.png"]
+    assert "그림/가상화.png" in targets
+
+
+def test_a_name_with_its_extension_is_also_a_key(tmp_path):
+    build(tmp_path, "Docker.md")
+    _, index, _ = scan_vault(tmp_path)
+    assert index["Docker"] == ["Docker.md"]
+    assert index["Docker.md"] == ["Docker.md"]
