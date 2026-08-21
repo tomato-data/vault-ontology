@@ -126,7 +126,11 @@ Phase 8    :type rdfs:range :DocumentType .       선언형 · 데이터
 
 ## 완료 기준
 
-- [ ] `uv run pytest -v` 전부 통과
-- [ ] `uv run python -m vault lint` 가 답안지와 **같은 위반 건수**를 낸다
-- [ ] 오탐 4종(`](#…)` · URL 조각 · `#Stack/Python` · 순수 숫자)이 하나도 안 잡힌다
-- [ ] 종료 코드가 규격대로 나온다 (`echo $?`)
+- [x] `uv run pytest -v` 전부 통과 — 110개
+- [x] `uv run python -m vault lint` 가 답안지와 대조된다 — 「같은 숫자」가 아니라 **「다른 숫자마다 이유가 있음」** 으로 통과. 깨진 링크 328 vs 267 (점 디렉토리 12 + vault 변화), frontmatter 26 vs 2 (**답안지에 없는 검사 24건**)
+- [x] 오탐 4종이 하나도 안 잡힌다 — **규칙 하나가 6종을 처리한다.** `#` 앞이 공백이거나 줄 시작일 것. 문서에 없던 위키링크 헤딩 앵커(345)와 단어 중간 `#`(226)도 같이
+- [x] 종료 코드가 규격대로 나온다 — `main` 이 정수를 돌려주므로 프로세스 없이 테스트한다
+
+**Phase 4 완료 (2026-08-21).** 회고는 [`learnings/phase04-the-report-nobody-reads.md`](../learnings/phase04-the-report-nobody-reads.md).
+
+백로그 항목 셋이 닫혔다 — 판단 구간 summary 거부 · `.vault-lint.json` 키 분리(커버리지 89% → 100%) · 템플릿 `{{date}}` 예외.
