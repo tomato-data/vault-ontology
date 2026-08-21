@@ -274,3 +274,20 @@ def orphans(connection, zone=None):
         sql += " AND zone = ?"
         parameters.append(zone)
     return [p for (p,) in connection.execute(sql + " ORDER BY path", parameters)]
+
+
+DB_NAME = ".vault-graph.db"
+
+
+def find(connection, needle):
+    """Return the path for `needle`, which may be a path or a note name.
+
+    A repeated name resolves to the first in sorted order — the same rule
+    as `resolve_link`, with one extra reason here: someone who typed a
+    bare name at a prompt has already accepted the ambiguity.
+    """
+    row = connection.execute(
+        "SELECT path FROM node WHERE path = ? OR name = ? ORDER BY path LIMIT 1",
+        (needle, needle),
+    ).fetchone()
+    return row[0] if row else None
