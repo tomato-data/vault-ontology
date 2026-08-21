@@ -1,4 +1,4 @@
-from vault.graph import build, by_tag, by_type, stats, learning_path
+from vault.graph import build, by_tag, by_type, stats, learning_path, near, orphans
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n{body}\n"
 
@@ -301,3 +301,104 @@ def test_only_builds_on_is_followed(tmp_path):
         },
     )
     assert learning_path(build(tmp_path), "A.md") == []
+
+
+def note(body="본문", tags=()):
+    """A minimal valid note, optionally tagged."""
+    block = "".join(f"  - {tag}\n" for tag in tags)
+    return (
+        "---\ntype: concept\n"
+        + (f"tags:\n{block}" if block else "")
+        + f"summary: ok\ncreated: 2026-08-10\n---\n{body}\n"
+    )
+
+
+def test_a_note_lists_what_it_points_at(tmp_path):
+    db = build(make(tmp_path, {"A.md": note("[[B]]"), "B.md": note()}))
+    assert near(db, "A.md")["links_to"] == ["B.md"]
+
+
+def test_a_note_lists_what_points_at_it(tmp_path):
+    db = build(make(tmp_path, {"A.md": note("[[B]]"), "B.md": note()}))
+    assert near(db, "B.md")["linked_by"] == ["A.md"]
+
+
+def test_a_shared_tag_makes_a_neighbour(tmp_path):
+    db = build(
+        make(
+            tmp_path,
+            {
+                "A.md": note(tags=["Stack/Python"]),
+                "B.md": note(tags=["Stack/Python"]),
+            },
+        )
+    )
+    assert near(db, "A.md")["shares_tag"] == [("B.md", 1)]
+
+
+def test_more_shared_tags_rank_higher(tmp_path):
+    db = build(
+        make(
+            tmp_path,
+            {
+                "A.md": note(tags=["Stack/Python", "Topic/Career"]),
+                "B.md": note(tags=["Stack/Python"]),
+                "C.md": note(tags=["Stack/Python", "Topic/Career"]),
+            },
+        )
+    )
+    assert near(db, "A.md")["shares_tag"] == [("C.md", 2), ("B.md", 1)]
+
+
+def test_a_tag_neighbour_already_linked_is_not_repeated(tmp_path):
+    db = build(
+        make(
+            tmp_path,
+            {
+                "A.md": note("[[B]]", tags=["Stack/Python"]),
+                "B.md": note(tags=["Stack/Python"]),
+            },
+        )
+    )
+    assert near(db, "A.md")["shares_tag"] == []
+
+
+def test_a_note_does_not_neighbour_itself(tmp_path):
+    db = build(make(tmp_path, {"A.md": note(tags=["Stack/Python"])}))
+    assert near(db, "A.md") == {"links_to": [], "linked_by": [], "shares_tag": []}
+
+
+def test_a_note_nobody_points_at_is_an_orphan(tmp_path):
+    db = build(make(tmp_path, {"A.md": note("[[B]]"), "B.md": note()}))
+    assert orphans(db) == ["A.md"]
+
+
+def test_a_folder_note_is_not_an_orphan(tmp_path):
+    db = build(
+        make(
+            tmp_path,
+            {
+                "200 Dev/Network/Network.md": note(),
+                "200 Dev/Network/CIDR.md": note(),
+            },
+        )
+    )
+    assert orphans(db) == ["200 Dev/Network/CIDR.md"]
+
+
+def test_an_unresolved_link_rescues_nobody(tmp_path):
+    db = build(make(tmp_path, {"A.md": note("[[없는 문서]]"), "B.md": note()}))
+    assert orphans(db) == ["A.md", "B.md"]
+
+
+def test_orphans_can_be_limited_to_a_zone(tmp_path):
+    db = build(
+        make(
+            tmp_path,
+            {
+                "200 Dev/A.md": note(),
+                "500 Mind/B.md": note(),
+            },
+        )
+    )
+    assert orphans(db, "500 Mind") == ["500 Mind/B.md"]

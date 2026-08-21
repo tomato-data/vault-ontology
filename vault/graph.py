@@ -214,3 +214,63 @@ def learning_path(connection, path, limit=10):
             {"start": path, "limit": limit},
         )
     )
+
+
+def near(connection, path):
+    """Return the notes around `path`, grouped by how they touch it.
+
+    `shares_tag` leaves out anything already linked either way. Obsidian
+    shows links and backlinks already; this third group only earns its
+    place by surfacing what following links would never reach — search
+    step 4 in the schema of record, 뜻밖의 발견.
+
+    It carries HOW MANY tags are shared, most first, because one shared
+    tag is usually not a relation. On the real vault a note tagged
+    `Source/Claude` neighbours 45 others that share nothing but their
+    author. Which prefixes carry meaning is a judgement with no evidence
+    behind it yet, so the count is reported rather than a rule applied.
+    """
+    out = [
+        p
+        for (p,) in connection.execute(
+            "SELECT DISTINCT dst FROM edge"
+            " WHERE src = ? AND dst IS NOT NULL ORDER BY dst",
+            (path,),
+        )
+    ]
+    into = [
+        p
+        for (p,) in connection.execute(
+            "SELECT DISTINCT src FROM edge WHERE dst = ? ORDER BY src", (path,)
+        )
+    ]
+    # A note is not its own neighbour, and the tag join would say otherwise.
+    known = set(out) | set(into) | {path}
+    shared = connection.execute(
+        "SELECT other.path, count(*) FROM tag mine"
+        "  JOIN tag other ON other.tag = mine.tag"
+        " WHERE mine.path = ?"
+        " GROUP BY other.path ORDER BY 2 DESC, 1",
+        (path,),
+    )
+    return {
+        "links_to": out,
+        "linked_by": into,
+        "shares_tag": [(p, n) for p, n in shared if p not in known],
+    }
+
+
+def orphans(connection, zone=None):
+    """Return every node no edge points at, optionally within one zone."""
+    # `dst IS NOT NULL` inside the subquery is not tidiness, it is required:
+    # `x NOT IN (…)` evaluates to NULL — never true — the moment the list
+    # holds a single NULL, so one broken link would empty this whole result.
+    sql = (
+        "SELECT path FROM node"
+        " WHERE path NOT IN (SELECT dst FROM edge WHERE dst IS NOT NULL)"
+    )
+    parameters = []
+    if zone is not None:
+        sql += " AND zone = ?"
+        parameters.append(zone)
+    return [p for (p,) in connection.execute(sql + " ORDER BY path", parameters)]
