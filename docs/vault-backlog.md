@@ -63,10 +63,17 @@ Phase 5~6 이 줄 답을 못 쓰게 된다. 반대로 몇 개는 지금 안 하�
 그리고 실물을 보면 흩어진 잡키가 아니라 **완결된 도메인 스키마**다.
 
 ```
-800 TRPG              1,834파일   id · name_en · name_de · category · rarity · profession
-600 Content Observatory 308파일   표지 · 감독 · 주연 · 점수 · Read Status
-300 Runtime             156파일
+600 Content Observatory  표지 · 감독 · 주연 · 점수 · 분류 · Read Status · Play Status
+300 Runtime              elevate · track · verifiable · incidentDate
+700 Life Stack           読み仮名 · 尊敬語 · 謙譲語 · 意味
 ```
+
+실측 (2026-08-23, `800 TRPG` 분리 후): **53종 2,357건 / 531파일 (13.3%)**.
+
+> 가장 선명한 예였던 `800 TRPG`(1,834파일, `id`·`name_en`·`name_de`·`category`·`rarity`)는
+> **2026-08-23 에 vault 밖으로 나갔다.** 근거가 하나 줄었지만 결론은 안 바뀐다 —
+> 오히려 가장 이질적인 구역이 빠져서 **남은 것들이 더 순수한 도메인 스키마**가 됐다.
+> 그리고 800 은 이제 「합칠까」 쪽 문제다 → [`800-trpg-split.md`](800-trpg-split.md)
 
 「위반」으로 정하면 진짜 지식을 지우게 되고, 「구역별 허용 목록」으로 정하면
 구역이 늘 때마다 스키마를 고쳐야 한다. **Phase 6 이 제3의 답을 준다.**

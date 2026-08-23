@@ -17,7 +17,7 @@
 sha256   39d34b564d380c3d…  (vault.py)
 ```
 
-**작업 트리가 아니라 커밋된 `HEAD`를 복사했다.** 복사 시점에 vault-cli에는 미완 작업(`STRAY_TAG_RE`·`fm_tags`, +54/-12)이 커밋되지 않은 채 있었다. 답안지는 문서와 실측 숫자가 짝이 맞는 상태여야 하므로 그건 제외했다.
+**작업 트리가 아니라 커밋된 `HEAD`를 복사했다.** 복사 시점에 vault-cli에는 미완 작업(`STRAY_TAG_RE`·`fm_tags`, +54/-12)이 커밋되지 않은 채 있었다. 답안지는 문서와 실측 숫자가 서로 맞아야 하므로 그 작업은 제외했다.
 
 ## 쓰는 법
 
@@ -49,7 +49,7 @@ uv run python -m vault build           # 내 코드
 **답안지는 Phase 1~5까지만 유효하다.**
 
 ```
-Phase 1~5   파서 → 검증 → SQLite 그래프      ← 여기까지가 vault.py 의 범위
+Phase 1~5   파서 → 검증 → SQLite 그래프      ← 여기까지가 vault.py의 범위
 Phase 6~9   RDF → SPARQL → RDFS/OWL → 추론   ← 답안지 없음
 ```
 
