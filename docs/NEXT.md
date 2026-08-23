@@ -108,7 +108,11 @@ uv run python -m tools.measure_phase01     # 02, 03 도 있다
 uv run python -m vault lint
 ```
 
-| 항목 | 값 | 답안지 |
+> **2026-08-23 — `800 TRPG` 가 vault 밖으로 나갔다.** 아래 수치는 그 전 것이다.
+> 이후: 노트 4,192 · 본문 링크 11,198 · lint 위반 373(링크 347 · frontmatter 26).
+> 경위와 Phase 6·9 영향은 [`800-trpg-split.md`](800-trpg-split.md).
+
+| 항목 | 값 (08-18) | 답안지 |
 |---|---:|---:|
 | 노트 (점 디렉토리 제외) | 6,430 | |
 | 링크 대상 (첨부 포함) | 7,353 | |
@@ -158,7 +162,11 @@ git 이 안다.
 새 파일 `vault/graph.py` 와 `tests/test_graph.py`. 세 테이블(`node` · `edge` · `tag`)을
 만들고 vault 를 적재한다. `sqlite3` 는 표준 라이브러리다.
 
-제외 구역은 `800 TRPG` · `900 Archive` · 점 디렉토리 · `CLAUDE.md`.
+제외 구역은 `900 Archive` · 점 디렉토리 · `CLAUDE.md`.
+
+> `800 TRPG` 는 2026-08-23 에 **물리적으로 vault 밖으로 나갔다.** `vault/graph.py` 의
+> `EXCLUDED_ZONES` 에는 아직 남아 있는데, **Step 6 답안지 대조가 끝날 때까지 그대로 둔다** —
+> 지금 지우면 답안지(`reference/vault.py`)와 제외 구역이 달라져 대조가 무의미해진다.
 **빼도 링크는 그쪽을 가리키므로**, 해석 실패를 두 줄로 나눠 보고한다 —
 제외 구역을 가리키는 것(정상)과 그 밖(진짜 깨짐).
 
