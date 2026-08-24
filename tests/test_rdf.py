@@ -1,7 +1,16 @@
 from rdflib import Literal, URIRef
-from rdflib.namespace import RDF, XSD
+from rdflib.namespace import RDF, SKOS, XSD
 
-from vault.rdf import V, doc_iri, edge_triples, folder_iri, folder_triples, node_triples
+from vault.rdf import (
+    V,
+    doc_iri,
+    edge_triples,
+    folder_iri,
+    folder_triples,
+    node_triples,
+    tag_iri,
+    tag_triples,
+)
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -150,3 +159,43 @@ def test_a_folder_note_becomes_the_hub():
 
 def test_a_folder_iri_is_not_a_document_iri():
     assert folder_iri("200 Dev/Network") != doc_iri("200 Dev/Network")
+
+
+TAGGED = (
+    "---\ntype: concept\ntags:\n  - Stack/Python\n  - Log\n"
+    "summary: ok\ncreated: 2026-08-10\n---\n본문\n"
+)
+
+
+def test_a_tag_becomes_a_resource():
+    tagged = [o for _, p, o in node_triples("a.md", TAGGED) if p == V.tagged]
+    assert tagged == [tag_iri("Stack/Python"), tag_iri("Log")]
+
+
+def test_a_note_without_tags_says_nothing():
+    assert V.tagged not in facts("a.md", NOTE)
+
+
+def test_a_flat_tag_has_no_parent():
+    assert list(tag_triples("Stack")) == []
+
+
+def test_a_nested_tag_names_its_parent():
+    assert list(tag_triples("Stack/Python")) == [
+        (tag_iri("Stack/Python"), SKOS.broader, tag_iri("Stack"))
+    ]
+
+
+def test_a_deep_tag_names_every_level():
+    assert list(tag_triples("Projects/E-Project/Learnings")) == [
+        (
+            tag_iri("Projects/E-Project/Learnings"),
+            SKOS.broader,
+            tag_iri("Projects/E-Project"),
+        ),
+        (tag_iri("Projects/E-Project"), SKOS.broader, tag_iri("Projects")),
+    ]
+
+
+def test_a_tag_iri_is_not_a_document_iri():
+    assert tag_iri("Stack") != doc_iri("Stack")

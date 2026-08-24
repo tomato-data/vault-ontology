@@ -4,7 +4,7 @@ Identity is decided in `doc_iri` and nowhere else - see docs/iri-policy.md.
 """
 
 from rdflib import Literal, Namespace
-from rdflib.namespace import RDF, XSD
+from rdflib.namespace import RDF, SKOS, XSD
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.links import iter_links, link_target
@@ -13,6 +13,7 @@ BASE = "https://tomato.vault/"
 V = Namespace(BASE + "schema/")
 DOC = Namespace(BASE + "doc/")
 FOLDER = Namespace(BASE + "folder/")
+TAG = Namespace(BASE + "tag/")
 
 # An IRI carries most of Unicode, so Korean goes in as it is - that is what
 # the `I` buys, and a readable IRI was half the reason paths were chosen at
@@ -61,6 +62,17 @@ def folder_iri(path):
     return FOLDER[path.translate(ESCAPES)]
 
 
+def tag_iri(tag):
+    """Mint the IRI for a tag.
+
+    The slash stays, so `tag:Stack/Python` reads the way it was written.
+    That slash is for a human eye only — hierarchy is stated by
+    `skos:broader`, never parsed back out of the IRI. Reading structure out
+    of a name is what Phase 3 spent itself proving wrong.
+    """
+    return TAG[tag.translate(ESCAPES)]
+
+
 def _class_name(type_):
     """`source-note` becomes `SourceNote`.
 
@@ -86,6 +98,11 @@ def node_triples(relative, text):
         # `Concept rdfs:subClassOf Document`, and a literal can never be
         # a subject — so a literal here would end the conversation.
         yield subject, RDF.type, V[_class_name(type_)]
+
+    # Frontmatter order: type, tags, summary, … — kept, so the triples read
+    # in the same order the note does.
+    for tag in fm_list(fm, "tags"):
+        yield subject, V.tagged, tag_iri(tag)
 
     summary = fm_get(fm, "summary")
     if summary:
@@ -167,3 +184,20 @@ def folder_triples(path, hub=None):
         # FOR. Measured: 76 hubs are no folder's note, and 27 folder notes
         # are not typed hub. Neither stands in for the other.
         yield subject, V.hub, doc_iri(hub)
+
+
+def tag_triples(tag):
+    """Yield a tag's whole ancestry, one level per triple.
+
+    Every level, not just the parent. Unlike a folder, an intermediate tag
+    may exist nowhere: measured, 12 of the vault's 20 parent tags sit on no
+    document at all. `Stack` is one of them, and `by_tag("Stack")` still
+    answers for 945 document - that hierarchy lived only inside a query.
+
+    `skos:broader`, not a predicate of our own. Looking for the standard
+    vocabulary first is the rule, and this is precisely what it says.
+    """
+    while "/" in tag:
+        parent = tag.rsplit("/", 1)[0]
+        yield tag_iri(tag), SKOS.broader, tag_iri(parent)
+        tag = parent
