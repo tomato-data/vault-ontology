@@ -59,3 +59,22 @@ def summaries(graph, type_):
         (doc_path(doc), str(summary) if summary is not None else None)
         for doc, summary in rows
     )
+
+
+def prerequisites(graph, path):
+    """Every note reachable from `path` through builds_on, as sorted paths.
+
+    `builds_on+` is the transitive closure the recursive CTE spelled out.
+    It answers reachability - a SET - and drops the depth, so this is
+    `prerequisites`, not a `learning_path`: no reading order survives.
+    A cycle terminates on its own here, where the CTE needed depth < limit.
+    """
+    rows = graph.query(
+        "SELECT ?prereq WHERE {"
+        " ?start v:builds_on+ ?prereq ."
+        " FILTER(?prereq != ?start)"
+        " }",
+        initNs={"v": V},
+        initBindings={"start": doc_iri(path)},
+    )
+    return sorted(doc_path(row[0]) for row in rows)

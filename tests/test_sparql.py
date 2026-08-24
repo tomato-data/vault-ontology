@@ -1,8 +1,13 @@
 import pytest
 
-from vault.graph import build, by_tag as sql_by_tag, by_type as sql_by_type
+from vault.graph import (
+    build,
+    by_tag as sql_by_tag,
+    by_type as sql_by_type,
+    learning_path,
+)
 from vault.rdf import build_graph
-from vault.sparql import by_tag, by_type, summaries
+from vault.sparql import by_tag, by_type, prerequisites, summaries
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -89,3 +94,35 @@ def test_it_matches_a_left_join(with_a_gap):
         "SELECT path, summary FROM node WHERE type = 'concept' ORDER BY path"
     ).fetchall()
     assert summaries(graph, "concept") == [tuple(row) for row in rows]
+
+
+def builds_on(name, *prereqs):
+    block = "".join(f"  - [[{p}]]\n" for p in prereqs)
+    head = f"builds_on:\n{block}" if prereqs else ""
+    return f"---\ntype: concept\n{head}summary: ok\ncreated: 2026-08-10\n---\n본문\n"
+
+
+@pytest.fixture
+def a_chain(tmp_path):
+    """A builds_on B builds_on C - a three-link prerequisite chain."""
+    files = {
+        "200 Dev/A.md": builds_on("A", "B"),
+        "200 Dev/B.md": builds_on("B", "C"),
+        "200 Dev/C.md": builds_on("C"),
+    }
+    for relative, text in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return build(tmp_path), build_graph(tmp_path)
+
+
+def test_plus_reaches_past_the_first_step(a_chain):
+    _, graph = a_chain
+    assert prerequisites(graph, "200 Dev/A.md") == ["200 Dev/B.md", "200 Dev/C.md"]
+
+
+def test_the_closure_matches_sqlite(a_chain):
+    connection, graph = a_chain
+    reachable = {row[0] for row in learning_path(connection, "200 Dev/A.md")}
+    assert set(prerequisites(graph, "200 Dev/A.md")) == reachable
