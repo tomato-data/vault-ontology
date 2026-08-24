@@ -40,6 +40,8 @@ ESCAPES = str.maketrans(
     }
 )
 
+UNESCAPES = {code: chr(char) for char, code in ESCAPES.items()}
+
 
 def doc_iri(relative):
     """Mint the IRI for a document. The ONE place identity is decided.
@@ -52,6 +54,19 @@ def doc_iri(relative):
     When the switch to a stable ID comes, this function is the whole cost.
     """
     return DOC[relative.removesuffix(".md").translate(ESCAPES)]
+
+
+def doc_path(iri):
+    """Turn a document IRI back into its vault path. The inverse of `doc_iri`.
+
+    Phase 7 needs it: SPARQL answers in IRIs, but a result has to line up
+    with SQLite, which answers in paths. Reversible only because the escape
+    was a single `translate` pass - see `doc_iri`.
+    """
+    encoded = str(iri).removeprefix(DOC)
+    for code, char in UNESCAPES.items():
+        encoded = encoded.replace(code, char)
+    return encoded + ".md"
 
 
 def folder_iri(path):

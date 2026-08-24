@@ -6,6 +6,7 @@ from vault.rdf import (
     V,
     build_graph,
     doc_iri,
+    doc_path,
     edge_triples,
     folder_iri,
     folder_triples,
@@ -271,3 +272,11 @@ def test_the_turtle_reads_back_to_the_same_graph(tmp_path):
     out = tmp_path / TTL_NAME
     original.serialize(destination=out, format="turtle")
     assert Graph().parse(out, format="turtle").isomorphic(original)
+
+
+def test_the_iri_goes_back_to_a_path():
+    assert doc_path(doc_iri("200 Dev/한글 노트.md")) == "200 Dev/한글 노트.md"
+
+
+def test_a_percent_survives_the_round_trip():
+    assert doc_path(doc_iri("100% 확실.md")) == "100% 확실.md"
