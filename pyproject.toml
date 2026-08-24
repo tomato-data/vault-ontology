@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "vault-cli 재구현으로 배우는 지식 그래프와 온톨로지"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "rdflib>=7.6.0",
+]
 
 [dependency-groups]
 dev = [
