@@ -2,6 +2,7 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 
 from vault.rdf import (
+    TTL_NAME,
     V,
     build_graph,
     doc_iri,
@@ -263,3 +264,10 @@ def test_the_folder_chain_is_walkable(tmp_path):
         str(folder_iri("200 Dev/Network")),
         str(folder_iri("200 Dev")),
     }
+
+
+def test_the_turtle_reads_back_to_the_same_graph(tmp_path):
+    original = build_graph(make(tmp_path, SMALL))
+    out = tmp_path / TTL_NAME
+    original.serialize(destination=out, format="turtle")
+    assert Graph().parse(out, format="turtle").isomorphic(original)

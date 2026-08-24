@@ -3,6 +3,7 @@
 import argparse
 import sqlite3
 import sys
+from collections import Counter
 from pathlib import Path
 
 from vault.graph import (
@@ -17,6 +18,7 @@ from vault.graph import (
     stats,
 )
 from vault.lint import lint_vault
+from vault.rdf import TTL_NAME, build_graph
 
 DEFAULT_VAULT = Path.home() / (
     "Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault"
@@ -33,6 +35,7 @@ def _parser():
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("lint", parents=[common], help="check against the schema")
     commands.add_parser("build", parents=[common], help="write the graph")
+    commands.add_parser("rdf", parents=[common], help="write the RDF graph")
 
     queries = commands.add_parser("q", help="ask the graph").add_subparsers(
         dest="query", required=True
@@ -77,6 +80,14 @@ def main(argv=None):
         for kind, n in sorted(counts["kinds"].items(), key=lambda kv: -kv[1]):
             print(f"  {n:7,}  {kind}")
         print(f"  {counts['unresolved']:7,}  해석 실패")
+        return 0
+
+    if args.command == "rdf":
+        graph = build_graph(args.vault)
+        graph.serialize(destination=args.vault / TTL_NAME, format="turtle")
+        print(f"{TTL_NAME} 트리플 {len(graph):,}")
+        for prefix, count in _predicate_counts(graph):
+            print(f"  {count:7,}  {prefix}")
         return 0
 
     database = args.vault / DB_NAME
@@ -133,6 +144,12 @@ def _query(connection, args):
     for path, count in neighbours["shares_tag"][:20]:
         print(f"      {count}  {path}")
     return 0
+
+
+def _predicate_counts(graph):
+    """Predicates by how often they are stated, most first."""
+    counts = Counter(str(p).rsplit("/", 1)[-1].rsplit("#", 1)[-1] for _, p, _ in graph)
+    return counts.most_common()
 
 
 if __name__ == "__main__":

@@ -95,7 +95,9 @@ def test_a_clean_vault_reports_nothing(tmp_path):
 
 
 def test_an_unknown_type_is_reported_with_its_path(tmp_path):
-    build_vault(tmp_path, {"a.md": "---\ntype: essay\ncreated: 2026-08-10\n---\n본문\n"})
+    build_vault(
+        tmp_path, {"a.md": "---\ntype: essay\ncreated: 2026-08-10\n---\n본문\n"}
+    )
     assert codes_of(tmp_path) == [("a.md", "type unknown")]
 
 
@@ -160,7 +162,9 @@ def test_main_returns_zero_on_a_clean_vault(tmp_path):
 
 
 def test_main_returns_one_when_something_is_wrong(tmp_path):
-    build_vault(tmp_path, {"a.md": "---\ntype: essay\ncreated: 2026-08-10\n---\n본문\n"})
+    build_vault(
+        tmp_path, {"a.md": "---\ntype: essay\ncreated: 2026-08-10\n---\n본문\n"}
+    )
     assert main(["lint", "--vault", str(tmp_path)]) == 1
 
 
@@ -204,3 +208,9 @@ def test_a_query_about_an_unknown_note_returns_two(tmp_path):
     build_vault(tmp_path, {"CIDR.md": GOOD})
     main(["build", "--vault", str(tmp_path)])
     assert main(["q", "path", "없는 문서", "--vault", str(tmp_path)]) == 2
+
+
+def test_rdf_writes_a_turtle_file(tmp_path):
+    build_vault(tmp_path, {"CIDR.md": GOOD})
+    assert main(["rdf", "--vault", str(tmp_path)]) == 0
+    assert (tmp_path / ".vault.ttl").exists()

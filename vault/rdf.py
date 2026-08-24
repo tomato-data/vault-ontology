@@ -16,6 +16,7 @@ V = Namespace(BASE + "schema/")
 DOC = Namespace(BASE + "doc/")
 FOLDER = Namespace(BASE + "folder/")
 TAG = Namespace(BASE + "tag/")
+TTL_NAME = ".vault.ttl"
 
 # An IRI carries most of Unicode, so Korean goes in as it is - that is what
 # the `I` buys, and a readable IRI was half the reason paths were chosen at

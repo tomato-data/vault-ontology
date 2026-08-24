@@ -284,3 +284,101 @@ tag_triples      while "/" in tag:    끝까지
 `tag:Stack/Python` 이라고 써도 **계층은 `skos:broader` 트리플이 말한다.**
 IRI 를 문자열로 파싱해 부모를 알아내면 Phase 3 이 증명한 그 실수로 돌아간다 —
 [[phase03-qa]] 의 「이름은 식별자가 아니다」. 슬래시는 사람이 읽기 좋으라고 있다.
+
+## 실측 — Step 5 조립 (2026-08-24)
+
+```
+uv run python -m vault rdf
+```
+
+**27,515 트리플 · 3.1MB · 빌드 1.7초.**
+
+| 술어 | 개수 |
+|---|---:|
+| `links_to` | 8,288 |
+| `part_of` | 4,758 |
+| `created` · `type` | 각 3,993 |
+| `tagged` | 3,352 |
+| `summary` | 1,145 |
+| `links_to_raw` | 1,071 |
+| `builds_on` | 415 |
+| `skos:broader` | 257 |
+| `hub` | 238 |
+| `supersedes_raw` | 5 |
+
+### Phase 5 와 대조
+
+`builds_on` 415 · `supersedes` 5 · 태그 3,352 — **SQLite 와 정확히 같다.**
+갈린 둘은 이유가 서로 다르다.
+
+**`links_to` 10,622 → 9,359 (−1,263). 모델의 성질이다.**
+
+```
+SQLite 에서 중복된 (src, dst, kind) 조합 862 · 남는 행 1,162
+```
+
+**RDF 그래프는 집합이다.** 한 문서가 다른 문서를 본문에서 두 번 링크하면 SQLite 는
+행이 둘, RDF 는 트리플이 하나다. 같은 문장을 두 번 말해도 그래프는 안 커진다.
+
+이게 Phase 6 가이드가 예고한 그 성질이다 — **「병합이 집합 합집합이다」.**
+합집합이 공짜인 이유가 중복이 자동으로 접히기 때문이고, **그 대가로 횟수를 잃는다.**
+「A 가 B 를 몇 번 언급했나」는 RDF 가 못 답한다.
+
+**`part_of` 1,020 → 4,758 (+3,738). 우리가 의도한 변화다.**
+
+| | SQLite | RDF |
+|---|---|---|
+| 대상 | 폴더 노트가 있을 때만 | **모든 문서가 자기 폴더로** |
+| 폴더끼리 | 없음 | **736개 폴더가 사슬을 이룬다** |
+
+### ill-typed 리터럴 9개 — Phase 9 의 재료
+
+빌드 중 rdflib 이 아홉 번 경고했다.
+
+```
+ValueError: Invalid isoformat string: '{{date:YYYY-MM-DD}}'
+```
+
+`000 Index/Templates/` 의 템플릿 9개다. Phase 4 lint 가 `created invalid` 로 잡던 것.
+
+```python
+Literal('{{date:YYYY-MM-DD}}', datatype=xsd:date)
+  ill_typed = True
+  그래프 안에 9개
+```
+
+**저장된다.** rdflib 이 `ill_typed=True` 플래그를 달지만 **거부하지 않는다.**
+코드 주석에 「serialises happily」라고 썼는데 **절반만 맞았다** — 조용하지는 않다.
+파이썬 값으로 바꾸려 할 때마다 경고를 찍는다. 다만 트리플은 들어간다.
+
+**RDF 1.1 에서 ill-typed 리터럴은 D-inconsistent 다.** 그리고 논리에서 모순은
+**아무거나 함의한다.** 템플릿 9개가 추론 전체를 오염시킬 수 있다.
+
+**지금 안 고친다.** 백로그의 「템플릿에서 `created:` 제거」는 Phase 9 이후로 잡혀
+있고, **그 전에 이 실험을 하는 게 순서다.** 「잘못된 데이터가 거부되지 않고 번진다」의
+가장 날카로운 실물이 될 자리다.
+
+### 육안 확인
+
+```turtle
+<https://tomato.vault/doc/000%20Index/Maintenance/Callout%20Types> a v:Reference ;
+    v:created "2026-03-23"^^xsd:date ;
+    v:part_of <https://tomato.vault/folder/000%20Index/Maintenance> ;
+    v:summary "Obsidian에서 쓸 수 있는 콜아웃 종류를…" .
+```
+
+한글이 인코딩 없이 그대로 있고, 날짜에 타입이 붙었고, 폴더가 별도 네임스페이스다.
+Step 1 에서 「읽을 수 있는 게 경로 IRI 를 고른 이유 중 하나」라고 한 것이 여기서 값을 한다.
+
+### 밟은 오타 둘이 대조적이었다
+
+| 오타 | 어떻게 드러났나 |
+|---|---|
+| `parnets=` (argparse) | **즉시.** `TypeError` + 「Did you mean 'parents'?」 |
+| `description=` (serialize) | **조용히.** 에러 없음. 파일만 안 생겼다 |
+
+`argparse` 는 모르는 키워드를 거부하는데 `serialize` 는 `**kwargs` 로 삼킨다.
+**같은 종류의 오타인데 라이브러리가 어떻게 짰느냐에 따라 갈린다.**
+
+출력은 「트리플 3」이라고 정상처럼 나왔다. **「파일이 실제로 생겼나」를 보는
+테스트가 없었으면 못 잡았다** — [[silent-failures]] 의 여섯 번째 규칙이 걸리는 자리다.
