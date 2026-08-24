@@ -4,7 +4,7 @@ Identity is decided in `doc_iri` and nowhere else - see docs/iri-policy.md.
 """
 
 from rdflib import Graph, Literal, Namespace
-from rdflib.namespace import RDF, SKOS, XSD
+from rdflib.namespace import DCTERMS, RDF, SKOS, XSD
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.graph import in_graph
@@ -120,22 +120,32 @@ def node_triples(relative, text):
     # Frontmatter order: type, tags, summary, … — kept, so the triples read
     # in the same order the note does.
     for tag in fm_list(fm, "tags"):
-        yield subject, V.tagged, tag_iri(tag)
+        yield subject, DCTERMS.subject, tag_iri(tag)
 
     summary = fm_get(fm, "summary")
     if summary:
-        yield subject, V.summary, Literal(summary)
+        yield subject, DCTERMS.abstract, Literal(summary)
 
     created = fm_get(fm, "created")
     if created:
         # Declaring a type is not checking it: `"2026-13-99"^^xsd:date`
         # serialises happily. Phase 4's lint is what refuses; the model
         # only states. That gap is the subject of Phase 9.
-        yield subject, V.created, Literal(created, datatype=XSD.date)
+        yield subject, DCTERMS.created, Literal(created, datatype=XSD.date)
 
 
 # The frontmatter relations, in the order the schema of record names them.
 NAMED = ("builds_on", "supersedes")
+
+# A resolved edge's predicate. `supersedes` reuses the Dublin Core term;
+# `builds_on` and `links_to` stay ours (subproperties of dcterms:references
+# in the schema). An unresolved edge keeps our `_raw` predicate regardless -
+# a broken link has no standard, it is just text we could not place.
+RESOLVED = {
+    "builds_on": V.builds_on,
+    "supersedes": DCTERMS.replaces,
+    "links_to": V.links_to,
+}
 
 
 def edge_triples(relative, text, resolve):
@@ -172,7 +182,7 @@ def edge_triples(relative, text, resolve):
     # that happens to represent it. That note is a sibling, not a container.
     directory = relative.rsplit("/", 1)[0] if "/" in relative else ""
     if directory:
-        yield subject, V.part_of, folder_iri(directory)
+        yield subject, DCTERMS.isPartOf, folder_iri(directory)
 
 
 def _edge(subject, kind, target, resolve):
@@ -181,7 +191,7 @@ def _edge(subject, kind, target, resolve):
     if landed is None:
         yield subject, V[kind + "_raw"], Literal(target)
     elif landed.endswith(".md"):
-        yield subject, V[kind], doc_iri(landed)
+        yield subject, RESOLVED[kind], doc_iri(landed)
     # An attachment is neither a relation nor a broken link — Phase 4 cost
     # us 582 false reports before that was clear.
 
@@ -196,7 +206,7 @@ def folder_triples(path, hub=None):
     """
     subject = folder_iri(path)
     if "/" in path:
-        yield subject, V.part_of, folder_iri(path.rsplit("/", 1)[0])
+        yield subject, DCTERMS.isPartOf, folder_iri(path.rsplit("/", 1)[0])
     if hub:
         # `type: hub` says what a document IS; this says which folder it is
         # FOR. Measured: 76 hubs are no folder's note, and 27 folder notes
@@ -255,6 +265,7 @@ def build_graph(root):
         ("folder", FOLDER),
         ("tag", TAG),
         ("skos", SKOS),
+        ("dcterms", DCTERMS),
     ):
         graph.bind(prefix, namespace)
 

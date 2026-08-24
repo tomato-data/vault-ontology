@@ -4,12 +4,21 @@ The answers must match. Where they diverge, Phase 6 modelled something
 wrong - that is what these queries are really testing.
 """
 
-from rdflib.namespace import SKOS
+from rdflib.namespace import DCTERMS, SKOS
 
 from vault.rdf import V, _class_name, doc_iri, doc_path, tag_iri
 
 # Declared once. An unused prefix costs nothing - it is only a binding.
-_NS = {"v": V, "skos": SKOS}
+_NS = {"v": V, "skos": SKOS, "dcterms": DCTERMS}
+
+# The vault's kind vocabulary, keyed by the RDF predicate each maps to.
+# `supersedes` is stored as dcterms:replaces but keeps its vault name so
+# the count lines up with SQLite's `kind` column.
+_KIND_NAME = {
+    str(V.builds_on): "builds_on",
+    str(V.links_to): "links_to",
+    str(DCTERMS.replaces): "supersedes",
+}
 
 
 def _paths(rows):
@@ -36,7 +45,7 @@ def by_tag(graph, tag):
     steps up - and a note is in if an ancestor it reaches is `?tag`.
     """
     rows = graph.query(
-        "SELECT ?doc WHERE { ?doc v:tagged/skos:broader* ?tag }",
+        "SELECT ?doc WHERE { ?doc dcterms:subject/skos:broader* ?tag }",
         initNs=_NS,
         initBindings={"tag": tag_iri(tag)},
     )
@@ -53,7 +62,7 @@ def summaries(graph, type_):
     rows = graph.query(
         "SELECT ?doc ?summary WHERE {"
         " ?doc a ?class ."
-        " OPTIONAL { ?doc v:summary ?summary }"
+        " OPTIONAL { ?doc dcterms:abstract ?summary }"
         " }",
         initNs=_NS,
         initBindings={"class": V[_class_name(type_)]},
@@ -114,12 +123,12 @@ def kinds(graph):
     """
     rows = graph.query(
         "SELECT ?kind (COUNT(*) AS ?n) WHERE {"
-        " VALUES ?kind { v:builds_on v:supersedes v:links_to }"
+        " VALUES ?kind { v:builds_on dcterms:replaces v:links_to }"
         " ?s ?kind ?o ."
         " } GROUP BY ?kind",
         initNs=_NS,
     )
-    return {str(kind).removeprefix(str(V)): int(n) for kind, n in rows}
+    return {_KIND_NAME[str(kind)]: int(n) for kind, n in rows}
 
 
 def orphans(graph):
@@ -134,7 +143,7 @@ def orphans(graph):
         "SELECT ?doc WHERE {"
         " ?doc a ?class ."
         " FILTER NOT EXISTS {"
-        "  VALUES ?link { v:builds_on v:supersedes v:links_to }"
+        "  VALUES ?link { v:builds_on dcterms:replaces v:links_to }"
         "  ?other ?link ?doc ."
         " }"
         " }",

@@ -1,0 +1,100 @@
+# The vault's schema, as data. Phase 8.
+#
+# Phase 4 kept this in code: `TYPES = {...}` and `if t not in TYPES: reject()`.
+# Here it is a graph the reasoner can read and a query can ask about.
+#
+# Every property below carries `rdfs:comment` naming the query it answers.
+# A property that answers no query is deleted, not documented.
+
+@prefix v:       <https://tomato.vault/schema/> .
+@prefix rdfs:    <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:     <http://www.w3.org/2002/07/owl#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+
+#################################################################
+# Classes — the type hierarchy is by ROLE, not by subject.
+#
+# The 13 type values do not form a semantic tree; grouping
+# concept/procedure/reference answers no query. What earns a
+# superclass is the role a note plays: did I write it, did it
+# come from elsewhere, or is it scaffolding.
+#################################################################
+
+v:Document   a rdfs:Class ;
+    rdfs:comment "Any note that is a node in the graph." .
+
+v:Content    a rdfs:Class ; rdfs:subClassOf v:Document ;
+    rdfs:comment "A note I authored. Query: my own thinking, source-notes and scaffolding excluded." .
+v:Imported   a rdfs:Class ; rdfs:subClassOf v:Document ;
+    rdfs:comment "A note that came from elsewhere. Query: what did I take in versus write." .
+v:Structural a rdfs:Class ; rdfs:subClassOf v:Document ;
+    rdfs:comment "Scaffolding, not content. Query: exclude these when counting real notes or finding orphans." .
+
+# Content — the ten authored types.
+v:Concept    rdfs:subClassOf v:Content .
+v:Procedure  rdfs:subClassOf v:Content .
+v:Reference  rdfs:subClassOf v:Content .
+v:Principle  rdfs:subClassOf v:Content .
+v:Decision   rdfs:subClassOf v:Content .
+v:Case       rdfs:subClassOf v:Content .
+v:Log        rdfs:subClassOf v:Content .
+v:Reflection rdfs:subClassOf v:Content .
+v:ProjectDoc rdfs:subClassOf v:Content .
+v:Tradeoff   rdfs:subClassOf v:Content .
+
+# Imported — one type.
+v:SourceNote rdfs:subClassOf v:Imported .
+
+# Structural — two types.
+v:Hub        rdfs:subClassOf v:Structural .
+v:Template   rdfs:subClassOf v:Structural .
+
+v:Folder a rdfs:Class ;
+    rdfs:comment "A directory, a resource in its own right since Phase 6." .
+
+#################################################################
+# Properties we own. Each is a subproperty of a standard, so a
+# tool that knows the standard understands ours.
+#################################################################
+
+v:builds_on a owl:ObjectProperty, owl:TransitiveProperty ;
+    rdfs:subPropertyOf dcterms:references ;
+    rdfs:domain v:Content ; rdfs:range v:Content ;
+    rdfs:comment "Curated prerequisites. Query: what must I read before this note (q path). Declared transitive; the closure is NOT materialised until Phase 9." .
+
+v:links_to a owl:ObjectProperty ;
+    rdfs:subPropertyOf dcterms:references ;
+    rdfs:domain v:Document ; rdfs:range v:Document ;
+    rdfs:comment "A body wikilink that resolved. Query: neighbours of a note (q near, the forward half)." .
+
+v:linked_by a owl:ObjectProperty ;
+    owl:inverseOf v:links_to ;
+    rdfs:comment "The backlink. Query: what points at this note (q near, the reverse half). Not materialised until Phase 9; Phase 7 read it with ^." .
+
+v:hub a owl:ObjectProperty ;
+    rdfs:subPropertyOf foaf:primaryTopic ;
+    rdfs:domain v:Folder ; rdfs:range v:Document ;
+    rdfs:comment "The note that represents a folder. Query: given a folder, its landing note." .
+
+#################################################################
+# Standard properties we reuse directly. We add local domain/range
+# so THIS graph can reason over them; that scopes the reused term
+# to the vault and does not change its meaning elsewhere.
+#################################################################
+
+dcterms:isPartOf rdfs:domain v:Document ; rdfs:range v:Folder ;
+    rdfs:comment "Folder membership, derived from the path. Query: every note under a folder." .
+
+dcterms:subject  rdfs:domain v:Document ; rdfs:range skos:Concept ;
+    rdfs:comment "A tag the note carries. The tag is a skos:Concept, so its hierarchy is walkable. Query: notes on a topic, nesting included (q tag)." .
+
+dcterms:replaces rdfs:domain v:Document ; rdfs:range v:Document ;
+    rdfs:comment "This note supersedes an older one. Often points at a deleted note, which is the normal case, not a fault." .
+
+dcterms:created  rdfs:domain v:Document ;
+    rdfs:comment "When the note was made. Central to the dated types, incidental to the rest." .
+
+dcterms:abstract rdfs:domain v:Document ;
+    rdfs:comment "The note's own summary line. Required of the content types by the schema of record." .

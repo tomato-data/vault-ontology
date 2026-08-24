@@ -1,5 +1,5 @@
 from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import RDF, SKOS, XSD
+from rdflib.namespace import DCTERMS, RDF, SKOS, XSD
 
 from vault.rdf import (
     TTL_NAME,
@@ -56,17 +56,17 @@ def test_a_type_becomes_a_resource_not_a_string():
 
 def test_a_summary_becomes_a_literal():
     triples = facts("CIDR.md", NOTE)
-    assert triples[V.summary] == Literal("ok")
+    assert triples[DCTERMS.abstract] == Literal("ok")
 
 
 def test_a_date_declares_its_type():
     triples = facts("CIDR.md", NOTE)
-    assert triples[V.created] == Literal("2026-08-10", datatype=XSD.date)
+    assert triples[DCTERMS.created] == Literal("2026-08-10", datatype=XSD.date)
 
 
 def test_a_missing_field_makes_no_triple():
     bare = "---\ntype: log\ncreated: 2026-08-10\n---\n본문\n"
-    assert V.summary not in facts("a.md", bare)
+    assert DCTERMS.abstract not in facts("a.md", bare)
 
 
 def test_every_triple_shares_the_document_as_subject():
@@ -127,7 +127,7 @@ def test_an_attachment_is_not_an_edge():
 
 def test_a_note_is_part_of_its_folder():
     assert edges("200 Dev/Network/CIDR.md", NOTE) == [
-        (str(V.part_of), str(folder_iri("200 Dev/Network")))
+        (str(DCTERMS.isPartOf), str(folder_iri("200 Dev/Network")))
     ]
 
 
@@ -143,7 +143,7 @@ def test_every_edge_shares_the_document_as_subject():
 
 def test_a_folder_is_part_of_the_folder_above_it():
     assert sorted(
-        str(o) for _, p, o in folder_triples("200 Dev/Network") if p == V.part_of
+        str(o) for _, p, o in folder_triples("200 Dev/Network") if p == DCTERMS.isPartOf
     ) == [str(folder_iri("200 Dev"))]
 
 
@@ -171,12 +171,12 @@ TAGGED = (
 
 
 def test_a_tag_becomes_a_resource():
-    tagged = [o for _, p, o in node_triples("a.md", TAGGED) if p == V.tagged]
+    tagged = [o for _, p, o in node_triples("a.md", TAGGED) if p == DCTERMS.subject]
     assert tagged == [tag_iri("Stack/Python"), tag_iri("Log")]
 
 
 def test_a_note_without_tags_says_nothing():
-    assert V.tagged not in facts("a.md", NOTE)
+    assert DCTERMS.subject not in facts("a.md", NOTE)
 
 
 def test_a_flat_tag_has_no_parent():
@@ -224,12 +224,12 @@ SMALL = {
 
 def test_a_note_becomes_triples(tmp_path):
     g = build_graph(make(tmp_path, SMALL))
-    assert (doc_iri("200 Dev/Network/CIDR.md"), V.summary, Literal("ok")) in g
+    assert (doc_iri("200 Dev/Network/CIDR.md"), DCTERMS.abstract, Literal("ok")) in g
 
 
 def test_a_folder_appears_as_a_resource(tmp_path):
     g = build_graph(make(tmp_path, SMALL))
-    assert (folder_iri("200 Dev/Network"), V.part_of, folder_iri("200 Dev")) in g
+    assert (folder_iri("200 Dev/Network"), DCTERMS.isPartOf, folder_iri("200 Dev")) in g
     assert (
         folder_iri("200 Dev/Network"),
         V.hub,
@@ -257,8 +257,8 @@ def test_a_link_into_an_excluded_zone_is_raw(tmp_path):
 def test_the_folder_chain_is_walkable(tmp_path):
     g = build_graph(make(tmp_path, SMALL))
     rows = g.query(
-        "SELECT ?f WHERE { ?d v:part_of/v:part_of* ?f }",
-        initNs={"v": V},
+        "SELECT ?f WHERE { ?d dcterms:isPartOf/dcterms:isPartOf* ?f }",
+        initNs={"dcterms": DCTERMS},
         initBindings={"d": doc_iri("200 Dev/Network/CIDR.md")},
     )
     assert {str(r[0]) for r in rows} == {
