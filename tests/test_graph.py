@@ -28,7 +28,7 @@ def test_an_excluded_zone_is_not_a_node(tmp_path):
         tmp_path,
         {
             "CIDR.md": NOTE.format(body="본문"),
-            "800 TRPG/현자의 돌.md": NOTE.format(body="본문"),
+            "900 Archive/현자의 돌.md": NOTE.format(body="본문"),
         },
     )
     assert rows(build(tmp_path), "SELECT path FROM node") == [("CIDR.md",)]
@@ -90,7 +90,7 @@ def test_a_link_into_an_excluded_zone_gets_a_null_dst(tmp_path):
         tmp_path,
         {
             "a.md": NOTE.format(body="[[현자의 돌]] 참조"),
-            "800 TRPG/현자의 돌.md": NOTE.format(body="본문"),
+            "900 Archive/현자의 돌.md": NOTE.format(body="본문"),
         },
     )
     assert rows(build(tmp_path), "SELECT dst, raw FROM edge") == [(None, "현자의 돌")]

@@ -2,7 +2,7 @@
 
 [![Korean](https://img.shields.io/badge/lang-Korean-blue)](README.md)
 
-> Turning 6,452 Obsidian notes into a **graph a machine can read** — and learning ontology by hand while doing it.
+> Turning 4,204 Obsidian notes into a **graph a machine can read** — and learning ontology by hand while doing it.
 > The same data gets modelled **twice**: once as a property graph, once as an RDF ontology.
 
 ## Highlights
@@ -22,7 +22,7 @@
 
 I had a rough idea of what an ontology was. A recent conversation with colleagues filled in the details, and the whole time I kept thinking about my Obsidian vault.
 
-The vault exists to be **a database of what I learn while building things**. 6,452 notes, already tangled together by 24,371 wikilinks. To a human eye it is obviously a graph — but **there is no structure a machine can read.** An ontology is exactly the tool that fits that gap.
+The vault exists to be **a database of what I learn while building things**. 4,204 notes, already tangled together by 11,624 wikilinks. To a human eye it is obviously a graph — but **there is no structure a machine can read.** An ontology is exactly the tool that fits that gap.
 
 So this repo does two things at once.
 
@@ -38,7 +38,7 @@ In Part 1 that gap showed up on both sides: **the new code was better in places,
 ## Modelled Twice
 
 ```
-            6,452 markdown files  (the source)
+            4,204 markdown notes  (the source)
                      │
   Phase 1~3     parse         frontmatter · wikilinks · file index
                      │

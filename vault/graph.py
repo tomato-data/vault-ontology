@@ -6,10 +6,12 @@ from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.links import iter_links, link_target
 from vault.scan import resolve_link, scan_vault
 
-# `800 TRPG` uses the same `type:` key for game items (완제품 · 원재료 · 마물),
-# so mixing it in breaks the axis. `900 Archive` is dead by design. Phase 6
-# gets both back through namespaces, which a SQL column cannot offer.
-EXCLUDED_ZONES = ("800 TRPG", "900 Archive")
+# `900 Archive` is dead by design, so its schema is not ours to judge.
+# `800 TRPG` used to sit here too — it reused `type:` for game items and
+# broke the axis — but on 2026-08-23 it left the vault for a repository of
+# its own. Phase 6 asks whether two corpora that far apart can be merged
+# into one graph at all, which is the question RDF namespaces exist for.
+EXCLUDED_ZONES = ("900 Archive",)
 EXCLUDED_FILES = ("CLAUDE.md",)
 
 

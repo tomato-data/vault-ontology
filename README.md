@@ -2,7 +2,7 @@
 
 [![English](https://img.shields.io/badge/lang-English-blue)](README.en.md)
 
-> Obsidian vault의 문서 6,452개를 **기계가 읽을 수 있는 그래프**로 만들면서 온톨로지를 손으로 배운다.
+> Obsidian vault의 문서 4,204개를 **기계가 읽을 수 있는 그래프**로 만들면서 온톨로지를 손으로 배운다.
 > 같은 데이터를 **두 번 모델링한다** — 속성 그래프로 한 번, RDF 온톨로지로 한 번.
 
 ## 하이라이트
@@ -22,7 +22,7 @@
 
 온톨로지라는 말은 대략 알고 있었다. 최근 동료 개발자들과 이야기하면서 조금 더 자세히 알게 됐고, 듣는 동안 계속 내 Obsidian vault가 떠올랐다.
 
-vault의 취지 자체가 **개발하면서 얻은 지식의 데이터베이스**였다. 문서 6,452개가 위키링크 24,371개로 이미 얽혀 있다. 사람 눈에는 분명 그래프인데, **기계가 읽을 수 있는 구조가 없다.** 온톨로지는 정확히 그 자리에 들어맞는 도구였다.
+vault의 취지 자체가 **개발하면서 얻은 지식의 데이터베이스**였다. 문서 4,204개가 위키링크 11,624개로 이미 얽혀 있다. 사람 눈에는 분명 그래프인데, **기계가 읽을 수 있는 구조가 없다.** 온톨로지는 정확히 그 자리에 들어맞는 도구였다.
 
 그래서 두 가지를 동시에 한다.
 
@@ -39,7 +39,7 @@ vault의 취지 자체가 **개발하면서 얻은 지식의 데이터베이스*
 
 ```
                   +-----------------------------------------------+
-                  | 6,452 Markdown files (source vault)           |
+                  | 4,204 Markdown notes (source vault)           |
                   |                                               |
    Phase 1-3      | Parse                                         |
    ---------      |   frontmatter / wikilinks / file index        |
@@ -184,7 +184,7 @@ uv run pytest -v          # 162개 통과해야 정상 출발점
 vault 경로 기본값은 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault`이고, 모든 명령이 `--vault`를 받는다.
 
 ```bash
-uv run python -m vault lint          # 스키마 정본 대비 위반 (현재 354건)
+uv run python -m vault lint          # 스키마 정본 대비 위반 (현재 382건)
 uv run python -m vault build         # .vault-graph.db 재생성 — 매번 지우고 새로 만든다
 
 uv run python -m vault q stats
