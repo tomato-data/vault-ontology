@@ -4,7 +4,7 @@ import sqlite3
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.links import iter_links, link_target
-from vault.scan import resolve_link, scan_vault
+from vault.scan import folder_note, resolve_link, scan_vault
 
 # `900 Archive` is dead by design, so its schema is not ours to judge.
 # `800 TRPG` used to sit here too — it reused `type:` for game items and
@@ -42,7 +42,7 @@ CREATE TABLE tag (path TEXT NOT NULL, tag TEXT NOT NULL);
 """
 
 
-def _in_graph(relative):
+def in_graph(relative):
     """True when this note belongs in the graph at all."""
     if relative in EXCLUDED_FILES:
         return False
@@ -53,36 +53,13 @@ def _in_graph(relative):
     )
 
 
-def _folder_note(relative, is_node):
-    r"""The note standing in for this note's folder, if there is one.
-
-    Two conventions, both pinned by PATH rather than by name:
-
-        A/B/B.md    the folder note inside the folder
-        A/B.md      the folder note beside it
-
-    Never a name lookup. The answer key resolves `B` globally, so a note in
-    `200 Dev/Network/` attaches to any `Network.md` anywhere in the vault.
-    A name is not an identifier — that was Phase 3's whole subject.
-    """
-    if "/" not in relative:
-        return None  # the vault root has no folder note
-    directory = relative.rsplit("/", 1)[0]
-    name = directory.rsplit("/", 1)[-1]
-    above = directory.rsplit("/", 1)[0] + "/" if "/" in directory else ""
-    for candidate in (f"{directory}/{name}.md", f"{above}{name}.md"):
-        if candidate != relative and candidate in is_node:
-            return candidate
-    return None
-
-
 def build(root, database=":memory:"):
     """Return a connection holding the vault as node/edge/tag."""
     connection = sqlite3.connect(database)
     connection.executescript(SCHEMA)
 
     notes, index, targets = scan_vault(root)
-    inside = [note for note in notes if _in_graph(note)]
+    inside = [note for note in notes if in_graph(note)]
     is_node = set(inside)
 
     nodes, edges, tags = [], [], []
@@ -122,10 +99,10 @@ def build(root, database=":memory:"):
         # Derived, never read: the schema of record dropped `part_of` as a
         # field because the path already knows. Storing it would drift the
         # moment a note moves.
-        folder_note = _folder_note(relative, is_node)
-        if folder_note:
+        note = folder_note(directory, is_node) if directory else None
+        if note and note != relative:
             edges.append(
-                (relative, folder_note, directory.rsplit("/", 1)[-1], "part_of")
+                (relative, note, directory.rsplit("/", 1)[-1], "part_of")
             )
 
         tags += [(relative, tag) for tag in fm_list(fm, "tags")]

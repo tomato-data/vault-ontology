@@ -114,3 +114,23 @@ def case_collisions(index):
     return {
         folded: sorted(names) for folded, names in grouped.items() if len(names) > 1
     }
+
+
+def folder_note(directory, is_node):
+    r"""The note standing in for `directory`, if there is one.
+
+    Two conventions, both pinned by PATH rather than by name:
+
+        A/B/B.md    the folder note inside the folder
+        A/B.md      the folder note beside it
+
+    Never a name lookup. The answer key resolves `B` globally and lands 139
+    edges on the wrong note — a travel plan in `000 Index/Dots/` becomes
+    part of `500 Mind Compiler/Q1. Better Developer/Dots.md`.
+    """
+    name = directory.rsplit("/", 1)[-1]
+    above = directory.rsplit("/", 1)[0] + "/" if "/" in directory else ""
+    for candidate in (f"{directory}/{name}.md", f"{above}{name}.md"):
+        if candidate in is_node:
+            return candidate
+    return

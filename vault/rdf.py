@@ -3,11 +3,13 @@
 Identity is decided in `doc_iri` and nowhere else - see docs/iri-policy.md.
 """
 
-from rdflib import Literal, Namespace
+from rdflib import Graph, Literal, Namespace
 from rdflib.namespace import RDF, SKOS, XSD
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
+from vault.graph import in_graph
 from vault.links import iter_links, link_target
+from vault.scan import folder_note, resolve_link, scan_vault
 
 BASE = "https://tomato.vault/"
 V = Namespace(BASE + "schema/")
@@ -201,3 +203,71 @@ def tag_triples(tag):
         parent = tag.rsplit("/", 1)[0]
         yield tag_iri(tag), SKOS.broader, tag_iri(parent)
         tag = parent
+
+
+def _resolver(index, targets, is_node, source):
+    """Build the `resolve` that `edge_triples` asks for.
+
+    A note in an excluded zone reads as unresolved. The file is there, but
+    the graph does not hold it, so a link into it is the same `_raw` case
+    as a link to nothing — which is what the SQLite model wrote as a NULL
+    `dst` beside a kept `raw`.
+    """
+
+    def resolve(target):
+        landed = resolve_link(target, index, targets, source=source)
+        if landed is None or (landed.endswith(".md") and landed not in is_node):
+            return None
+        return landed
+
+    return resolve
+
+
+def build_graph(root):
+    """Assemble the whole vault as one graph.
+
+    Derived and rebuilt, exactly like the SQLite one. Nothing incremental.
+
+    Folders and tags are collected while walking the notes and emitted
+    afterwards, because a folder or a tag is stated once no matter how many
+    notes point at it.
+    """
+    graph = Graph()
+    for prefix, namespace in (
+        ("v", V),
+        ("doc", DOC),
+        ("folder", FOLDER),
+        ("tag", TAG),
+        ("skos", SKOS),
+    ):
+        graph.bind(prefix, namespace)
+
+    notes, index, targets = scan_vault(root)
+    inside = [note for note in notes if in_graph(note)]
+    is_node = set(inside)
+    folders, tags = set(), set()
+
+    for relative in inside:
+        text = (root / relative).read_text(encoding="utf-8")
+        for triple in node_triples(relative, text):
+            graph.add(triple)
+        for triple in edge_triples(
+            relative, text, _resolver(index, targets, is_node, relative)
+        ):
+            graph.add(triple)
+
+        directory = relative.rsplit("/", 1)[0] if "/" in relative else ""
+        while directory:
+            folders.add(directory)
+            directory = directory.rsplit("/", 1)[0] if "/" in directory else ""
+
+        fm, _ = split_frontmatter(text)
+        tags.update(fm_list(fm, "tags"))
+
+    for directory in sorted(folders):
+        for triple in folder_triples(directory, folder_note(directory, is_node)):
+            graph.add(triple)
+    for tag in sorted(tags):
+        for triple in tag_triples(tag):
+            graph.add(triple)
+    return graph

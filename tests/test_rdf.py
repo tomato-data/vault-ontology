@@ -1,8 +1,9 @@
-from rdflib import Literal, URIRef
+from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import RDF, SKOS, XSD
 
 from vault.rdf import (
     V,
+    build_graph,
     doc_iri,
     edge_triples,
     folder_iri,
@@ -199,3 +200,66 @@ def test_a_deep_tag_names_every_level():
 
 def test_a_tag_iri_is_not_a_document_iri():
     assert tag_iri("Stack") != doc_iri("Stack")
+
+
+def make(root, files):
+    for name, text in files.items():
+        path = root / name
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return root
+
+
+SMALL = {
+    "200 Dev/Network/Network.md": NOTE,
+    "200 Dev/Network/CIDR.md": (
+        "---\ntype: concept\ntags:\n  - Stack/Python\n"
+        "summary: ok\ncreated: 2026-08-10\n---\n[[Network]] 참조\n"
+    ),
+    "900 Archive/옛것.md": NOTE,
+}
+
+
+def test_a_note_becomes_triples(tmp_path):
+    g = build_graph(make(tmp_path, SMALL))
+    assert (doc_iri("200 Dev/Network/CIDR.md"), V.summary, Literal("ok")) in g
+
+
+def test_a_folder_appears_as_a_resource(tmp_path):
+    g = build_graph(make(tmp_path, SMALL))
+    assert (folder_iri("200 Dev/Network"), V.part_of, folder_iri("200 Dev")) in g
+    assert (
+        folder_iri("200 Dev/Network"),
+        V.hub,
+        doc_iri("200 Dev/Network/Network.md"),
+    ) in g
+
+
+def test_a_tag_hierarchy_is_stated(tmp_path):
+    g = build_graph(make(tmp_path, SMALL))
+    assert (tag_iri("Stack/Python"), SKOS.broader, tag_iri("Stack")) in g
+
+
+def test_an_excluded_zone_leaves_no_trace(tmp_path):
+    g = build_graph(make(tmp_path, SMALL))
+    assert (doc_iri("900 Archive/옛것.md"), None, None) not in g
+
+
+def test_a_link_into_an_excluded_zone_is_raw(tmp_path):
+    files = dict(SMALL)
+    files["200 Dev/a.md"] = NOTE.replace("본문", "[[옛것]] 참조")
+    g = build_graph(make(tmp_path, files))
+    assert (doc_iri("200 Dev/a.md"), V.links_to_raw, Literal("옛것")) in g
+
+
+def test_the_folder_chain_is_walkable(tmp_path):
+    g = build_graph(make(tmp_path, SMALL))
+    rows = g.query(
+        "SELECT ?f WHERE { ?d v:part_of/v:part_of* ?f }",
+        initNs={"v": V},
+        initBindings={"d": doc_iri("200 Dev/Network/CIDR.md")},
+    )
+    assert {str(r[0]) for r in rows} == {
+        str(folder_iri("200 Dev/Network")),
+        str(folder_iri("200 Dev")),
+    }
