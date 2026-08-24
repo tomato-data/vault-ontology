@@ -5,9 +5,18 @@ from vault.graph import (
     by_tag as sql_by_tag,
     by_type as sql_by_type,
     learning_path,
+    orphans as sql_orphans,
 )
 from vault.rdf import build_graph
-from vault.sparql import by_tag, by_type, kinds, neighbours, prerequisites, summaries
+from vault.sparql import (
+    by_tag,
+    by_type,
+    kinds,
+    neighbours,
+    orphans,
+    prerequisites,
+    summaries,
+)
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -199,3 +208,28 @@ def test_the_grouping_matches_sqlite(a_mix):
         "SELECT kind, count(*) FROM edge" " WHERE dst IS NOT NULL GROUP BY kind"
     ).fetchall()
     assert kinds(graph) == dict(rows)
+
+
+@pytest.fixture
+def with_an_orphan(tmp_path):
+    """A points at B. Nobody points at A or C - two orphans, no folder-note."""
+    files = {
+        "200 Dev/A.md": links("A", "B"),
+        "200 Dev/B.md": links("B"),
+        "200 Dev/C.md": links("C"),
+    }
+    for relative, text in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return build(tmp_path), build_graph(tmp_path)
+
+
+def test_an_orphan_is_pointed_at_by_nothing(with_an_orphan):
+    _, graph = with_an_orphan
+    assert orphans(graph) == ["200 Dev/A.md", "200 Dev/C.md"]
+
+
+def test_orphans_match_sqlite(with_an_orphan):
+    connection, graph = with_an_orphan
+    assert orphans(graph) == sql_orphans(connection)

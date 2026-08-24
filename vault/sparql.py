@@ -120,3 +120,24 @@ def kinds(graph):
         initNs=_NS,
     )
     return {str(kind).removeprefix(str(V)): int(n) for kind, n in rows}
+
+
+def orphans(graph):
+    """Every note nothing links to, as sorted paths - graph.orphans in SPARQL.
+
+    `FILTER NOT EXISTS` keeps a note only when no link points AT it, the way
+    `NOT IN (SELECT dst ...)` did. Only the three link predicates count;
+    part_of points at a folder, not a note, so it never makes a note un-
+    orphaned here - which is the same modelling split the counts showed.
+    """
+    rows = graph.query(
+        "SELECT ?doc WHERE {"
+        " ?doc a ?class ."
+        " FILTER NOT EXISTS {"
+        "  VALUES ?link { v:builds_on v:supersedes v:links_to }"
+        "  ?other ?link ?doc ."
+        " }"
+        " }",
+        initNs=_NS,
+    )
+    return sorted(doc_path(row[0]) for row in rows)
