@@ -9,6 +9,7 @@
 | | |
 |---|---|
 | **문서 IRI** | **vault 기준 상대경로.** `https://tomato.vault/doc/<경로>` |
+| **폴더 IRI** | 같은 규칙. `https://tomato.vault/folder/<경로>` (2026-08-24 추가) |
 | **정규화** | **NFC 를 정본으로 못박는다.** 선택이 아니다 |
 | **전환 대상** | **ULID.** 지금은 아니다 — 조건은 아래 |
 | **전환 비용** | **함수 하나.** IRI 생성을 `doc_iri()` 한 곳으로 격리한다 |
@@ -127,10 +128,26 @@ def doc_iri(relative):
 ## 네임스페이스
 
 ```turtle
-@prefix v:    <https://tomato.vault/schema/> .   # 우리 어휘
-@prefix doc:  <https://tomato.vault/doc/> .      # 문서
-@prefix tag:  <https://tomato.vault/tag/> .      # 태그 (Phase 8 에서 판정)
+@prefix v:      <https://tomato.vault/schema/> .   # 우리 어휘
+@prefix doc:    <https://tomato.vault/doc/> .      # 문서
+@prefix folder: <https://tomato.vault/folder/> .   # 폴더 (2026-08-24 추가)
+@prefix tag:    <https://tomato.vault/tag/> .      # 태그 (Phase 8 에서 판정)
 ```
+
+### 폴더를 왜 따로 두나 (2026-08-24)
+
+**파일이 아닌 것에 IRI 를 주는 첫 사례다.** SQLite 에서는 폴더를 노드로 만들려면
+가짜 행이 필요해서, 대신 폴더 노트를 폴더의 대역으로 썼다. 그 타협 때문에
+`part_of` 가 형제 파일을 가리키고 계층이 2단에서 끊겼다.
+
+RDF 에서는 IRI 가 공짜라 그 타협이 필요 없다. 경위와 실측은
+[`../learnings/phase06-qa.md`](../learnings/phase06-qa.md) 의 「모델링」 절.
+
+**`doc:` 와 `folder:` 를 가른 이유**는 같은 경로가 둘 다일 수 있어서다.
+`200 Dev/Network` 는 폴더이고, `200 Dev/Network/Network.md` 를 옮기면 `.md` 를 뗀
+IRI 가 `doc:200%20Dev/Network/Network` 다. 네임스페이스를 안 가르면 **폴더와
+문서가 같은 이름을 두고 부딪힐 수 있다.** 가르면 절대 안 부딪힌다 —
+[[네임스페이스 — 어휘 충돌을 푸는 법]] 이 말하는 그 성질이다.
 
 **IRI 는 주소가 아니라 이름이다.** 접속될 필요가 없고 도메인을 소유하지 않아도 된다.
 URL 모양인 이유는 **전역 유일성을 값싸게 얻으려고** — 도메인은 세상에 하나씩만 있으므로

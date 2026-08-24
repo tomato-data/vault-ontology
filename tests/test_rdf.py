@@ -1,7 +1,7 @@
 from rdflib import Literal, URIRef
 from rdflib.namespace import RDF, XSD
 
-from vault.rdf import V, doc_iri, node_triples
+from vault.rdf import V, doc_iri, edge_triples, folder_iri, folder_triples, node_triples
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -60,3 +60,93 @@ def test_a_missing_field_makes_no_triple():
 def test_every_triple_shares_the_document_as_subject():
     subjects = {s for s, _, _ in node_triples("200 Dev/CIDR.md", NOTE)}
     assert subjects == {doc_iri("200 Dev/CIDR.md")}
+
+
+RESOLVE = {
+    "CIDR": "200 Dev/CIDR.md",
+    "가상화": "그림/가상화.png",
+}.get
+
+
+def edges(relative, text):
+    """(predicate, object) pairs, subject guarded by the last test."""
+    return sorted((str(p), str(o)) for _, p, o in edge_triples(relative, text, RESOLVE))
+
+
+def with_field(field, value, body="본문"):
+    return (
+        f'---\ntype: concept\nsummary: ok\n{field}:\n  - "[[{value}]]"\n'
+        f"created: 2026-08-10\n---\n{body}\n"
+    )
+
+
+def test_a_resolved_builds_on_becomes_a_resource():
+    assert edges("a.md", with_field("builds_on", "CIDR")) == [
+        (str(V.builds_on), str(doc_iri("200 Dev/CIDR.md")))
+    ]
+
+
+def test_an_unresolved_builds_on_keeps_the_text_as_a_literal():
+    assert edges("a.md", with_field("builds_on", "없는 문서")) == [
+        (str(V.builds_on_raw), "없는 문서")
+    ]
+
+
+def test_supersedes_normally_lands_in_the_raw_form():
+    assert edges("a.md", with_field("supersedes", "옛 문서")) == [
+        (str(V.supersedes_raw), "옛 문서")
+    ]
+
+
+def test_a_body_link_becomes_links_to():
+    assert edges("a.md", NOTE.replace("본문", "[[CIDR]] 참조")) == [
+        (str(V.links_to), str(doc_iri("200 Dev/CIDR.md")))
+    ]
+
+
+def test_a_frontmatter_link_is_not_also_a_body_link():
+    predicates = [p for p, _ in edges("a.md", with_field("builds_on", "CIDR"))]
+    assert str(V.links_to) not in predicates
+
+
+def test_an_attachment_is_not_an_edge():
+    assert edges("a.md", NOTE.replace("본문", "![[가상화]] 그림")) == []
+
+
+def test_a_note_is_part_of_its_folder():
+    assert edges("200 Dev/Network/CIDR.md", NOTE) == [
+        (str(V.part_of), str(folder_iri("200 Dev/Network")))
+    ]
+
+
+def test_a_note_at_the_root_is_part_of_nothing():
+    assert edges("CIDR.md", NOTE) == []
+
+
+def test_every_edge_shares_the_document_as_subject():
+    text = with_field("builds_on", "CIDR", body="[[CIDR]] 참조")
+    subjects = {s for s, _, _ in edge_triples("a.md", text, RESOLVE)}
+    assert subjects == {doc_iri("a.md")}
+
+
+def test_a_folder_is_part_of_the_folder_above_it():
+    assert sorted(
+        str(o) for _, p, o in folder_triples("200 Dev/Network") if p == V.part_of
+    ) == [str(folder_iri("200 Dev"))]
+
+
+def test_a_top_level_folder_is_part_of_nothing():
+    assert [p for _, p, _ in folder_triples("200 Dev")] == []
+
+
+def test_a_folder_note_becomes_the_hub():
+    triples = list(folder_triples("200 Dev/Network", hub="200 Dev/Network/Network.md"))
+    assert (
+        folder_iri("200 Dev/Network"),
+        V.hub,
+        doc_iri("200 Dev/Network/Network.md"),
+    ) in triples
+
+
+def test_a_folder_iri_is_not_a_document_iri():
+    assert folder_iri("200 Dev/Network") != doc_iri("200 Dev/Network")
