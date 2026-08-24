@@ -133,7 +133,7 @@ Phase 4에서 `date.fromisoformat`으로 검사했던 것을 여기서는 **데�
 
 | Step | 내용 |
 |---|---|
-| 1 | 네임스페이스와 IRI 정책 결정 (`docs/iri-policy.md`에 근거를 남긴다) |
+| 1 | 네임스페이스와 IRI 정책 결정 — ✅ [`iri-policy.md`](iri-policy.md) (2026-08-24) |
 | 2 | 노드 → 트리플 (`type`·`summary`·`created`) |
 | 3 | 엣지 → 트리플 (`builds_on`·`supersedes`·`links_to`·`part_of`) |
 | 4 | 태그 — 리터럴인가 리소스인가 결정 |
