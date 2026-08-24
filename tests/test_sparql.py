@@ -7,7 +7,7 @@ from vault.graph import (
     learning_path,
 )
 from vault.rdf import build_graph
-from vault.sparql import by_tag, by_type, neighbours, prerequisites, summaries
+from vault.sparql import by_tag, by_type, kinds, neighbours, prerequisites, summaries
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -163,3 +163,39 @@ def test_both_directions_match_sqlite(a_web):
     ).fetchall()
     expected = sorted({row[0] for row in rows} - {"200 Dev/Hub.md"})
     assert neighbours(graph, "200 Dev/Hub.md") == expected
+
+
+def note(name, prereqs=(), links_out=()):
+    head = (
+        "builds_on:\n" + "".join(f"  - [[{p}]]\n" for p in prereqs) if prereqs else ""
+    )
+    body = " ".join(f"[[{t}]]" for t in links_out) or "본문"
+    return f"---\ntype: concept\n{head}summary: ok\ncreated: 2026-08-10\n---\n{body}\n"
+
+
+@pytest.fixture
+def a_mix(tmp_path):
+    """Two builds_on edges and two links_to edges, all resolved."""
+    files = {
+        "200 Dev/A.md": note("A", prereqs=["B"], links_out=["C"]),
+        "200 Dev/B.md": note("B", prereqs=["C"]),
+        "200 Dev/C.md": note("C", links_out=["A"]),
+    }
+    for relative, text in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return build(tmp_path), build_graph(tmp_path)
+
+
+def test_edges_counted_by_kind(a_mix):
+    _, graph = a_mix
+    assert kinds(graph) == {"builds_on": 2, "links_to": 2}
+
+
+def test_the_grouping_matches_sqlite(a_mix):
+    connection, graph = a_mix
+    rows = connection.execute(
+        "SELECT kind, count(*) FROM edge" " WHERE dst IS NOT NULL GROUP BY kind"
+    ).fetchall()
+    assert kinds(graph) == dict(rows)

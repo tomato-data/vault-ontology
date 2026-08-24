@@ -101,3 +101,22 @@ def neighbours(graph, path):
         initBindings={"path": doc_iri(path)},
     )
     return sorted(doc_path(row[0]) for row in rows)
+
+
+def kinds(graph):
+    """Count the resolved links by kind - the edge half of graph.stats.
+
+    Only three predicates are links; `VALUES` pins the query to them so a
+    tag or a part_of triple is not swept in. `COUNT(*) AS ?n` and `GROUP BY`
+    read almost exactly like SQL - aggregation is where the two languages
+    meet, not where one wins. Unresolved links sit on `_raw` predicates and
+    are not counted, which is why the SQLite side filters `dst IS NOT NULL`.
+    """
+    rows = graph.query(
+        "SELECT ?kind (COUNT(*) AS ?n) WHERE {"
+        " VALUES ?kind { v:builds_on v:supersedes v:links_to }"
+        " ?s ?kind ?o ."
+        " } GROUP BY ?kind",
+        initNs=_NS,
+    )
+    return {str(kind).removeprefix(str(V)): int(n) for kind, n in rows}
