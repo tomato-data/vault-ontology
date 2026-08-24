@@ -38,3 +38,24 @@ def by_tag(graph, tag):
         initBindings={"tag": tag_iri(tag)},
     )
     return _paths(rows)
+
+
+def summaries(graph, type_):
+    """Every note of `type_` with its summary, notes lacking one included.
+
+    Bare pattern matching is an inner join - a note with no summary triple
+    would vanish. `OPTIONAL` keeps it and leaves the summary unbound, which
+    rdflib hands back as None, right where SQLite would put NULL.
+    """
+    rows = graph.query(
+        "SELECT ?doc ?summary WHERE {"
+        " ?doc a ?class ."
+        " OPTIONAL { ?doc v:summary ?summary }"
+        " }",
+        initNs={"v": V},
+        initBindings={"class": V[_class_name(type_)]},
+    )
+    return sorted(
+        (doc_path(doc), str(summary) if summary is not None else None)
+        for doc, summary in rows
+    )

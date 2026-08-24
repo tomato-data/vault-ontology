@@ -2,7 +2,7 @@ import pytest
 
 from vault.graph import build, by_tag as sql_by_tag, by_type as sql_by_type
 from vault.rdf import build_graph
-from vault.sparql import by_tag, by_type
+from vault.sparql import by_tag, by_type, summaries
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -56,3 +56,36 @@ def test_the_two_engines_agree(both):
         assert by_type(graph, type_) == sql_by_type(connection, type_)
     for tag in ("Stack", "Stack/Python", "Stacked"):
         assert by_tag(graph, tag) == sql_by_tag(connection, tag)
+
+
+NO_SUMMARY = "---\ntype: concept\ncreated: 2026-08-10\n---\n요약 없음\n"
+
+
+@pytest.fixture
+def with_a_gap(tmp_path):
+    """A vault where one concept has no summary at all."""
+    files = {
+        "a/Full.md": tagged("concept", "Stack"),
+        "a/Bare.md": NO_SUMMARY,
+    }
+    for relative, text in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return build(tmp_path), build_graph(tmp_path)
+
+
+def test_a_note_without_a_summary_still_appears(with_a_gap):
+    _, graph = with_a_gap
+    assert summaries(graph, "concept") == [
+        ("a/Bare.md", None),
+        ("a/Full.md", "ok"),
+    ]
+
+
+def test_it_matches_a_left_join(with_a_gap):
+    connection, graph = with_a_gap
+    rows = connection.execute(
+        "SELECT path, summary FROM node WHERE type = 'concept' ORDER BY path"
+    ).fetchall()
+    assert summaries(graph, "concept") == [tuple(row) for row in rows]
