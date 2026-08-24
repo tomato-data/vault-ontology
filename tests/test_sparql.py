@@ -7,7 +7,7 @@ from vault.graph import (
     learning_path,
 )
 from vault.rdf import build_graph
-from vault.sparql import by_tag, by_type, prerequisites, summaries
+from vault.sparql import by_tag, by_type, neighbours, prerequisites, summaries
 
 NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
@@ -126,3 +126,40 @@ def test_the_closure_matches_sqlite(a_chain):
     connection, graph = a_chain
     reachable = {row[0] for row in learning_path(connection, "200 Dev/A.md")}
     assert set(prerequisites(graph, "200 Dev/A.md")) == reachable
+
+
+def links(name, *targets):
+    body = " ".join(f"[[{t}]]" for t in targets) or "본문"
+    return f"---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n{body}\n"
+
+
+@pytest.fixture
+def a_web(tmp_path):
+    """Hub links to A and B; A links back to Hub; B links to nobody."""
+    files = {
+        "200 Dev/Hub.md": links("Hub", "A", "B"),
+        "200 Dev/A.md": links("A", "Hub"),
+        "200 Dev/B.md": links("B"),
+    }
+    for relative, text in files.items():
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+    return build(tmp_path), build_graph(tmp_path)
+
+
+def test_reverse_surfaces_a_pure_backlink(a_web):
+    _, graph = a_web
+    # B links to no one. Only `^` can reach Hub, which links to B.
+    assert neighbours(graph, "200 Dev/B.md") == ["200 Dev/Hub.md"]
+
+
+def test_both_directions_match_sqlite(a_web):
+    connection, graph = a_web
+    rows = connection.execute(
+        "SELECT dst FROM edge WHERE src = ? AND kind = 'links_to' AND dst IS NOT NULL"
+        " UNION SELECT src FROM edge WHERE dst = ? AND kind = 'links_to'",
+        ("200 Dev/Hub.md", "200 Dev/Hub.md"),
+    ).fetchall()
+    expected = sorted({row[0] for row in rows} - {"200 Dev/Hub.md"})
+    assert neighbours(graph, "200 Dev/Hub.md") == expected

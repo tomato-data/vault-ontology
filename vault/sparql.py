@@ -8,6 +8,9 @@ from rdflib.namespace import SKOS
 
 from vault.rdf import V, _class_name, doc_iri, doc_path, tag_iri
 
+# Declared once. An unused prefix costs nothing - it is only a binding.
+_NS = {"v": V, "skos": SKOS}
+
 
 def _paths(rows):
     """SPARQL answers in IRIs; SQLite answers in paths. Meet at the path."""
@@ -18,7 +21,7 @@ def by_type(graph, type_):
     """Every note declaring `type_`, as sorted paths. Mirrors graph.by_type."""
     rows = graph.query(
         "SELECT ?doc WHERE { ?doc a ?class }",
-        initNs={"v": V},
+        initNs=_NS,
         initBindings={"class": V[_class_name(type_)]},
     )
     return _paths(rows)
@@ -34,7 +37,7 @@ def by_tag(graph, tag):
     """
     rows = graph.query(
         "SELECT ?doc WHERE { ?doc v:tagged/skos:broader* ?tag }",
-        initNs={"v": V, "skos": SKOS},
+        initNs=_NS,
         initBindings={"tag": tag_iri(tag)},
     )
     return _paths(rows)
@@ -52,7 +55,7 @@ def summaries(graph, type_):
         " ?doc a ?class ."
         " OPTIONAL { ?doc v:summary ?summary }"
         " }",
-        initNs={"v": V},
+        initNs=_NS,
         initBindings={"class": V[_class_name(type_)]},
     )
     return sorted(
@@ -74,7 +77,27 @@ def prerequisites(graph, path):
         " ?start v:builds_on+ ?prereq ."
         " FILTER(?prereq != ?start)"
         " }",
-        initNs={"v": V},
+        initNs=_NS,
         initBindings={"start": doc_iri(path)},
+    )
+    return sorted(doc_path(row[0]) for row in rows)
+
+
+def neighbours(graph, path):
+    """Every note linked to `path` in either direction, as sorted paths.
+
+    `v:links_to` is the forward link, `^v:links_to` the backlink, and `|`
+    unions them. Phase 5 ran two queries and merged the sets in Python;
+    the reverse arrow does it in one pattern. A note linked both ways
+    matches twice, so DISTINCT dedupes the bag the way UNION did. A note
+    is not its own neighbour, so the self-link a cycle makes is filtered.
+    """
+    rows = graph.query(
+        "SELECT DISTINCT ?neighbour WHERE {"
+        " ?path (v:links_to|^v:links_to) ?neighbour ."
+        " FILTER(?neighbour != ?path)"
+        " }",
+        initNs=_NS,
+        initBindings={"path": doc_iri(path)},
     )
     return sorted(doc_path(row[0]) for row in rows)
