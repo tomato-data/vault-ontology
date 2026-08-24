@@ -103,8 +103,8 @@ Phase 7:      ?          · ?
 
 ## 완료 기준
 
-- [ ] Phase 5의 모든 질의(`path`·`near`·`orphans`·`type`·`tag`·`stats`)를 SPARQL로 재현
-- [ ] **결과가 SQLite와 일치**한다 (다르면 Phase 6 모델링이 틀린 것)
-- [ ] 질의별 비교표가 `learnings/`에 있다 — 코드 길이·시간·주관적 읽기 쉬움
-- [ ] 성능 실측 숫자가 있다
-- [ ] "property path가 실제로 필요했던 질의"가 몇 개인지 셌다
+- [x] Phase 5의 모든 질의(`path`·`near`·`orphans`·`type`·`tag`·`stats`)를 SPARQL로 재현
+- [x] **결과가 SQLite와 일치**한다 (다르면 Phase 6 모델링이 틀린 것)
+- [x] 질의별 비교표가 `learnings/`에 있다 — 코드 길이·시간·주관적 읽기 쉬움
+- [x] 성능 실측 숫자가 있다
+- [x] "property path가 실제로 필요했던 질의"가 몇 개인지 셌다
