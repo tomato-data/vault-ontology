@@ -154,3 +154,23 @@ dcterms:isPartOf rdfs:domain v:Document .
 
 **교훈: 재사용한 표준 속성에 로컬 domain 을 거는 건 위험하다.** isPartOf 는
 문서·폴더가 공유하는데, 한쪽 타입으로 domain 을 좁히면 다른 쪽이 오염된다.
+
+## OWA/CWA — 실물로 확인
+
+"필수 필드"를 OWL 로 표현하려다 실패해봤다.
+
+- Content 노트 하나에 summary(dcterms:abstract) 를 안 붙인다.
+- OWL 로 "모든 Content 는 abstract 를 최소 1개 가진다"(owl:minCardinality 1
+  Restriction)를 선언한다.
+- OWL RL 추론기를 돌린다.
+
+결과: **위반 0건.** owl:Nothing(모순) 트리플 0개. 없던 abstract 를 만들지도
+않았다. 추론기는 "이 노트는 잘못됐다"를 **말하지 못한다.**
+
+이유: OWL 은 열린 세계(OWA)다 — 안 적힌 건 거짓이 아니라 모를 뿐. 추론기는
+더하기만 하니(단조적) "없으면 위반"이라는 뺄셈을 표현할 방법이 없다. Phase 4
+lint(닫힌 세계, 안 적히면 거짓)라면 즉시 위반이었을 것을.
+
+**결론: 검증은 OWL 이 아니라 SHACL 의 일이다.** Phase 4 의 lint 가 실은 SHACL
+이 하는 일이었다. OWL=추론, SHACL=검증. 이 프로젝트는 차이를 이해하는 게
+목표였고, 여기서 몸으로 확인했다.
