@@ -72,3 +72,24 @@ def test_rdfs_alone_leaves_the_far_edge_unmade(tmp_path):
     ontology = Graph().parse(ONTOLOGY, format="turtle")
     rdfs_only = close(data, ontology)  # owl=False
     assert (doc_iri("d/A.md"), V.builds_on, doc_iri("d/C.md")) not in rdfs_only
+
+
+def test_a_plain_query_finds_the_far_prereq_after_closure(owl_closed):
+    # Phase 7 needed builds_on+ . Materialised, a one-hop pattern finds it.
+    rows = owl_closed.query(
+        "SELECT ?c WHERE { ?a v:builds_on ?c }",
+        initNs={"v": V},
+        initBindings={"a": doc_iri("d/A.md")},
+    )
+    assert doc_iri("d/C.md") in {row[0] for row in rows}
+
+
+def test_the_same_plain_query_misses_it_before_closure(tmp_path):
+    # The contrast: on raw data, one hop only reaches B, not C.
+    data = build_graph(make(tmp_path, CHAIN))
+    rows = data.query(
+        "SELECT ?c WHERE { ?a v:builds_on ?c }",
+        initNs={"v": V},
+        initBindings={"a": doc_iri("d/A.md")},
+    )
+    assert doc_iri("d/C.md") not in {row[0] for row in rows}
