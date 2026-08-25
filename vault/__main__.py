@@ -3,9 +3,12 @@
 import argparse
 import sqlite3
 import sys
+
+from datetime import date
 from collections import Counter
 from pathlib import Path
 
+from vault.create import build_frontmatter, check_new
 from vault.graph import (
     DB_NAME,
     build,
@@ -19,6 +22,7 @@ from vault.graph import (
 )
 from vault.lint import lint_vault
 from vault.rdf import TTL_NAME, build_graph
+from vault.scan import nfc
 
 DEFAULT_VAULT = Path.home() / (
     "Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault"
@@ -36,6 +40,18 @@ def _parser():
     commands.add_parser("lint", parents=[common], help="check against the schema")
     commands.add_parser("build", parents=[common], help="write the graph")
     commands.add_parser("rdf", parents=[common], help="write the RDF graph")
+    new = commands.add_parser(
+        "new", parents=[common], help="create a document only if it passes"
+    )
+    new.add_argument("--type", required=True)
+    new.add_argument("--title", required=True)
+    new.add_argument("--dir", required=True)
+    new.add_argument("--summary", default="")
+    new.add_argument("--builds-on", dest="builds_on", action="append", default=[])
+    new.add_argument("--supersedes", action="append", default=[])
+    new.add_argument("--body")
+    new.add_argument("--created")
+    new.add_argument("--mkdir", action="store_true")
 
     queries = commands.add_parser("q", help="ask the graph").add_subparsers(
         dest="query", required=True
@@ -74,26 +90,29 @@ def main(argv=None):
     if args.command == "build":
         counts = stats(build(args.vault, args.vault / DB_NAME))
         print(
-            f"{DB_NAME}  노드 {counts['node']:,} · 엣지 {counts['edge']:,}"
-            f" · 태그 {counts['tag']:,}"
+            f"{DB_NAME}  nodes {counts['node']:,} · edges {counts['edge']:,}"
+            f" · tags {counts['tag']:,}"
         )
         for kind, n in sorted(counts["kinds"].items(), key=lambda kv: -kv[1]):
             print(f"  {n:7,}  {kind}")
-        print(f"  {counts['unresolved']:7,}  해석 실패")
+        print(f"  {counts['unresolved']:7,}  unresolved")
         return 0
 
     if args.command == "rdf":
         graph = build_graph(args.vault)
         graph.serialize(destination=args.vault / TTL_NAME, format="turtle")
-        print(f"{TTL_NAME} 트리플 {len(graph):,}")
+        print(f"{TTL_NAME}  triples {len(graph):,}")
         for prefix, count in _predicate_counts(graph):
             print(f"  {count:7,}  {prefix}")
         return 0
 
+    if args.command == "new":
+        return _new(args)
+
     database = args.vault / DB_NAME
     if not database.exists():
         print(
-            f"vault: {DB_NAME} 가 없다. `vault build` 를 먼저 돌린다.", file=sys.stderr
+            f"vault: {DB_NAME} not found. run `vault build` first.", file=sys.stderr
         )
         return 2
     return _query(sqlite3.connect(database), args)
@@ -125,24 +144,53 @@ def _query(connection, args):
 
     start = find(connection, args.note)
     if start is None:
-        print(f"vault: 그런 문서가 없다: {args.note}", file=sys.stderr)
+        print(f"vault: no such document: {args.note}", file=sys.stderr)
         return 2
 
     if args.query == "path":
-        print(f"{start} 를 이해하려면\n")
+        print(f"to understand {start}\n")
         for target, depth in learning_path(connection, start):
             print(f"  {depth}  {target}")
         return 0
 
     neighbours = near(connection, start)
-    print(f"{start} 의 이웃\n")
+    print(f"neighbours of {start}\n")
     for key in ("links_to", "linked_by"):
         print(f"  {key}")
         for path in neighbours[key]:
             print(f"      {path}")
-    print("  shares_tag  (공유 태그 수 · 많은 순)")
+    print("  shares_tag  (shared tags, most first)")
     for path, count in neighbours["shares_tag"][:20]:
         print(f"      {count}  {path}")
+    return 0
+
+
+def _new(args):
+    """Write a document, or refuse and explain. 0 written · 1 rejected."""
+    body = args.body if args.body is not None else sys.stdin.read()
+    created = args.created or date.today().isoformat()
+    relative = nfc(str(Path(args.dir) / f"{args.title}.md"))
+    fm = build_frontmatter(
+        args.type, args.summary.strip(), args.builds_on, created, args.supersedes
+    )
+    if args.mkdir:
+        (args.vault / args.dir).mkdir(parents=True, exist_ok=True)
+
+    problems = check_new(args.vault, relative, fm, body)
+    if problems:
+        print("not created — did not pass the schema.\n", file=sys.stderr)
+        for code, detail in problems:
+            print(f"  {code:<22}{(' ' + detail) if detail else ''}", file=sys.stderr)
+        print(
+            "\ntags are not added — add them yourself, from the existing vocabulary.",
+            file=sys.stderr,
+        )
+        return 1
+
+    (args.vault / relative).write_text(
+        "---\n" + fm + "\n---\n\n" + body.strip() + "\n", encoding="utf-8"
+    )
+    print(f"created: {relative}")
     return 0
 
 

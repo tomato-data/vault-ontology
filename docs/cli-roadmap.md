@@ -29,7 +29,7 @@ uv run python -m vault <command> [args]   # --vault 생략 시 iCloud vault 기�
 
 | 단계 | 명령 | 하는 일 | 재사용/근거 | 상태 |
 |---|---|---|---|---|
-| 1 | `new` | 표준 입력이나 인자로 받은 문서를 **스키마 검사 후** 생성. 통과하지 못하면 파일을 만들지 않음 | `schema.py` 검사 + 새 `create_document` | 착수 |
+| 1 | `new` | 표준 입력이나 인자로 받은 문서를 **스키마 검사 후** 생성. 통과하지 못하면 파일을 만들지 않음 | `schema.validate` + `scan.resolve_link` 재사용 → `vault/create.py` | ✅ 완료 |
 | 2 | `template` | 스키마 뼈대 출력 / `--list`로 `type:template` 나열 | `new`의 스키마 로직 공유 | 대기 |
 | 3 | `ingest` | 기존 초안 `.md`를 편입. frontmatter 존중, 빈 것만 채움. `--rm` | `new`의 변형 | 대기 |
 | 4 | `doctor` | 유실·손상 검사(iCloud의 로컬 파일 제거·Git 누락·내용 급감). `--restore` | 독립적인 Git 기반 기능. 그래프와 무관 | 대기 |
