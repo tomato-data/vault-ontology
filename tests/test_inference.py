@@ -39,3 +39,36 @@ def test_the_chain_reaches_the_top(closed):
 def test_the_supertype_query_is_now_a_plain_match(closed):
     # No property path, no hierarchy walk: the triple is simply there.
     assert doc_iri("200 Dev/CIDR.md") in set(closed.subjects(RDF.type, V.Document))
+
+
+CHAIN = {
+    "d/A.md": "---\ntype: concept\nbuilds_on:\n  - [[B]]\nsummary: ok\ncreated: 2026-08-10\n---\n[[B]]\n",
+    "d/B.md": "---\ntype: concept\nbuilds_on:\n  - [[C]]\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n",
+    "d/C.md": "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n",
+}
+
+
+@pytest.fixture
+def owl_closed(tmp_path):
+    """A builds_on B builds_on C, with OWL RL - transitive + inverse fire."""
+    data = build_graph(make(tmp_path, CHAIN))
+    ontology = Graph().parse(ONTOLOGY, format="turtle")
+    return close(data, ontology, owl=True)
+
+
+def test_transitive_builds_the_far_edge(owl_closed):
+    # Nobody wrote A builds_on C. Transitivity materialises it.
+    assert (doc_iri("d/A.md"), V.builds_on, doc_iri("d/C.md")) in owl_closed
+
+
+def test_inverse_makes_the_backlink_a_triple(owl_closed):
+    # A links to B in its body; linked_by is now stored, not queried with ^.
+    assert (doc_iri("d/B.md"), V.linked_by, doc_iri("d/A.md")) in owl_closed
+
+
+def test_rdfs_alone_leaves_the_far_edge_unmade(tmp_path):
+    # The contrast: without owl=True, transitivity does NOT fire.
+    data = build_graph(make(tmp_path, CHAIN))
+    ontology = Graph().parse(ONTOLOGY, format="turtle")
+    rdfs_only = close(data, ontology)  # owl=False
+    assert (doc_iri("d/A.md"), V.builds_on, doc_iri("d/C.md")) not in rdfs_only
