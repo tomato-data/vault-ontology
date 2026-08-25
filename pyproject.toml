@@ -5,6 +5,7 @@ description = "vault-cli 재구현으로 배우는 지식 그래프와 온톨로
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
+    "owlrl>=7.6.2",
     "rdflib>=7.6.0",
 ]
 
