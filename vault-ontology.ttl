@@ -84,7 +84,12 @@ v:hub a owl:ObjectProperty ;
 # to the vault and does not change its meaning elsewhere.
 #################################################################
 
-dcterms:isPartOf rdfs:domain v:Document ; rdfs:range v:Folder ;
+# NO rdfs:domain here on purpose. isPartOf is shared: a document is part of
+# a folder, and a folder is part of its parent folder. A domain of v:Document
+# would fire on the folder subjects too and mistype 764 nested folders as
+# Documents - inference, not validation (measured, Phase 9). The range stays:
+# every object of isPartOf is a folder, which is what types folders v:Folder.
+dcterms:isPartOf rdfs:range v:Folder ;
     rdfs:comment "Folder membership, derived from the path. Query: every note under a folder." .
 
 dcterms:subject  rdfs:domain v:Document ; rdfs:range skos:Concept ;

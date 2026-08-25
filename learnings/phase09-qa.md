@@ -97,3 +97,60 @@ SHACL 의 일이다.
 한 번 비싸게 부풀려 두고 그 뒤론 싸게 읽는다. 대가는 그 "한 번"이 몇 배로
 터지는가. (참고: forward-chaining=미리 다 만듦=owlrl / backward-chaining=
 물을 때마다 거꾸로 따짐. 우리는 앞쪽.)
+
+## Step 3 — 폭발 측정 (실제 vault)
+
+추론 전 data 27,529 + ontology 58 = 27,587.
+
+| 추론 | 트리플 | 증가 | 배수 | 시간 |
+|---|---|---|---|---|
+| RDFS only | 53,302 | +25,715 | x1.93 | 3.0s |
+| RDFS + OWL RL | 77,478 | +49,891 | x2.81 | 16.6s |
+
+거의 3배, 16.6초. SQLite 빌드 ~1초 · 쿼리 <1ms 와 비교하면 큰 비용이다.
+
+### 무엇이 늘었나 (OWL RL 기준)
+
+| 술어 | 전 → 후 |
+|---|---|
+| `rdf:type` | 3,996 → 28,928 (**+24,932**) |
+| `builds_on` | 415 → 718 (+303, 이행 폐쇄) |
+| `linked_by` | 0 → 8,292 (역링크 전량 물질화) |
+| `links_to` | 8,292 → 8,292 (불변) |
+
+`rdf:type` 폭발의 절반은 **잡음**이다.
+
+```
+rdfs:Resource  7,328     ← 모든 노드에 붙는다
+owl:Thing      7,328     ← 모든 노드에 붙는다
+v:Document     4,761
+v:Content      2,545
+...
+```
+
+`rdfs:Resource` + `owl:Thing` = 14,656. 노드마다 "이것은 자원이다 / 사물이다"
+를 박는다. 참이지만 **어떤 질의도 벌지 못하는** 트리플이다. 폭발의 상당량이
+질의력 없는 잡음이라는 게 실측으로 나왔다.
+
+## Step 4 — domain/range 가 만든 이상한 것 (핵심 발견)
+
+**폴더 764개가 v:Document 로 추론됐다.** 문서는 3,995개인데 v:Document 는
+4,761개 — 차이 764가 폴더다.
+
+원인은 내가 Phase 8 에서 넣은 축입이다.
+
+```turtle
+dcterms:isPartOf rdfs:domain v:Document .
+```
+
+그런데 isPartOf 의 주어는 문서만이 아니다. **폴더도 상위 폴더의 isPartOf
+주어**다 (`folder isPartOf parentFolder`). domain 규칙이 발화해서 "isPartOf 의
+주어는 Document 다 → 이 폴더는 Document 다"를 만들어버린다.
+
+이게 Phase 8 이 경고한 함정의 실물이다 — **domain/range 는 검증이 아니라
+추론이다.** 잘못된 데이터가 아니라 **너무 넓은 스키마 축입**이 764개의 헛
+사실을 낳았다. lint(닫힌 세계)라면 "폴더는 Document 가 아니다"라고 거부했을
+텐데, OWL(열린 세계)은 "그렇다면 폴더도 Document 인 것이다"라고 만들어낸다.
+
+**교훈: 재사용한 표준 속성에 로컬 domain 을 거는 건 위험하다.** isPartOf 는
+문서·폴더가 공유하는데, 한쪽 타입으로 domain 을 좁히면 다른 쪽이 오염된다.
