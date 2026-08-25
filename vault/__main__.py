@@ -23,6 +23,7 @@ from vault.graph import (
 from vault.lint import lint_vault
 from vault.rdf import TTL_NAME, build_graph
 from vault.scan import nfc
+from vault.tags import tag_vocabulary
 
 DEFAULT_VAULT = Path.home() / (
     "Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault"
@@ -40,6 +41,7 @@ def _parser():
     commands.add_parser("lint", parents=[common], help="check against the schema")
     commands.add_parser("build", parents=[common], help="write the graph")
     commands.add_parser("rdf", parents=[common], help="write the RDF graph")
+    commands.add_parser("tags", parents=[common], help="list the tag vocabulary (whitelist)")
     new = commands.add_parser(
         "new", parents=[common], help="create a document only if it passes"
     )
@@ -104,6 +106,11 @@ def main(argv=None):
         print(f"{TTL_NAME}  triples {len(graph):,}")
         for prefix, count in _predicate_counts(graph):
             print(f"  {count:7,}  {prefix}")
+        return 0
+
+    if args.command == "tags":
+        for tag, count in tag_vocabulary(args.vault):
+            print(f"{count:6,}  {tag}")
         return 0
 
     if args.command == "new":
