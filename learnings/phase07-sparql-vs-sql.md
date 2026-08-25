@@ -4,7 +4,7 @@ Phase 5는 SQLite로, Phase 7은 SPARQL로 같은 여섯 질문에 답했다. �
 같았다(두 곳은 모델 차이로 갈렸는데, 그 갈림이 소득이다). 표현과 속도는
 달랐다. 이 문서가 Phase 7의 산출물이다.
 
-실측 환경: 실제 vault 3,996 노트 / 27,525 트리플. 질의 시간은 워밍업 뒤
+실측 환경: 실제 vault 노트 3,996개 / 트리플 27,525개. 질의 시간은 워밍업 뒤
 5회 최소값. rdflib 7.6, 순수 파이썬 인메모리. SQLite는 C 인메모리.
 
 ## 한 장 요약
@@ -53,7 +53,7 @@ type          0.5 ms       11 ms
 tag           0.3 ms        3 ms
 path          0.5 ms        2 ms
 near          0.0 ms        7 ms
-orphans       0.0 ms      281 ms      ← FILTER NOT EXISTS 가 제일 느리다
+orphans       0.0 ms      281 ms      ← FILTER NOT EXISTS가 제일 느리다
 kinds         0.0 ms       60 ms
 ```
 
@@ -106,7 +106,7 @@ Phase 8에서 `rdfs:subClassOf`로 클래스 계층을 세우면 이 열거 문�
    `UNION`이 자동으로 하던 중복 제거를 SPARQL은 `DISTINCT`로 명시해야 한다.
 3. **`UNESCAPES` 값이 정수** — `str.maketrans`가 만든 dict는 key가
    코드포인트(정수)라, 뒤집으면 값이 정수가 된다. `chr`로 문자를 되살려야
-   했다. `replace() argument 2 must be str, not int` 가 정확히 가리켰다.
+   했다. `replace() argument 2 must be str, not int`가 정확히 가리켰다.
 
 두 언어가 같은 함정을 공유한다(bag, NULL/미바인딩). 다른 곳은 방향과
 집합성이다.

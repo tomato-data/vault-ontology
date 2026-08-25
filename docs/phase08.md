@@ -47,7 +47,7 @@ v:Procedure     a rdfs:Class ; rdfs:subClassOf v:Document .
 
 **여기서 이 Phase의 핵심 질문이 나온다.**
 
-> vault의 `type` 13값에 실제로 계층이 있는가?
+> vault의 `type` 13가지 값에 실제로 계층이 있는가?
 
 지금은 **평평한 집합**이다. 13개가 나란히 있다. 하지만 스키마 정본의 정의를 다시 읽으면 묶음이 보인다.
 
@@ -82,7 +82,7 @@ X v:builds_on Y  가 있으면
   →  X a v:Document  를 추론한다 (검사하는 게 아니라 만들어낸다)
 ```
 
-Phase 4의 lint와 정반대 방향이다. lint는 "Document가 아니면 거부", RDFS는 "그렇다면 Document인 것이다". **Phase 9에서 이게 실제로 무슨 일을 벌이는지 본다.**
+Phase 4의 lint와 정반대 방향이다. lint는 "Document가 아니면 거부", RDFS는 "그렇다면 Document인 것이다"라고 처리한다. Phase 9에서는 너무 넓은 `dcterms:isPartOf` domain 때문에 **폴더 764개가 `v:Document`로 추론되는 문제**를 실제로 확인했다.
 
 ### 4. OWL — 관계의 성질을 선언한다
 
@@ -94,8 +94,8 @@ v:linked_by  owl:inverseOf v:links_to .
 
 | 선언 | 의미 | Phase 5·7에서는 |
 |---|---|---|
-| `TransitiveProperty` | A→B, B→C면 **A→C다** | 재귀 CTE / `+` 로 **질의할 때마다** 계산 |
-| `inverseOf` | A links_to B면 **B linked_by A다** | `UNION ALL` / `^` 로 **질의할 때마다** |
+| `TransitiveProperty` | A→B, B→C면 **A→C다** | 재귀 CTE / `+`로 **질의할 때마다** 계산 |
+| `inverseOf` | A links_to B면 **B linked_by A다** | `UNION ALL` / `^`로 **질의할 때마다** |
 | `SymmetricProperty` | 양방향 | 해당 없음 |
 
 차이가 뭔가. **질의의 성질이 아니라 관계 자체의 성질로 선언한다.** 그러면 추론기가 트리플을 실제로 만들어내고, 그 뒤로는 아무 질의나 그 사실을 볼 수 있다.
@@ -121,7 +121,7 @@ v:linked_by  owl:inverseOf v:links_to .
 | Step | 내용 |
 |---|---|
 | 1 | 표준 어휘 조사 — SKOS·Dublin Core에서 재사용할 것 목록 |
-| 2 | `type` 13값의 클래스 계층 **판정** (있으면 설계, 없으면 없다고 결론) |
+| 2 | `type` 13가지 값의 클래스 계층 **판정** (있으면 설계, 없으면 없다고 결론) |
 | 3 | 태그 체계 → `skos:broader` (`Stack/Python` ⊂ `Stack`) |
 | 4 | 속성 선언 — `domain`·`range`·`TransitiveProperty`·`inverseOf` |
 | 5 | `vault-ontology.ttl` 작성 · rdflib로 로드 검증 |

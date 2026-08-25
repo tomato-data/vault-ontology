@@ -11,10 +11,10 @@
 - **답안지를 옆에 두고 백지에서 다시 짠다** — 이미 동작하는 `vault-cli`(1,142줄)를 `reference/`에 커밋 스냅샷으로 고정해 두었다. **막히기 전에는 열지 않는다.** Phase 1~5까지만 답이 있고, 2부에는 답안지가 없다
 - **답안지와 갈린 다섯 지점에서 모두 이 구현이 맞았다** — 동명이인 해석(링크 126) · 정본엔 있는데 구현엔 없던 검사(23) · 이미지 임베드 오인(582) · `part_of` 전역 이름 조회(139) · 태그 집계(3,319)
 - **코드보다 vault가 먼저 개선됐다** — 스키마 정본 v1.8(`builds_on` 선택 기준 신설) · CLAUDE.md v2.43 · 죽은 태그 어휘 13종 삭제 · **끊겨 있던 pre-commit 훅 복구**(홈 디렉터리 이름이 바뀌면서 경로가 깨져, 커밋은 모두 막으면서 유실 검사는 하나도 못 하던 상태였다)
-- **테스트 162개, Phase 1~5는 의존성 0** — 파서를 손으로 짜는 것이 목적이라 표준 라이브러리만 썼다. `rdflib`은 Phase 6에서 처음 들어온다
+- **테스트 229개, Phase 1~5는 외부 의존성 0** — 파서를 손으로 짜는 것이 목적이라 표준 라이브러리만 썼다. `rdflib`과 `owlrl`은 온톨로지를 다루는 2부에서만 사용한다
 - **실측이 판정한다** — 단위 테스트가 전부 초록이어도 실제 vault에서 숫자가 다르면 틀린 것이다. 1부 내내 「조용히 틀리는 실패」가 다섯 번 나왔고, 의심하는 법을 [`learnings/silent-failures.md`](learnings/silent-failures.md)에 따로 정리했다
 
-> **현재 상태**: 1부 종료 (2026-08-21). 다음은 **Phase 6 Step 1 — IRI 정책 결정.** 2부의 첫 Step이 코드가 아니라 설계 판단인 것은 의도한 것이다.
+> **현재 상태**: Phase 1~9 완료 (2026-08-25). 결론은 간단하다. **이 vault의 상시 운용에는 SQLite가 맞고, RDF/OWL은 학습과 상호운용을 위한 산출물로 남긴다.**
 
 ---
 
@@ -32,6 +32,28 @@ vault의 취지 자체가 **개발하면서 얻은 지식의 데이터베이스*
 여기에 한 가지 이유가 더 있었다. vault를 SQLite로 뽑아내는 `vault-cli`는 **이미 동작한다. 다만 내가 짜지 않았다.** Claude가 만들었고, 돌아가지만 내 의도와 어긋난 자리가 남아 있다. 그래서 파서부터 그래프 빌더까지 백지에서 다시 짜고, 기존 코드는 **권위가 아니라 검토 대상**으로 옆에 둔다. "정본에 그렇게 적혀 있다"는 논증의 끝이 아니라 시작이다.
 
 실제로 1부에서 그 간극이 **코드의 우위와 vault의 개선** 양쪽으로 나타났다.
+
+---
+
+## 사용 시나리오
+
+매일의 목적은 하나다. **AI 에이전트로 vault를 탐색하기 쉽게 만드는 것.**
+
+예를 들어 이렇게 묻는다.
+
+> "지금 프로젝트에서 Redis 커넥션 풀 문제를 겪고 있어. 읽어보면 좋을 문서를 골라줘."
+
+그러면 에이전트가 구역의 성격을 살려 답한다.
+
+- **200 Dev Knowledge Base** — 객관적 사실·범용 지식 (커넥션 관리의 일반 원리)
+- **300 Runtime** — 다른 프로젝트에서 실제로 겪은 것 (E-Project에서 같은 문제를 어떻게 풀었나)
+- **400 Logic Forge** — 선택이 걸린 자리의 trade-off (풀 크기 vs 지연)
+
+또는 "Docker를 설명하는 문서를 전부 나열해줘" 같은 단순 검색도 grep이 아니라 그래프에 묻는다 — `q tag Stack/Docker`, `q near`로 역링크·같은 태그 이웃까지.
+
+`q path`가 대표 질의다. `builds_on`을 따라 올라가 "이걸 이해하려면 뭘 먼저 읽어야 하나"를 학습 순서로 낸다. 파일시스템 탐색이나 grep으로는 한 단계는 봐도 이행 폐쇄는 못 한다.
+
+**이 검색 경험이 목적이고, 온톨로지·그래프는 그걸 떠받치는 수단이다.** 4,204개 문서를 사람이 다 기억할 수 없으니, 구조화된 frontmatter가 에이전트에게 "어디에 무엇이 있는지"를 알려준다.
 
 ---
 
@@ -109,25 +131,23 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 
 | Phase | 만드는 것 | 배우는 것 | 상태 |
 |---|---|---|---|
-| **6** | [RDF 재모델링](docs/phase06.md) | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 | 🔄 Step 1 |
-| **7** | [SPARQL 질의](docs/phase07.md) | 그래프 패턴 · property path `+` · 역방향 `^` | ⏳ |
-| **8** | [어휘 설계 (RDFS/OWL/SKOS)](docs/phase08.md) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 | ⏳ |
-| **9** | [추론 (owlrl)](docs/phase09.md) | 물질화 · **열린 세계 가정** · 폭발 측정 · 최종 판단 | ⏳ |
+| **6** | [RDF 재모델링](docs/phase06.md) | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 | ✅ |
+| **7** | [SPARQL 질의](docs/phase07.md) | 그래프 패턴 · property path `+` · 역방향 `^` | ✅ |
+| **8** | [어휘 설계 (RDFS/OWL/SKOS)](docs/phase08.md) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 | ✅ |
+| **9** | [추론 (owlrl)](docs/phase09.md) | 물질화 · **열린 세계 가정** · 증가량 측정 · 최종 판단 | ✅ |
 
-범례: ✅ 완료 · 🔄 진행 중 · ⏳ 예정
-
-Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learnings/)에 있다. **재개 지점은 항상 [`docs/NEXT.md`](docs/NEXT.md).**
+모든 Phase가 끝났다. Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learnings/)에 있다. 최종 판단은 [`learnings/verdict.md`](learnings/verdict.md)에서 바로 읽을 수 있다.
 
 ### 성공 기준
 
 "코드가 돌아간다"는 성공 기준이 아니다. 도구를 하나 더 만드는 것으로 끝날 위험이 실재하고, 원본 프로젝트 문서도 그 위험을 스스로 적어뒀다 — **지식 정리 자체가 목적이 되어 실제 행동을 미루는 기계가 되는 것.** 그 위험을 알고 시작했다.
 
-- [x] Phase 5 — 실측값 표를 **손으로 짠 코드로** 재현했는가
-- [ ] Phase 8 — vault의 `type` 13값에 **실제로 계층이 있는지** 답을 냈는가 (없다면 없다고 결론내는 것도 답)
-- [ ] Phase 9 — 추론이 **SQLite로는 못 얻던 사실을 하나라도** 만들어냈는가
-- [ ] 최종 — **"재귀 CTE로 부족한가?"**에 답한다
+- [x] Phase 5 — 실측값 표를 **손으로 짠 코드로** 재현했다
+- [x] Phase 8 — `type`의 13가지 값에는 의미별 묶음보다 **Content·Imported·Structural 3역할 계층**이 유용하다고 결론냈다
+- [x] Phase 9 — 추론이 만든 사실을 측정했다. **SQLite로 얻을 수 없던 유용한 사실은 0건**이었다
+- [x] 최종 — **재귀 CTE로 충분하다.** rdflib 상시 운용은 하지 않는다
 
-마지막 항목이 진짜 산출물이다. 원본 설계 문서에는 "2주 써보고 정한다. 지금은 아니다"로 열려 있다.
+마지막 항목이 진짜 산출물이다. 예상과 달리 0건이 나왔지만, 그 결과 덕분에 운영 도구와 학습 도구의 역할을 분명히 나눌 수 있었다.
 
 ---
 
@@ -135,7 +155,7 @@ Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learning
 
 ### 답안지 대조
 
-같은 vault에 같은 날 둘 다 돌렸다.
+같은 vault에서 같은 날 두 구현을 실행했다.
 
 | | 이 저장소 | 답안지 | |
 |---|---:|---:|---|
@@ -146,21 +166,21 @@ Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learning
 | `part_of` | 1,017 | 1,152 | 답안지의 전역 이름 조회 오답 139 |
 | 태그 | **3,319** | 0 | 답안지가 본문에서 읽는다 |
 
-**세 축은 정확히 일치했고, 갈린 셋은 모두 이쪽이 맞았다.** 통과 기준을 「전부 일치」에서 **「다른 숫자마다 이유가 있음」**으로 바꾼 이유가 마지막 줄에 있다. 답안지는 2026-08-11 고정 스냅샷이라 8월 16일 태그 일원화 이후로 태그 집계가 계속 0이다. **기준선이 움직이는 건 vault만이 아니라 답안지 자신이었다.**
+**세 축은 정확히 일치했고, 값이 달랐던 세 항목은 모두 새 구현이 맞았다.** 마지막 행 때문에 통과 기준을 「전부 일치」에서 **「모든 차이를 설명할 수 있음」**으로 바꿨다. 답안지는 2026-08-11 고정 스냅샷이라 8월 16일 태그 일원화 이후로 태그 집계가 계속 0이다. 비교 기준으로 삼은 답안지도 고정된 진실은 아니었다.
 
 빌드 1.3초 · 질의 55ms. `builds_on` 최대 깊이는 7이다 — Design System 시리즈가 `00`부터 `08`까지 순서대로 나온다. **아무도 직접 적지 않았지만 그래프에서 드러난 커리큘럼이다.**
 
-### 답안지가 틀렸던 자리
+### 기존 구현과 달랐던 부분
 
 | Phase | 무엇이 | 규모 |
 |---|---|---:|
 | 3 | 동명이인을 이름만으로 해석 (링크가 어디서 왔는지를 받지 않았다) | 링크 126 |
 | 4 | 「판단 구간 summary」 검사가 정본에 있는데 코드에 없다 | 23 |
-| 4 | 이미지 임베드를 깨진 링크로 (이쪽도 한 번 밟았다) | 582 |
+| 4 | 이미지 임베드를 깨진 링크로 분류 (새 구현에서도 한 차례 같은 실수를 했다) | 582 |
 | 5 | `part_of`를 전역 이름 조회로 | 139 |
 | 5 | 태그를 본문에서 읽는다 (8월 11일 고정본) | 3,319 |
 
-### 코드 말고 남은 것
+### 코드 외 성과
 
 | | |
 |---|---|
@@ -168,9 +188,51 @@ Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learning
 | CLAUDE.md v2.43 | 태그 규칙 완화 (기존 어휘 안에서만 · 붙이면 보고) |
 | 죽은 태그 어휘 13종 삭제 · 충돌 사본 8건 정리 | |
 | `.vault-lint.json` 재설계 | 링크 제외와 frontmatter 제외를 분리 (커버리지 89% → 100%) |
-| **끊겨 있던 pre-commit 훅 복구** | 홈 디렉토리 개명으로 경로가 깨져, **모든 커밋을 막으면서 유실 검사는 하나도 못 하고 있었다** |
+| **끊겨 있던 pre-commit 훅 복구** | 홈 디렉터리 개명으로 경로가 깨져, **모든 커밋을 막으면서 유실 검사는 하나도 못 하고 있었다** |
 
 1부 회고는 [`learnings/part1-retrospective.md`](learnings/part1-retrospective.md).
+
+---
+
+## 2부 결과와 최종 판단 (2026-08-25)
+
+### SQL과 SPARQL
+
+Phase 5의 여섯 질의를 Phase 7에서 SPARQL로 다시 구현했다. property path는 이행 폐쇄와 역방향 순회를 표현하는 질의를 크게 줄였지만, 새로운 종류의 질의를 가능하게 하지는 않았다.
+
+| 질의 | SQLite | rdflib | 결과 |
+|---|---:|---:|---|
+| `path` | 0.5ms | 2ms | SPARQL이 간결하지만 깊이 정보는 잃는다 |
+| `near` | 0.0ms | 7ms | `^`로 역방향을 간결하게 표현한다 |
+| `orphans` | 0.0ms | 281ms | 표현은 비슷하고 SQLite가 훨씬 빠르다 |
+| `kinds` | 0.0ms | 60ms | 표현은 비슷하고 SQLite가 훨씬 빠르다 |
+
+모든 질의에서 SQLite가 10~600배 빨랐다. 자세한 비교는 [`learnings/phase07-sparql-vs-sql.md`](learnings/phase07-sparql-vs-sql.md)에 있다.
+
+### 어휘와 추론
+
+`type`의 13가지 값을 억지로 의미별 계층에 넣지 않고, 실제 질의에 도움이 되는 세 역할만 남겼다.
+
+```
+Document
+├── Content       내가 쓴 내용
+├── Imported      외부에서 가져온 자료
+└── Structural    허브와 템플릿
+```
+
+OWL RL 추론은 트리플을 27,587개에서 77,478개로 늘렸다(2.81배, 16.6초). 이행 관계 303개와 역링크 8,292개를 물질화했지만, 둘 다 SQLite가 질의 시점에 이미 계산하던 사실이었다. 새로 생긴 `rdf:type` 트리플 중 `rdfs:Resource`와 `owl:Thing` 14,656개는 실제 질의에 도움이 되지 않았다.
+
+더 중요한 수확은 실패에서 나왔다. 너무 넓게 선언한 `domain` 하나가 폴더 764개를 `Document`로 추론했고, OWL의 열린 세계 가정에서는 "summary가 없으면 위반"이라는 검증 규칙을 표현할 수 없었다. **OWL은 추론, SHACL은 검증**이라는 경계를 실제 데이터로 확인했다.
+
+최종 결정:
+
+- 상시 운용은 SQLite 구현을 사용한다
+- RDF 산출물은 학습과 상호운용을 위해 남긴다
+- rdflib 기반 v1은 진행하지 않는다
+- Oxigraph 기반 v2는 성능 때문이 아니라 추가 학습이 필요할 때만 재검토한다
+- 분리된 `800 TRPG` 코퍼스는 두 저장소를 함께 물어야 하는 질의가 생길 때 합친다
+
+전체 판단과 근거는 [`learnings/verdict.md`](learnings/verdict.md)에 정리했다.
 
 ---
 
@@ -178,7 +240,7 @@ Phase별 가이드는 [`docs/`](docs/), Q&A와 회고는 [`learnings/`](learning
 
 ```bash
 uv sync
-uv run pytest -v          # 162개 통과해야 정상 출발점
+uv run pytest -v          # 229개 통과해야 정상 출발점
 ```
 
 vault 경로 기본값은 `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault`이고, 모든 명령이 `--vault`를 받는다.
@@ -186,6 +248,7 @@ vault 경로 기본값은 `~/Library/Mobile Documents/iCloud~md~obsidian/Documen
 ```bash
 uv run python -m vault lint          # 스키마 정본 대비 위반 (현재 382건)
 uv run python -m vault build         # .vault-graph.db 재생성 — 매번 지우고 새로 만든다
+uv run python -m vault rdf           # .vault.ttl 재생성
 
 uv run python -m vault q stats
 uv run python -m vault q path "CIDR"     # 이걸 이해하려면 뭘 먼저 읽어야 하나 (재귀 CTE)
@@ -197,7 +260,7 @@ uv run python -m vault q orphans 200     # 아무도 안 가리키는 문서
 
 종료 코드는 `0` 정상 · `1` 위반 있음 · `2` 실행 불가. **출력만 하는 도구는 CI에도 pre-commit 훅에도 넣을 수 없다.**
 
-`q path`가 대표 질의다. `builds_on`을 여러 단 따라 올라가 학습 순서를 낸다. **파일시스템 탐색이나 grep만으로는 할 수 없는 일이다** — 한 단계는 볼 수 있어도 이행 폐쇄는 계산할 수 없다.
+`q path`가 대표 질의다. `builds_on`을 여러 단계 따라 올라가 학습 순서를 낸다. **파일 시스템 탐색이나 grep만으로는 할 수 없는 일이다** — 한 단계는 볼 수 있어도 이행 폐쇄는 계산할 수 없다.
 
 ### 설계 결정 몇 가지
 
@@ -219,15 +282,19 @@ uv run python -m vault q orphans 200     # 아무도 안 가리키는 문서
 
 ```
 vault-ontology/
-├── vault/                  코드 — Phase 1~5는 표준 라이브러리만
+├── vault/                  파싱부터 추론까지의 구현
 │   ├── frontmatter.py      split_frontmatter · fm_get · fm_list
 │   ├── links.py            link_target · strip_code · iter_links
 │   ├── scan.py             scan_vault · resolve_link · 동명이인·대소문자 충돌
 │   ├── schema.py           스키마 정본을 코드로
 │   ├── lint.py             lint_vault — 정본 대비 검증
-│   ├── graph.py            build · stats · by_type · by_tag · learning_path · near · orphans
-│   └── __main__.py         CLI — lint · build · q
-├── tests/                  162개
+│   ├── graph.py            SQLite 그래프와 질의
+│   ├── rdf.py              RDF 그래프 생성과 Turtle 직렬화
+│   ├── sparql.py           SPARQL 질의
+│   ├── inference.py        RDFS · OWL RL 물질화
+│   └── __main__.py         CLI — lint · build · rdf · q
+├── vault-ontology.ttl      RDFS · OWL · SKOS 어휘
+├── tests/                  229개
 ├── tools/                  Phase별 실측 스크립트
 ├── docs/                   Phase 가이드 — 무엇을 왜 만드는지 (+ NEXT.md)
 ├── learnings/              Q&A · 회고 — 실제로 배운 것
@@ -253,7 +320,7 @@ Claude가 짠 `vault-cli`(단일 파일 1,142줄)를 **커밋된 `HEAD` 그대�
 3. [`learnings/silent-failures.md`](learnings/silent-failures.md) — **크래시가 없고 숫자도 그럴듯한데 틀린** 실패를 의심하는 법 여섯 가지
 4. [`docs/phase05.md`](docs/phase05.md) — 재귀 CTE 여섯 줄. Phase 7의 `builds_on+` 한 줄이 무엇을 줄여주는지 보려면 여기부터
 5. [`docs/phase06.md`](docs/phase06.md) ~ [`phase09.md`](docs/phase09.md) — 온톨로지 본론
-6. [`docs/NEXT.md`](docs/NEXT.md) — 지금 어디고 다음이 뭔지
+6. [`learnings/verdict.md`](learnings/verdict.md) — 실측에 근거한 최종 판단
 
 ---
 
@@ -264,6 +331,6 @@ Claude가 짠 `vault-cli`(단일 파일 1,142줄)를 **커밋된 `HEAD` 그대�
 | Python 3.14 · uv | |
 | **Phase 1~5** | 표준 라이브러리만 (`re` · `sqlite3` · `unicodedata` · `argparse`) |
 | **Phase 6~** | `rdflib` (RDF · SPARQL) · `owlrl` (추론) |
-| 테스트 | pytest — 162개 |
+| 테스트 | pytest — 229개 |
 
 의존성을 미룬 건 취향이 아니라 목적이다. **파서를 손으로 짜는 것이 Phase 1~5의 이유였고**, 그 목적이 끝나는 Phase 6에서 제약을 푼다.

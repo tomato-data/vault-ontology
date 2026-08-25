@@ -69,7 +69,7 @@ SELECT ?prereq WHERE { <doc/CIDR> v:builds_on+ ?prereq }
 | **역방향 순회** | `UNION ALL` 반복 | `^` | **SPARQL 압승** |
 | 상위 10개 태그 | `ORDER BY LIMIT` | 같음 | 비슷 |
 | 문자열 가공 | 함수가 풍부 | 제한적 | SQL 우세 |
-| 성능 | ? | ? | **재본다** |
+| 성능 | 모든 질의 0.0~0.5ms | 2~281ms | **SQLite가 10~600배 빠름** |
 
 마지막 줄이 이 프로젝트의 미결 판단이다. 스키마 정본:
 
@@ -80,11 +80,13 @@ SELECT ?prereq WHERE { <doc/CIDR> v:builds_on+ ?prereq }
 rdflib는 **순수 파이썬 인메모리 스토어**다. SQLite는 C로 짜인 인덱스 있는 디스크 스토어다. 트리플 3~4만 개 규모에서 어느 쪽이 빠른지는 재봐야 안다.
 
 ```
-Phase 5 실측: 빌드 0.8초 · 질의 40ms
-Phase 7:      ?          · ?
+SQLite 빌드   약 970ms
+RDF 빌드      약 1,250ms
+SQLite 질의   0.0~0.5ms
+rdflib 질의   2~281ms
 ```
 
-느리면 그것도 결과다. **v2(Rust + Oxigraph)의 근거가 성능인지 학습인지를 여기서 가른다.** 스키마 정본은 "v2의 목적은 성능이 아니라 온톨로지 학습"이라고 미리 적어뒀는데, 실측이 그걸 지지하는지 본다.
+실측 결과, SQLite가 모든 질의에서 10~600배 빨랐다. **v2(Rust + Oxigraph)의 근거는 성능이 아니라 학습**이라는 사전 가설을 지지한다. 자세한 결과는 [`../learnings/phase07-sparql-vs-sql.md`](../learnings/phase07-sparql-vs-sql.md)에 있다.
 
 ---
 
