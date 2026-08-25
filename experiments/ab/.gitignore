@@ -1,0 +1,7 @@
+# 재생성 가능한 것은 커밋하지 않는다
+chunks.json
+chunks_capped.json
+vecs/
+results/
+.venv/
+*.log

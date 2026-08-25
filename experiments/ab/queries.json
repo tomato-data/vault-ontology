@@ -1,0 +1,47 @@
+[
+{"id":1,"cat":"한→한","q":"레디스는 스레드가 하나인데 어떻게 그렇게 빠른가?","gold":["Redis가 싱글 스레드인데도 빠른 이유"]},
+{"id":2,"cat":"한→한","q":"동시에 읽고 쓸 때 데이터가 어긋나는 걸 DB가 어떤 단계로 막아주나","gold":["트랜잭션 격리 수준 심화","PostgreSQL - 트랜잭션 격리 수준 설정과 성능"]},
+{"id":3,"cat":"한→한","q":"인덱스를 걸어놨는데 실제로 안 타는 것 같다. 어떻게 확인하나","gold":["23 뼈대 — idx_scan이 0인 인덱스의 함정","인덱스 최적화 성능 비교"]},
+{"id":4,"cat":"한→한","q":"파이썬은 왜 아직도 스레드로 병렬 처리가 제대로 안 되나","gold":["Python GIL이 30년간 유지된 이유 — Reference Counting 부채와 PEP 703","Python - CPython GIL과 진정한 병렬성의 한계"]},
+
+{"id":5,"cat":"한→영","q":"FastAPI 프로젝트 폴더를 어떤 식으로 나눠야 하나","gold":["fastapi-app-structure"]},
+{"id":6,"cat":"한→영","q":"어떤 ORM을 쓸지 장단점을 비교해놓은 게 있나","gold":["orm-comparison"]},
+{"id":7,"cat":"한→영","q":"오래 걸리는 작업을 요청과 분리해서 뒤에서 돌리는 방법","gold":["background-jobs"]},
+{"id":8,"cat":"한→영","q":"결제 기능을 붙이려면 무엇을 고려해야 하나","gold":["payment-integration"]},
+{"id":21,"cat":"한→영","q":"비즈니스 규칙을 어느 계층에 둘지 정리한 문서","gold":["01-business-logic-architecture"]},
+{"id":22,"cat":"한→영","q":"테이블 스키마를 어떻게 설계했는지 기록","gold":["database-design"]},
+{"id":23,"cat":"한→영","q":"어떤 테스트를 어느 수준까지 짤지 정한 방침","gold":["testing-strategies","07-testing-strategies"]},
+{"id":24,"cat":"한→영","q":"누가 무엇을 할 수 있는지 권한을 어떻게 나눴나","gold":["03-authorization","08-auth-account"]},
+{"id":25,"cat":"한→영","q":"Flutter 코드를 쓸 때 지켜야 할 규칙 모음","gold":["flutter_rules"]},
+{"id":26,"cat":"한→영","q":"분산 작업 큐를 어떤 구조로 돌리고 있나","gold":["Celery Architecture"]},
+
+{"id":9,"cat":"영→한","q":"how should I design indexes for read-heavy traffic","gold":["02. 조회 트래픽을 고려한 인덱스 설계"]},
+{"id":10,"cat":"영→한","q":"reliably publishing events with a database write","gold":["04. 트랜잭션 아웃박스 패턴"]},
+{"id":11,"cat":"영→한","q":"why is a single-threaded server still fast","gold":["Redis가 싱글 스레드인데도 빠른 이유"]},
+{"id":12,"cat":"영→한","q":"where do I start when tuning server performance","gold":["02. 서버 성능 개선 기초"]},
+{"id":27,"cat":"영→한","q":"how memory is laid out and managed at runtime","gold":["Chapter 9. 메모리"]},
+{"id":28,"cat":"영→한","q":"what basis vectors mean in linear algebra","gold":["Chapter 6. 기저(Basis)"]},
+{"id":29,"cat":"영→한","q":"establishing a baseline before writing tests","gold":["10 뼈대 — 테스트 기준선"]},
+{"id":30,"cat":"영→한","q":"coding rules and discipline for a project","gold":["_개발 규율집 (Project Discipline Bible)"]},
+{"id":31,"cat":"영→한","q":"recurrent neural networks for text sentiment classification","gold":["09-2 순환 신경망으로 IMDB 리뷰 분류하기"]},
+{"id":32,"cat":"영→한","q":"preparing for a technical interview from my resume","gold":["기술면접 숙지 지도 — 이력서·포트폴리오 역산"]},
+
+{"id":13,"cat":"상황형","q":"지금 프로젝트에서 DB 커넥션이 자꾸 모자라서 터진다. 뭘 읽어보면 좋을까","gold":["DB Connection Pool은 85%까지만, 나머지는 headroom","DB Connection Pool 모니터링 구현","07 뼈대 — 커넥션 풀"]},
+{"id":14,"cat":"상황형","q":"모바일 앱을 하나 만들어야 하는데 어떤 프레임워크로 갈지 못 정하겠다","gold":["Decision Node - Mobile Cross-Platform Framework Selection","Trade-offs - Flutter vs React Native"]},
+{"id":15,"cat":"상황형","q":"API를 REST로 낼지 GraphQL로 낼지 판단 근거가 필요하다","gold":["Decision Node - REST vs GraphQL","Trade-offs - REST vs GraphQL"]},
+{"id":16,"cat":"상황형","q":"푸시 알림을 붙여야 하는데 예전에 하면서 무슨 문제를 겪었었지","gold":["푸시 알림 시스템 진화","읽음 추적 및 뱃지 동기화 시스템"]},
+{"id":17,"cat":"상황형","q":"응답이 느린 API를 여러 쿼리 병렬로 돌려서 개선한 경험","gold":["asyncio.gather와 SQL 통합을 통한 API 성능 최적화"]},
+{"id":33,"cat":"상황형","q":"N+1 때문에 쿼리가 폭발하는데 어떻게 잡았었나","gold":["N+1 문제 해결전략","N+1 쿼리 일괄 최적화","20 뼈대 — N+1 측정"]},
+{"id":34,"cat":"상황형","q":"마이그레이션 돌리다 실패한 적이 있는데 뭐가 문제였지","gold":["11 뼈대 — 마이그레이션 3가지 실패"]},
+{"id":35,"cat":"상황형","q":"인증 구조를 여러 제공자로 확장해야 한다","gold":["Multi-Provider OAuth 아키텍처 패턴","인증 아키텍처 패턴"]},
+
+{"id":18,"cat":"구조형","q":"컨테이너로 돌리는 것과 그냥 띄우는 것의 오버헤드 차이","gold":["Trade-offs - Docker vs Native vs LXC","Go 배포 표준 — Docker 오버헤드 신화와 컨테이너 선택지"]},
+{"id":19,"cat":"구조형","q":"도커에서 개발용과 배포용 설정을 분리하는 법","gold":["Docker - 개발, 배포 환경을 override, profiles로 관리"]},
+{"id":20,"cat":"구조형","q":"쿠버네티스에 파드를 어떤 전략으로 올리나","gold":["7.1 파드 배포 전략","6.2 작업 관리 앱을 쿠버네티스에 배포하기"]},
+
+{"id":36,"cat":"함정","q":"프로그램이 실행 중에 동적으로 할당한 객체가 저장되는 메모리 공간","gold":["Heap (힙) — 메모리 영역"],"trap":"Heap (힙) — 자료구조"},
+{"id":37,"cat":"함정","q":"가장 크거나 작은 값을 O(log n)에 꺼내는 완전 이진 트리","gold":["Heap (힙) — 자료구조"],"trap":"Heap (힙) — 메모리 영역"},
+{"id":38,"cat":"함정","q":"나중에 넣은 것이 먼저 나오는 LIFO 자료구조","gold":["Stack (스택)"],"trap":"어떤 기술 스택을 깊이 있게 익혀야 하는가?"},
+{"id":39,"cat":"함정","q":"먼저 들어온 것이 먼저 나가는 FIFO 자료구조","gold":["Queue (큐)"],"trap":"Message Queue 완벽 가이드"},
+{"id":40,"cat":"함정","q":"서비스끼리 비동기로 메시지를 주고받게 하는 미들웨어","gold":["Message Queue 완벽 가이드"],"trap":"Queue (큐)"}
+]

@@ -99,7 +99,7 @@ wheels = [
 [[package]]
 name = "vault-ontology"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
     { name = "owlrl" },
     { name = "rdflib" },

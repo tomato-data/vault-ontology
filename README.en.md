@@ -22,7 +22,7 @@
 
 I had a rough idea of what an ontology was. A recent conversation with colleagues filled in the details, and the whole time I kept thinking about my Obsidian vault.
 
-The vault exists to be **a database of what I learn while building things**. 4,204 notes, already tangled together by 11,624 wikilinks. To a human eye it is obviously a graph — but **there is no structure a machine can read.** An ontology is exactly the tool that fits that gap.
+The vault exists to be **a database of what I learn while building things**. It has 4,204 notes, already tangled together by 11,624 wikilinks. To a human eye it is obviously a graph — but **there is no structure a machine can read.** I initially thought an ontology was exactly the tool for that gap. This project tests that hypothesis against the real vault.
 
 So this repo does two things at once.
 
@@ -32,6 +32,22 @@ So this repo does two things at once.
 There's a third motive underneath. `vault-cli`, the tool that already extracts the vault into SQLite, **works — but I didn't write it.** Claude did. It runs, and it still has places where it diverges from what I meant. So the parser, the resolver, and the graph builder get rebuilt from a blank file, and the existing code sits beside me **as a subject of review, not an authority.** "The schema of record says so" is where an argument starts, not where it ends.
 
 In Part 1 that gap showed up on both sides: **the new code was better in places, and the vault itself got fixed in others.**
+
+---
+
+## What “Ontology” Means Here
+
+“Ontology” points to three different ideas depending on context. Distinguishing them is necessary to explain what this project built and what it actually wanted.
+
+| Sense | The question it asks | In this project |
+|---|---|---|
+| **1. Philosophical ontology** | What do we consider to exist in this world? | The vault contains notes, folders, tags, and 13 `type` values; folders and files are different kinds of things |
+| **2. Gruber / knowledge-engineering ontology** | How do we state a shared conceptualisation explicitly and formally? | `vault-ontology.ttl` states RDFS/OWL axioms and is processed by a reasoner |
+| **3. Operational ontology in industry** | How do data, logic, actions, and permissions drive real operations? | The original goal — helping an AI agent navigate the vault and choose what to do next — is closer to this sense |
+
+**The project built sense 2, but the problem it wanted to solve was closer to sense 3.** It was not an attempt to force a collection of Markdown files into an ontology. It treated the vault as a **personal knowledge operating environment** in which notes, relationships, and rules work together, then tested whether a formal ontology was actually needed to make that environment machine-readable.
+
+RDFS/OWL inference ultimately produced zero useful facts that SQLite could not already derive. Markdown therefore remains the source of truth, the SQLite graph remains the operational tool, and RDF/OWL remains an artefact for learning and interoperability. **Building sense 2 made it possible to identify what sense 3 actually needed.** The evidence behind that decision is in [`learnings/verdict.md`](learnings/verdict.md).
 
 ---
 

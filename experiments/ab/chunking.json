@@ -1,0 +1,16 @@
+{
+  "strategy": "heading-based, then paragraph split, then hard character cut",
+  "max_chars": 1200,
+  "min_chars": 80,
+  "overlap": 0,
+  "heading_path_prepended": true,
+  "metadata_prefix": "title + summary + tags (vault frontmatter)",
+  "chunks_per_doc_cap": null,
+  "docs": 3857,
+  "chunks": 43635,
+  "token_len_median": 213,
+  "token_len_p95": 613,
+  "token_len_max": 767,
+  "max_seq_length": 768,
+  "truncation": "none (768 >= max 767)"
+}

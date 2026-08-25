@@ -13,15 +13,20 @@
 
 ## 호출 규약
 
-아직 패키지로 설치하지 않았으므로 저장소 디렉터리에서 실행한다.
+`vault` 는 **전역 명령**이다. 어느 디렉터리에서든 부른다.
 
 ```bash
-cd ~/Desktop/Code/vault-ontology
-uv run python -m vault <command> [args]   # --vault 생략 시 iCloud vault 기본값
+vault <command> [args]        # --vault 생략 시 iCloud vault 기본값
 ```
 
-- **사전 작업** — `[project.scripts] vault = "vault.__main__:main"`을 추가하고
-  `uv tool install`을 실행한다. 완료하면 어느 디렉터리에서든 `vault <command>`를 사용할 수 있다.
+editable 설치라 이 저장소의 코드를 고치면 **재설치 없이 바로 반영**된다. 다시
+깔거나 다른 Mac에 놓을 때는 저장소에서 한 번:
+
+```bash
+uv tool install --editable .
+```
+
+`~/.local/bin/vault` 에 실행 파일이 생긴다. 그 경로가 `PATH` 에 있어야 한다.
 
 ## 명령 이관 순서
 
