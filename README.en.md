@@ -11,10 +11,15 @@
 - **Rewritten from scratch with the answer key sitting right there** — the working tool (`vault-cli`, 1,142 lines) is pinned in `reference/` as a commit snapshot. **It doesn't get opened until I'm stuck.** It only covers Phases 1–5; Part 2 has no answer key at all
 - **Five places where my code and the answer key disagreed — mine was right in all five**: duplicate-name resolution (126 links) · a check the schema of record requires but the implementation never had (23) · image embeds reported as broken links (582) · `part_of` resolved by global name lookup (139) · tag counting (3,319)
 - **The vault got improved before the code did** — schema of record v1.8 (added selection criteria for `builds_on`) · CLAUDE.md v2.43 · 13 dead tag vocabularies deleted · **a broken pre-commit hook restored** (a home-directory rename had broken its path, so it was blocking every commit while running none of the loss checks)
-- **229 tests, zero external dependencies through Phase 5** — writing the parsers by hand was the point, so Part 1 uses only the standard library. `rdflib` and `owlrl` are used only in Part 2
+- **241 tests, zero external dependencies through Phase 5** — writing the parsers by hand was the point, so Part 1 uses only the standard library. `rdflib` and `owlrl` are used only in Part 2
 - **Measurement is the verdict** — all-green unit tests mean nothing if the numbers come out different on the real vault. Part 1 hit five "silently wrong" failures; how to suspect them is collected in [`learnings/silent-failures.md`](learnings/silent-failures.md)
 
-> **Current status**: Phases 1–9 complete (2026-08-25). SQLite remains the operational choice; RDF/OWL remains an output for learning and interoperability.
+> **Current status**: Phases 1–9 complete (2026-08-25); Phases 10–19 planned.
+> The Part 2 decision remains unchanged: SQLite is the operational choice and RDF/OWL remains
+> an output for learning and interoperability. Part 3 is a separate semantic-ontology track for
+> claims, events, decisions, principles, and their evidence—not a retrieval upgrade. Its scope is
+> the whole vault: engineering knowledge, personal experience, reflection, philosophy, career,
+> and life knowledge, with each context preserved while cross-domain connections are discovered.
 
 ---
 
@@ -126,7 +131,31 @@ Parsers suit TDD unusually well, because every trap has the shape "for this inpu
 | **8** | [vocabulary design (RDFS/OWL/SKOS)](docs/phase08.md) | **Writing the schema as data** · reusing standard vocabularies | ✅ |
 | **9** | [inference (owlrl)](docs/phase09.md) | Materialisation · **open world assumption** · measuring growth · the final call | ✅ |
 
-All phases are complete. The final decision and evidence are in [`learnings/verdict.md`](learnings/verdict.md).
+### Part 3 — Semantic ontology and knowledge operations
+
+| Phase | What gets built | Gate | Status |
+|---|---|---|---|
+| **10** | [Problem contract and competency questions](docs/phase10.md) | 20 real questions with approved expected answers | Planned |
+| **11** | [Artifact/knowledge identity split](docs/phase11.md) | Identity survives rename, move, split, and merge | Planned |
+| **12** | [Core domain ontology](docs/phase12.md) | Every term serves a competency question | Planned |
+| **13** | [Semantic authoring contract and gold set](docs/phase13.md) | 50 labelled notes with sustainable authoring cost | Planned |
+| **14** | [Semantic assertion graph](docs/phase14.md) | Asserted, proposed, and inferred facts stay separate | Planned |
+| **15** | [SHACL semantic contract](docs/phase15.md) | Results match gold violations | Planned |
+| **16** | [Purpose-bound inference and rules](docs/phase16.md) | New answers are explainable and retractable | Planned |
+| **17** | [Semantic queries and explanations](docs/phase17.md) | Two-week real-use trial | Planned |
+| **18** | [Proposal, approval, and retraction](docs/phase18.md) | No unapproved fact contaminates the asserted graph | Planned |
+| **19** | [Bounded knowledge operations](docs/phase19.md) | Shadow mode, approval, audit, and rollback | Planned |
+
+Phases 1–9 remain closed and preserved. The full Part 3 plan, risks, prerequisites, and stop rules
+are in [`docs/README.md`](docs/README.md); [`docs/NEXT.md`](docs/NEXT.md) is the resume point.
+Vector retrieval is a separate track and is not implemented by these phases.
+
+“Whole vault” does not mean annotating every note up front. The work starts with representative
+samples across zones 000–700 and 900 plus cross-domain competency questions, then expands only where it
+proves useful. Technical claims, personal beliefs, values, and interpretations retain different
+epistemic status, perspective, and time context.
+The current graph excludes `900 Archive`; Part 3 must reintroduce it behind an explicit read-only
+archive boundary so past beliefs and decisions do not masquerade as current facts.
 
 Per-phase guides are in [`docs/`](docs/); Q&A and retrospectives are in [`learnings/`](learnings/). [`docs/NEXT.md`](docs/NEXT.md) records the closed state and follow-up boundary.
 
@@ -138,6 +167,17 @@ Per-phase guides are in [`docs/`](docs/); Q&A and retrospectives are in [`learni
 - [x] Phase 8 — the 13 `type` values support a useful three-role hierarchy: Content, Imported, and Structural
 - [x] Phase 9 — inference produced **zero useful facts that SQLite could not already derive at query time**
 - [x] Final — a recursive CTE is enough for this vault; do not operate rdflib continuously
+
+Part 3 has separate success criteria:
+
+- [ ] Separate artifacts from knowledge entities and preserve stable identity.
+- [ ] Answer competency questions the current graph cannot answer.
+- [ ] Trace every semantic and derived fact back to source evidence.
+- [ ] Keep proposed, inferred, and approved states separate and retractable.
+- [ ] Demonstrate value greater than annotation and review cost in real use.
+- [ ] Require shadow mode, preview, approval, audit, and rollback before writes.
+- [ ] Explain evidence-backed connections across engineering, personal, philosophical, career,
+      and life knowledge.
 
 That last item is the real deliverable. The measured result separates the operational tool from the learning artefact.
 
@@ -190,7 +230,7 @@ The Part 1 retrospective is in [`learnings/part1-retrospective.md`](learnings/pa
 
 ```bash
 uv sync
-uv run pytest -v          # 229 passing is the correct starting point
+uv run pytest -v          # 241 passing is the correct starting point
 ```
 
 The vault path defaults to `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault`, and every command accepts `--vault`.
@@ -239,7 +279,7 @@ vault-ontology/
 │   ├── lint.py             lint_vault — validation against the schema
 │   ├── graph.py            build · stats · by_type · by_tag · learning_path · near · orphans
 │   └── __main__.py         CLI — lint · build · q
-├── tests/                  229 of them
+├── tests/                  241 of them
 ├── tools/                  per-phase measurement scripts
 ├── docs/                   phase guides — what gets built and why (+ NEXT.md)
 ├── learnings/              Q&A · retrospectives — what was actually learned
@@ -278,6 +318,6 @@ There are three moments it may be opened: stuck for over 30 minutes · **the Pha
 | Python 3.14 · uv | |
 | **Phases 1–5** | standard library only (`re` · `sqlite3` · `unicodedata` · `argparse`) |
 | **Phase 6+** | `rdflib` (RDF · SPARQL) · `owlrl` (inference) |
-| Tests | pytest — 229 |
+| Tests | pytest — 241 |
 
 Holding off on dependencies wasn't taste, it was the point. **Writing the parsers by hand is what Phases 1–5 are for**, and the constraint lifts in Phase 6, where that purpose ends.
