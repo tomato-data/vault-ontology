@@ -1,4 +1,4 @@
-# Phase 15 — SHACL 의미 계약
+# Phase 16 — SHACL 의미 계약
 
 > OWL이 추론하는 것과 Vault가 요구하는 것을 분리한다.
 

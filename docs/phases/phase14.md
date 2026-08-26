@@ -1,10 +1,10 @@
-# Phase 12 — 핵심 도메인 온톨로지 0.1
+# Phase 14 — 핵심 도메인 온톨로지 0.1
 
 > 문서 구조가 아니라 Vault가 다루는 지식 세계를 최소 어휘로 명세한다.
 
 ## 목표
 
-Phase 10의 역량 질문과 Phase 11의 정체성 계약을 바탕으로 작은 TBox를 만든다.
+Phase 10의 역량 질문과 Phase 13의 정체성 계약을 바탕으로 작은 TBox를 만든다.
 개발 지식 전용 스키마가 아니라 Vault 전체가 공유할 **영역 중립 kernel**과, 필요한
 영역에서만 붙는 vocabulary/profile의 경계를 설계한다.
 후보는 다음과 같지만 질문에 쓰이지 않는 것은 넣지 않는다.
@@ -70,9 +70,9 @@ invalidates · hasEvidence · affects
 |---|---|
 | `Principle`은 `KnowledgeEntity`다 | RDFS/OWL |
 | `operationalizedBy`의 역관계 | OWL 또는 질의 |
-| 원칙에는 근거가 최소 하나 있어야 한다 | SHACL, Phase 15 |
-| 폐기 근거에 의존하면 재검토한다 | 운영 규칙, Phase 16 |
-| 승인되지 않은 제안은 확정 사실이 아니다 | 데이터셋 경계, Phase 14 |
+| 원칙에는 근거가 최소 하나 있어야 한다 | SHACL, Phase 16 |
+| 폐기 근거에 의존하면 재검토한다 | 운영 규칙, Phase 17 |
+| 승인되지 않은 제안은 확정 사실이 아니다 | 데이터셋 경계, Phase 15 |
 
 특히 domain/range는 검증 규칙이 아니다. Phase 9에서처럼 과도한 선언이 잘못된 타입을
 대량 추론할 수 있으므로 필요한 경우에만 둔다.
@@ -130,7 +130,7 @@ ontology/
 
 ## 난이도와 위험
 
-> **선행 관측 — [`part3-decisions.md`](part3-decisions.md)의 관측 5~8**
+> **선행 관측 — [`part3-decisions.md`](../part3/decisions.md)의 관측 5~8**
 >
 > - **후보 목록이 vault와 어긋난다.** `Claim`은 vault에 대응물이 없고,
 >   `tradeoff` 44개는 후보에 없는데 `decision`과 140건으로 이어져 있다.

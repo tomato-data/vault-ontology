@@ -31,7 +31,7 @@ vault 경로는 두 Mac 모두 같다.
 
 ## 현재 위치
 
-**Phase 1~9 완료. 테스트 241개 통과. Phase 10~19 계획 수립.**
+**Phase 1~9 완료. 테스트 241개 통과. Phase 10~20 계획 수립.**
 
 | Phase | 내용 | 상태 |
 |---|---|---|
@@ -42,9 +42,10 @@ vault 경로는 두 Mac 모두 같다.
 | 8 | RDFS/OWL/SKOS 어휘 설계 | ✅ |
 | 9 | 추론 · 최종 판단 | ✅ |
 | 10 | 문제 계약 · 역량 질문 30개 | 🟡 산출물 완료 · **승인 대기** |
-| 10.5 | 라벨링 파일럿 — 비용 측정 | 다음 시작점 |
-| 11~17 | 의미 정체성 · 온톨로지 · 검증 · 추론 · 질의 | 계획 |
-| 18~19 | 제안·승인 · 제한 운영 | **보류** — Phase 17 실사용 뒤 판단 |
+| 11 | 라벨링 파일럿 — 비용 측정 | 다음 시작점 |
+| 12 | 의미 작성 계약 · gold set | 계획 |
+| 13~18 | 정체성 · 어휘 · 그래프 · SHACL · 추론 · 질의 | 계획 |
+| 19~20 | 제안·승인 · 제한 운영 | **보류** — Phase 18 실사용 뒤 판단 |
 
 `vault/`에는 파서·검증·SQLite 그래프·RDF·SPARQL·추론 구현이 모두 들어 있다.
 최종 결론은 [`../learnings/verdict.md`](../learnings/verdict.md)에 있다.
@@ -77,7 +78,7 @@ Phase 6에서는 **사람이 코드를 이겼다** — 「왜 형제 파일이 `
 | vault·800 TRPG 병합 | 두 코퍼스를 함께 물어야 하는 질의가 생길 때까지 미룬다 |
 
 전체 근거는 [`../learnings/verdict.md`](../learnings/verdict.md)에 있으며,
-IRI 결정의 세부 내용은 [`iri-policy.md`](iri-policy.md)에서 확인할 수 있다.
+IRI 결정의 세부 내용은 [`iri-policy.md`](notes/iri-policy.md)에서 확인할 수 있다.
 
 ### 여기까지 오면서 확정한 것
 
@@ -114,7 +115,7 @@ uv run python -m vault rdf         # .vault.ttl
 77,478개로 늘어난다(2.81배, 16.6초). 이 가운데 `rdfs:Resource`와 `owl:Thing`
 14,656개는 실제 질의에 도움이 되지 않는 일반 타입 정보다.
 
-> **`800 TRPG`가 2026-08-23에 vault 밖으로 나갔다** — [`800-trpg-split.md`](800-trpg-split.md).
+> **`800 TRPG`가 2026-08-23에 vault 밖으로 나갔다** — [`800-trpg-split.md`](notes/800-trpg-split.md).
 > Phase 6·9의 실습 대상이 「제외 구역」에서 **「출처가 다른 독립 코퍼스」**로 바뀌었고,
 > 문제가 약해진 게 아니라 **RDF가 원래 풀려던 문제**가 됐다.
 
@@ -128,42 +129,42 @@ uv run python -m vault rdf         # .vault.ttl
 포함한 Vault 전체다. Phase 10은 000~700 대역별 질문과 영역 사이를 잇는 질문을
 함께 고정하는 데서 시작한다.
 
-> **시작 전에 정한 것은 [`part3-decisions.md`](part3-decisions.md)에 있다.**
-> 라벨링 파일럿을 앞으로 당긴 이유(D1), 종착점을 Phase 17로 둔 이유(D2),
+> **시작 전에 정한 것은 [`part3-decisions.md`](part3/decisions.md)에 있다.**
+> 라벨링 파일럿을 앞으로 당긴 이유(D1), 종착점을 Phase 18로 둔 이유(D2),
 > 900 Archive와 100 Private Log의 참여 방식(D3·D4), 역량 질문을 캐내는 절차(D5),
-> 프라이버시 규칙의 축을 바꾼 이유(D6), 그리고 Phase 11·12 선행 관측이 거기 있다.
+> 프라이버시 규칙의 축을 바꾼 이유(D6), 그리고 Phase 13·14 선행 관측이 거기 있다.
 
-> **⏳ 지금 막혀 있는 곳 — [`part3-open-decisions.md`](part3-open-decisions.md)**
+> **⏳ 지금 막혀 있는 곳 — [`part3-open-decisions.md`](part3/open-decisions.md)**
 > Phase 10 산출물은 전부 나왔고 **토마토의 결정 8건을 기다린다.** 그중 1·3·4가
-> 없으면 Phase 10.5로 넘어갈 수 없다.
+> 없으면 Phase 11로 넘어갈 수 없다.
 
 ### Phase 10 산출물
 
 | | |
 |---|---|
-| [`competency-questions.md`](competency-questions.md) | 역량 질문 30개 · **전수 판정 완료** |
-| [`part3-boundary.md`](part3-boundary.md) | 목표·비목표·계층 책임·기준선·**갈림길** |
-| [`part3-risks.md`](part3-risks.md) | 위험 15항목. 1군 5개는 이번에 실제로 관측된 것 |
-| [`part3-open-decisions.md`](part3-open-decisions.md) | 미결 8건 |
+| [`competency-questions.md`](part3/competency-questions.md) | 역량 질문 30개 · **전수 판정 완료** |
+| [`part3-boundary.md`](part3/boundary.md) | 목표·비목표·계층 책임·기준선·**갈림길** |
+| [`part3-risks.md`](part3/risks.md) | 위험 15항목. 1군 5개는 이번에 실제로 관측된 것 |
+| [`part3-open-decisions.md`](part3/open-decisions.md) | 미결 8건 |
 
 **판정 결과 30개 중 18개가 「그 사실이 적혀 있지 않다」였다.** 그리고 그중 12개는
 frontmatter 필드를 늘리면 **기존 SQLite가 그대로 답한다**(실증). 3부의 정당성은
-「문서보다 작은 단위가 필요한가」 하나에 걸려 있고, 그것을 재는 것이 Phase 10.5다.
+「문서보다 작은 단위가 필요한가」 하나에 걸려 있고, 그것을 재는 것이 Phase 11이다.
 
 진행 순서는 [`README.md`](README.md)의 3부 표와 각 Phase 가이드를 따른다.
 
-1. [`phase10.md`](phase10.md) — 역량 질문·비목표·위험 장부
-2. [`phase10-5.md`](phase10-5.md) — **라벨링 파일럿.** 문서 8~10개, 비용 측정
-3. [`phase11.md`](phase11.md) — 문서와 지식 개체 분리, 안정 ID
-4. [`phase12.md`](phase12.md) — 핵심 도메인 온톨로지 0.1
-5. [`phase13.md`](phase13.md) — 의미 작성 계약과 gold set 50개
-6. [`phase14.md`](phase14.md) — asserted/proposed/inferred 그래프
-7. [`phase15.md`](phase15.md) — SHACL 의미 계약
-8. [`phase16.md`](phase16.md) — 목적 제한 추론과 철회 가능한 운영 규칙
-9. [`phase17.md`](phase17.md) — 의미 질의와 근거 설명 — **3부의 종착점**
+1. [`phase10.md`](phases/phase10.md) — 역량 질문·비목표·위험 장부 ✅
+2. [`phase11.md`](phases/phase11.md) — **라벨링 파일럿.** 문서 8~10개, 비용 측정
+3. [`phase12.md`](phases/phase12.md) — **의미 작성 계약**과 gold set 50개
+4. [`phase13.md`](phases/phase13.md) — 문서와 지식 개체 분리, 안정 ID
+5. [`phase14.md`](phases/phase14.md) — 핵심 도메인 온톨로지 0.1
+6. [`phase15.md`](phases/phase15.md) — asserted/proposed/inferred 그래프
+7. [`phase16.md`](phases/phase16.md) — SHACL 의미 계약
+8. [`phase17.md`](phases/phase17.md) — 목적 제한 추론과 철회 가능한 운영 규칙
+9. [`phase18.md`](phases/phase18.md) — 의미 질의와 근거 설명 — **3부의 종착점**
 
-[`phase18.md`](phase18.md)와 [`phase19.md`](phase19.md)는 보류한다. 문서는 지우지
-않는다. Phase 17의 2주 실사용에서 가치가 확인되면 그때 다시 판단한다.
+[`phase19.md`](phases/phase19.md)와 [`phase20.md`](phases/phase20.md)는 보류한다. 문서는 지우지
+않는다. Phase 18의 2주 실사용에서 가치가 확인되면 그때 다시 판단한다.
 
 ### Phase 10 전에 하지 않을 것
 
@@ -176,11 +177,11 @@ frontmatter 필드를 늘리면 **기존 SQLite가 그대로 답한다**(실증)
 
 ### 병행하지만 별도인 운영 개선
 
-- 생성 계열 명령 이관: [`cli-roadmap.md`](cli-roadmap.md)
-- vault 운영 백로그: [`vault-backlog.md`](vault-backlog.md)
+- 생성 계열 명령 이관: [`cli-roadmap.md`](backlog/cli-roadmap.md)
+- vault 운영 백로그: [`vault-backlog.md`](backlog/vault-backlog.md)
 - 스키마 정본에 3역할 계층과 최종 결론 반영
 - 실제로 두 코퍼스를 함께 물어야 하는 질의가 생기면 RDF 병합 재검토
-- VectorDB·임베딩 검색: [`retrieval-architecture.md`](retrieval-architecture.md). 3부에서는
+- VectorDB·임베딩 검색: [`retrieval-architecture.md`](notes/retrieval-architecture.md). 3부에서는
   `chunk_id → artifact IRI → knowledge entity` 연결 계약만 다룬다
 
 ---
@@ -217,16 +218,16 @@ Step 하나가 곧 커밋 하나다. 잘게 쪼개면 이력이 오히려 안 �
 | 8 | `vocab` |
 | 9 | `inference` |
 | 10 | `questions` |
-| 10.5 | `pilot` |
-| 11 | `identity` |
-| 12 | `domain-vocab` |
-| 13 | `annotation` |
-| 14 | `semantic-graph` |
-| 15 | `shacl` |
-| 16 | `rules` |
-| 17 | `semantic-query` |
-| 18 | `proposal` |
-| 19 | `operations` |
+| 11 | `pilot` |
+| 12 | `annotation` |
+| 13 | `identity` |
+| 14 | `domain-vocab` |
+| 15 | `semantic-graph` |
+| 16 | `shacl` |
+| 17 | `rules` |
+| 18 | `semantic-query` |
+| 19 | `proposal` |
+| 20 | `operations` |
 
 ---
 

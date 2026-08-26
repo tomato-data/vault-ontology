@@ -28,7 +28,7 @@ uv run pytest -q       # 2026-08-25 기준 241 passed
 
 ## Step 1 — 질문 후보를 실제 사용 장면에서 모은다
 
-> **절차는 [`part3-decisions.md`](part3-decisions.md)의 D5에 있다.** Claude가
+> **절차는 [`part3-decisions.md`](../part3/decisions.md)의 D5에 있다.** Claude가
 > 증거 등급 A·B만 써서 발굴하고, 토마토가 승인·기각한다. 근거 경로 없는 후보는
 > 목록에 못 들어온다. 최대 광맥은 `500 Mind Compiler`의 질문 63개이며, 삶의
 > 질문을 역량 질문으로 **변환**해서 쓴다.
@@ -57,7 +57,7 @@ uv run pytest -q       # 2026-08-25 기준 241 passed
 
 ### 900 Archive와 100 Private Log — 시작 전에 정해졌다
 
-두 대역의 참여 방식은 [`part3-decisions.md`](part3-decisions.md)의 D3·D4로 이미
+두 대역의 참여 방식은 [`part3-decisions.md`](../part3/decisions.md)의 D3·D4로 이미
 확정됐다. Phase 10은 이를 전제로 질문을 쓴다.
 
 | 대역 | 실측 | 참여 방식 |
@@ -131,9 +131,9 @@ ID
 
 ## 산출물
 
-- [x] [`competency-questions.md`](competency-questions.md) — 역량 질문 **30개**, 전수 판정
-- [x] [`part3-boundary.md`](part3-boundary.md) — 목표·비목표·계층 책임·Vector 경계·기준선
-- [x] [`part3-risks.md`](part3-risks.md) — 위험 장부 15항목
+- [x] [`competency-questions.md`](../part3/competency-questions.md) — 역량 질문 **30개**, 전수 판정
+- [x] [`part3-boundary.md`](../part3/boundary.md) — 목표·비목표·계층 책임·Vector 경계·기준선
+- [x] [`part3-risks.md`](../part3/risks.md) — 위험 장부 15항목
 - [x] 기준선 — 테스트 241 · lint 393 · node 4,019 · edge 12,179 (`part3-boundary.md`)
 
 ## 완료 조건
@@ -145,7 +145,7 @@ ID
 - [x] 기존 SQLite만으로 답하는 질문을 새 온톨로지 목표에서 제외했다. C05·C14·C25
 - [x] Vector 의존 질문은 외부 인터페이스로 표시했다. C06·C11 부분 의존
 - [ ] **100 대역 질문** — D4에 따라 토마토가 직접 쓴다. 현재 0개
-- [ ] 이후 만들려는 모든 핵심 클래스가 적어도 하나의 질문에 필요하다. Phase 12에서 확인
+- [ ] 이후 만들려는 모든 핵심 클래스가 적어도 하나의 질문에 필요하다. Phase 14에서 확인
 - [ ] **토마토가 질문 목록과 비목표를 승인했다.**
 
 남은 셋은 전부 토마토의 판단을 기다린다. 반례 필드는 승인된 질문에만 쓴다 —

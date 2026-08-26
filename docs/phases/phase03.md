@@ -101,8 +101,8 @@ Obsidian의 실제 동작을 근사한다.
 - [x] 한글 파일명 링크가 해석된다 — NFC 정규화가 링크 **5,341개(21.9%)**를 살린다. vault 파일 1,091개가 NFD로 저장돼 있다
 - [x] 깨진 링크 수가 답안지와 같은 자릿수다 — 1,977 (8.1%) / 제외 후 1,445 vs 답안지 2,343 (9.4%) / 1,694
 - [x] 동명이인·대소문자 충돌 목록이 나온다 — 이름 66개·파일 244개 / 대소문자 충돌 3개 무리
-- [x] "이름을 식별자로 쓸 때의 문제"를 `learnings/`에 정리 — [`phase03-qa.md`](../learnings/phase03-qa.md)
+- [x] "이름을 식별자로 쓸 때의 문제"를 `learnings/`에 정리 — [`phase03-qa.md`](../../learnings/phase03-qa.md)
 
 **Step 5 추가 (2026-08-18).** `resolve_link`에 `source`를 넘겨 같은 폴더의 후보를 우선한다. 링크 126개가 다른 프로젝트의 동명 문서를 가리키고 있었다. Phase 5의 그래프에 그대로 굳을 뻔했다.
 
-**Phase 3 완료 (2026-08-18).** 회고는 [`learnings/phase03-the-rule-you-measured.md`](../learnings/phase03-the-rule-you-measured.md).
+**Phase 3 완료 (2026-08-18).** 회고는 [`learnings/phase03-the-rule-you-measured.md`](../../learnings/phase03-the-rule-you-measured.md).

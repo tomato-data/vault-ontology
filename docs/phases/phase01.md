@@ -83,4 +83,4 @@ type: concept
 - [x] `type` 분포가 스키마 정본의 13값 안에 들어온다 — 제외 후 정확히 13개. 제외 전에는 `800 TRPG`의 5값 1,822건이 섞인다
 - [x] "정규식 파싱이 깨지는 지점" 목록을 `learnings/phase01-qa.md`에 적었다
 
-**Phase 1 완료 (2026-08-18).** 회고는 [`learnings/phase01-measure-then-decide.md`](../learnings/phase01-measure-then-decide.md).
+**Phase 1 완료 (2026-08-18).** 회고는 [`learnings/phase01-measure-then-decide.md`](../../learnings/phase01-measure-then-decide.md).

@@ -86,7 +86,7 @@ SQLite 질의   0.0~0.5ms
 rdflib 질의   2~281ms
 ```
 
-실측 결과, SQLite가 모든 질의에서 10~600배 빨랐다. **v2(Rust + Oxigraph)의 근거는 성능이 아니라 학습**이라는 사전 가설을 지지한다. 자세한 결과는 [`../learnings/phase07-sparql-vs-sql.md`](../learnings/phase07-sparql-vs-sql.md)에 있다.
+실측 결과, SQLite가 모든 질의에서 10~600배 빨랐다. **v2(Rust + Oxigraph)의 근거는 성능이 아니라 학습**이라는 사전 가설을 지지한다. 자세한 결과는 [`../learnings/phase07-sparql-vs-sql.md`](../../learnings/phase07-sparql-vs-sql.md)에 있다.
 
 ---
 
