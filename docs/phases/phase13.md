@@ -360,7 +360,12 @@ dcterms:isPartOf rdfs:range v:Folder .     # 이미 vault-ontology.ttl 에 있�
 ```
 
 **Phase 9가 폴더 764개를 Document로 잘못 타입했던 것과 같은 사고다.** 그때는 domain
-때문이었고 이번엔 range다. 새 속성 `v:section_of`를 둔다.
+때문이었고 이번엔 range다.
+
+> **2026-08-26 정정.** 여기서 새 속성 `v:section_of`를 만들기로 했으나 Phase 14
+> Step 2가 뒤집었다. 방향을 뒤집어 **`dcterms:hasPart`** 를 쓴다 — dcterms를
+> import 하지 않으므로 외부 공리가 없고, `rdfs:range v:Section` 지역 선언 하나로
+> 섹션이 자동 타입된다. 표준으로 되는 일에 로컬 어휘를 만들지 않는다.
 
 #### 네 공간의 계약
 
@@ -440,7 +445,7 @@ deprecated 어휘           남기지 않는다         위 항목 참고
 - [x] 기존 Phase 1~9 테스트가 모두 통과한다. — 241 passed
 - [x] 같은 로컬 이름을 다른 의미로 조용히 재사용하지 않는다. — Step 1
 
-**Phase 15로 넘긴 것** — 섹션 파싱(`links.py`의 `#` 처리), `v:Section`·`v:section_of`
+**Phase 15로 넘긴 것** — 섹션 파싱(`links.py`의 `#` 처리), `v:Section`·`dcterms:hasPart`
 선언, 섹션 단위 시나리오 테스트. 설계는 끝났고 코드가 없을 뿐이다.
 
 ## 난이도와 위험

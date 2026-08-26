@@ -11,7 +11,7 @@
 git clone git@github.com:tomato-data/vault-ontology.git ~/Desktop/Code/vault-ontology
 cd ~/Desktop/Code/vault-ontology
 uv sync
-uv run pytest -v          # 2026-08-25 기준 241개 통과해야 정상 출발점
+uv run pytest -v          # 2026-08-26 기준 255개 통과해야 정상 출발점
 ```
 
 ### 답안지
@@ -33,7 +33,7 @@ vault 경로는 두 Mac 모두 같다.
 
 **Phase 1~9 완료. 테스트 241개 통과. Phase 10~20 계획 수립.**
 
-재개 지점은 **Phase 14 — 도메인 어휘**다.
+재개 지점은 **Phase 12 Step 3~5 — gold set 50개**다. Phase 15~18이 전부 여기에 매여 있다.
 
 | Phase | 내용 | 상태 |
 |---|---|---|
@@ -47,7 +47,8 @@ vault 경로는 두 Mac 모두 같다.
 | 11 | 라벨링 파일럿 — 비용 측정 | 🟡 1차 완료 · **2차는 7일 뒤** |
 | 12 | 의미 작성 계약 · gold set | 계획 |
 | 13 | 문서와 지식 개체의 분리 | ✅ **완료** — [`semantic-identity.md`](part3/semantic-identity.md) |
-| 14~18 | 어휘 · 그래프 · SHACL · 추론 · 질의 | 계획 |
+| 14 | 핵심 도메인 온톨로지 0.1 | ✅ **완료** |
+| 15~18 | 그래프 · SHACL · 추론 · 질의 | 계획 — **Phase 12 gold set 대기** |
 | 19~20 | 제안·승인 · 제한 운영 | **보류** — Phase 18 실사용 뒤 판단 |
 
 `vault/`에는 파서·검증·SQLite 그래프·RDF·SPARQL·추론 구현이 모두 들어 있다.

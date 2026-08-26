@@ -17,16 +17,16 @@ phase14의 상한은 관계 10~15개다. **상한이 목표가 아니므로 8개
 
 | | 이름 | 나온 질문 | 뜻 |
 |---|---|---|---|
-| 1 | `derivedFrom` | C02 C04 C13 C23 C28 | **A는 B에서 나왔다** |
+| 1 | `derived_from` | C02 C04 C13 C23 C28 | **A는 B에서 나왔다** |
 | 2 | `contradicts` | C03 C06 | 양립할 수 없다 |
-| 3 | `divergesFrom` | C13 | B를 딛되 **바꿨다** |
+| 3 | `diverges_from` | C13 | B를 딛되 **바꿨다** |
 | 4 | `applies` | C21 C29 | 이 판단이 저 원칙을 적용했다 |
 | 5 | `violates` | C29 | 적용했어야 하는데 **어겼다** |
 | 6 | `informs` | C09 C15 | 영향을 줬다. 근거는 아니지만 흘러들었다 |
 | 7 | `expresses` | C07 | 이 판단이 저 가치를 구현한다 |
-| 8 | `answeredBy` | C11 C27 | 이 질문이 저 문서에서 답을 얻는다 |
+| 8 | `answered_by` | C11 C27 | 이 질문이 저 문서에서 답을 얻는다 |
 
-### `derivedFrom` 이 다섯을 흡수한 이유
+### `derived_from` 이 다섯을 흡수한 이유
 
 ```
 원칙  ← 사건          C04
@@ -45,14 +45,14 @@ phase14의 상한은 관계 10~15개다. **상한이 목표가 아니므로 8개
 극성이 반대다. 한 관계에 넣고 부울 값으로 가르면 질의가 지저분해진다. 그리고
 **어긴 기록이 원칙을 고칠 근거**이므로 독립 관계로 두는 편이 쓰기 쉽다.
 
-### `contradicts` 와 `divergesFrom` 의 차이
+### `contradicts` 와 `diverges_from` 의 차이
 
 ```
 contradicts    둘 다 참일 수 없다
-divergesFrom   저것을 딛고 서되 일부를 바꿨다 — 둘 다 성립할 수 있다
+diverges_from   저것을 딛고 서되 일부를 바꿨다 — 둘 다 성립할 수 있다
 ```
 
-C13(원칙이 저자 주장에서 어디를 바꿨는가)이 `divergesFrom`이다. 저자를 부정하는
+C13(원칙이 저자 주장에서 어디를 바꿨는가)이 `diverges_from`이다. 저자를 부정하는
 것이 아니라 **겪어보고 고친 것**이므로 충돌이 아니다.
 
 ---
@@ -64,11 +64,11 @@ C13(원칙이 저자 주장에서 어디를 바꿨는가)이 `divergesFrom`이�
 | | 이름 | 나온 질문 | 뜻 |
 |---|---|---|---|
 | 9 | `status: archived` | C17 | 흥미가 식음. **폐기·오류가 아니다** |
-| 10 | `sourceUnknown` | C02 C13 | **찾아봤고 없었다** |
-| 11 | `asOf` | C08 | 이 사실이 언제 유효했나 |
-| 12 | `needsReview` | C30 C08 | 재검토 후보. **철회 가능해야 한다** |
+| 10 | `source_unknown` | C02 C13 | **찾아봤고 없었다** |
+| 11 | `as_of` | C08 | 이 사실이 언제 유효했나 |
+| 12 | `needs_review` | C30 C08 | 재검토 후보. **철회 가능해야 한다** |
 
-### `sourceUnknown` 이 이 프로젝트다운 항목이다
+### `source_unknown` 이 이 프로젝트다운 항목이다
 
 RDF에서 트리플을 안 쓰면 **「모른다」**다. 이 값을 적으면 **「찾아봤고 없었다」**가
 된다. 열린 세계 가정에서 부재를 적극적으로 기록하는 방법이다.
@@ -105,7 +105,7 @@ Phase 11 파일럿에서 실제로 라벨링해보고 정한다.
 
 | | |
 |---|---|
-| `derivedFrom` 을 더 쪼개야 하는가 | 대상의 `type`만으로 충분한지 써봐야 안다 |
+| `derived_from` 을 더 쪼개야 하는가 | 대상의 `type`만으로 충분한지 써봐야 안다 |
 | `informs` 는 양방향인가 | C09의 「상호보완적」을 역관계로 둘지, 대칭 관계로 둘지 |
 | `expresses` 의 대상을 어떻게 가리키나 | 「가치」가 문서가 아니라 `500 _Insights`의 **번호 매겨진 항목**이다 |
 
@@ -114,10 +114,21 @@ Phase 11 파일럿에서 실제로 라벨링해보고 정한다.
 
 ---
 
-## 이름은 영어로 쓴다
+## 이름은 영어 `snake_case` 로 쓴다 — 2026-08-26 확정
 
 vault 본문은 한국어지만 frontmatter 키와 관계 이름은 영어다. 기존
 `builds_on`·`supersedes`와 같은 자리에 놓이기 때문이다.
 
-표기는 Phase 12 작성 계약에서 확정한다. `snake_case`(기존 `builds_on`과 일관)와
-`camelCase`(RDF 관례) 중 무엇을 쓸지가 남았다.
+**표기는 `snake_case`다.** Phase 14 Step 1이 정했다.
+
+```
+frontmatter   derived_from
+RDF           v:derived_from      ← 같은 문자열. 변환표가 없다
+```
+
+RDF 관례는 `camelCase`지만 `vault-ontology.ttl`이 이미 `v:builds_on`으로 그 관례를
+벗어나 있다. 여기서 `camelCase`를 택하면 frontmatter 키와 RDF 이름 사이에 변환표가
+생기고, **변환표는 조용히 어긋나는 자리다.**
+
+> 이 문서는 한동안 `camelCase`로, `semantic-authoring.md`와 파일럿은 `snake_case`로
+> 적혀 있었다. 어긋난 채로 두 곳이 굴러갔다.

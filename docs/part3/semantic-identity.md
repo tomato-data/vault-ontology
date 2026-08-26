@@ -129,7 +129,9 @@ IRI에 들어가는 것은 **문서에 실제로 적힌 제목 전체**다. 링�
 **앞부분 일치(prefix)로 구현하면 안 된다.** `인사이트 1`이 `인사이트 10`에도
 걸린다. 첫 `:` 앞부분과의 **정확 일치**여야 `인사이트 1 ≠ 인사이트 10`이 성립한다.
 
-### 섹션이 어느 문서 것인지 — `dcterms:isPartOf` 를 쓰면 안 된다
+### 섹션이 어느 문서 것인지 — `dcterms:hasPart` 를 쓴다
+
+**`dcterms:isPartOf` 를 쓰면 안 된다.**
 
 ```turtle
 dcterms:isPartOf rdfs:range v:Folder .     # 이미 선언돼 있다
@@ -137,7 +139,24 @@ dcterms:isPartOf rdfs:range v:Folder .     # 이미 선언돼 있다
 
 `<섹션> dcterms:isPartOf <문서>`를 쓰면 추론기가 `<문서> a v:Folder`를 만든다.
 Phase 9가 폴더 764개를 Document로 잘못 타입했던 것과 같은 사고다 (그때는 domain,
-이번엔 range). **새 속성 `v:section_of`를 둔다.**
+이번엔 range).
+
+**대신 방향을 뒤집어 `dcterms:hasPart` 를 쓴다.** dcterms 온톨로지를 import 하지
+않으므로 이 술어에는 외부 공리가 붙지 않는다. 지역 선언만 하면 된다.
+
+```turtle
+dcterms:hasPart rdfs:range v:Section .     # domain 은 선언하지 않는다
+
+<문서> dcterms:hasPart <문서#제목> .
+```
+
+range가 섹션을 `v:Section`으로 자동 타입한다 — `isPartOf`의 range가 폴더를 타입하는
+것과 같은 수법이다. **domain을 선언하지 않는 이유**: 폴더도 언젠가 part를 가질 수
+있고, Phase 9가 domain 하나로 폴더 764개를 잘못 타입한 자리가 바로 그 옆이다.
+
+> Phase 13은 여기서 새 속성 `v:section_of`를 만들기로 했다가, Phase 14 Step 2
+> (표준 어휘 재사용 범위)에서 뒤집었다. **표준으로 되는 일에 로컬 어휘를 만들지
+> 않는다.**
 
 ---
 
@@ -145,7 +164,7 @@ Phase 9가 폴더 764개를 Document로 잘못 타입했던 것과 같은 사고
 
 ```
 links.py:18      # 에서 자르는 대신 (문서, 제목) 으로 나눈다
-rdf.py           section_iri · v:Section · v:section_of
+rdf.py           section_iri · v:Section · dcterms:hasPart
 vault-ontology.ttl  두 어휘 선언
 tests            rename · move · split · merge 시나리오 (섹션 단위)
 ```
