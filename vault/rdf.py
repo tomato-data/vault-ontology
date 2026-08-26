@@ -92,12 +92,19 @@ def tag_iri(tag):
 
 
 def _class_name(type_):
-    """`source-note` becomes `SourceNote`.
+    """`source-note` becomes `SourceNoteDocument`.
 
     RDF names classes UpperCamelCase and properties lowerCamelCase, so the
     shape of a name says which of the two it is.
+
+    The `Document` suffix is Phase 13's. `v:Principle` used to name the file
+    whose `type:` is principle — but that reads as the principle itself,
+    which is what the file is ABOUT, not what it IS. The suffix keeps the
+    bare name free for the knowledge entity.
     """
-    return "".join(part.capitalize() for part in type_.split("-"))
+    stem = "".join(part.capitalize() for part in type_.split("-"))
+    # `project-doc` alone would stutter into ProjectDocDocument.
+    return ("Project" if stem == "ProjectDoc" else stem) + "Document"
 
 
 def node_triples(relative, text):

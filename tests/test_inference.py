@@ -32,7 +32,7 @@ def test_a_concept_is_inferred_to_be_content(closed):
 
 
 def test_the_chain_reaches_the_top(closed):
-    # Concept ⊂ Content ⊂ Document — two hops, both materialised.
+    # ConceptDocument ⊂ Content ⊂ Document — two hops, both materialised.
     assert (doc_iri("200 Dev/CIDR.md"), RDF.type, V.Document) in closed
 
 

@@ -51,7 +51,7 @@ def test_a_slash_stays_a_separator():
 
 def test_a_type_becomes_a_resource_not_a_string():
     triples = facts("CIDR.md", NOTE)
-    assert triples[RDF.type] == V.Concept
+    assert triples[RDF.type] == V.ConceptDocument
 
 
 def test_a_summary_becomes_a_literal():

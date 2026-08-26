@@ -20,6 +20,19 @@
 # concept/procedure/reference answers no query. What earns a
 # superclass is the role a note plays: did I write it, did it
 # come from elsewhere, or is it scaffolding.
+#
+# Every leaf carries the `Document` suffix. Phase 13 put it there.
+# Before it, `v:Principle` named the FILE whose `type:` is principle —
+# but that name reads as the principle itself, which is what the file
+# is about, not what it is. Two resources, one name. The suffix is the
+# whole fix: a name ending in Document is a note on disk, and the bare
+# name is left free for the knowledge entity Phase 13 introduces.
+#
+# There is deliberately NO compatibility axiom. An
+# `owl:equivalentClass v:Principle` would keep the old name resolving,
+# and under the OWL RL closure of Phase 9 it would type every document
+# as `v:Principle` again — reinstating the exact ambiguity this rename
+# removes. Nothing reads the generated .vault.ttl, so nothing needs it.
 #################################################################
 
 v:Document   a rdfs:Class ;
@@ -33,23 +46,23 @@ v:Structural a rdfs:Class ; rdfs:subClassOf v:Document ;
     rdfs:comment "Scaffolding, not content. Query: exclude these when counting real notes or finding orphans." .
 
 # Content — the ten authored types.
-v:Concept    rdfs:subClassOf v:Content .
-v:Procedure  rdfs:subClassOf v:Content .
-v:Reference  rdfs:subClassOf v:Content .
-v:Principle  rdfs:subClassOf v:Content .
-v:Decision   rdfs:subClassOf v:Content .
-v:Case       rdfs:subClassOf v:Content .
-v:Log        rdfs:subClassOf v:Content .
-v:Reflection rdfs:subClassOf v:Content .
-v:ProjectDoc rdfs:subClassOf v:Content .
-v:Tradeoff   rdfs:subClassOf v:Content .
+v:ConceptDocument    rdfs:subClassOf v:Content .
+v:ProcedureDocument  rdfs:subClassOf v:Content .
+v:ReferenceDocument  rdfs:subClassOf v:Content .
+v:PrincipleDocument  rdfs:subClassOf v:Content .
+v:DecisionDocument   rdfs:subClassOf v:Content .
+v:CaseDocument       rdfs:subClassOf v:Content .
+v:LogDocument        rdfs:subClassOf v:Content .
+v:ReflectionDocument rdfs:subClassOf v:Content .
+v:ProjectDocument    rdfs:subClassOf v:Content .
+v:TradeoffDocument   rdfs:subClassOf v:Content .
 
 # Imported — one type.
-v:SourceNote rdfs:subClassOf v:Imported .
+v:SourceNoteDocument rdfs:subClassOf v:Imported .
 
 # Structural — two types.
-v:Hub        rdfs:subClassOf v:Structural .
-v:Template   rdfs:subClassOf v:Structural .
+v:HubDocument        rdfs:subClassOf v:Structural .
+v:TemplateDocument   rdfs:subClassOf v:Structural .
 
 v:Folder a rdfs:Class ;
     rdfs:comment "A directory, a resource in its own right since Phase 6." .

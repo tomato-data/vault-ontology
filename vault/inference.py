@@ -1,8 +1,9 @@
 """Run the reasoner. What Phase 8 declared, this materialises.
 
 Phase 8 split schema from data into two files. Inference is where they
-meet: a rule fires only when the data's `a v:Concept` and the ontology's
-`subClassOf` sit in one graph. So `close` merges them, then expands.
+meet: a rule fires only when the data's `a v:ConceptDocument` and the
+ontology's `subClassOf` sit in one graph. So `close` merges them, then
+expands.
 """
 
 import owlrl

@@ -189,7 +189,8 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
 
 ### 구현 전에 해결할 선행 결정
 
-1. 현재 `v:Principle`(원칙 유형 문서)과 실제 원칙 개체의 이름·네임스페이스를 분리한다.
+1. ~~현재 `v:Principle`(원칙 유형 문서)과 실제 원칙 개체의 이름·네임스페이스를 분리한다.~~
+   **해결(Phase 13 Step 1, 2026-08-26).** 문서 13종을 `v:PrincipleDocument`처럼 개명했다.
 2. 문서 안 주장·사건·원칙의 최소 단위와 안정 ID를 정한다.
 3. 의미 annotation을 Markdown, block ID, sidecar 중 어디에 둘지 실험한다.
 4. asserted·proposed·inferred graph의 저장 경계와 provenance를 정한다.

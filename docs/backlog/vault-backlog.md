@@ -123,7 +123,7 @@ Phase 5가 끝나면 손으로 짠 도구가 답안지와 같은 일을 한다.
 - [ ] **구역별 도메인 필드** — 네임스페이스가 답이다. `phase06.md`가 이미 800 TRPG로 예를 들어뒀다
 
 ```turtle
-<doc/CIDR>      v:type    v:Concept .
+<doc/CIDR>      v:type    v:ConceptDocument .
 <doc/현자의돌>   trpg:type trpg:완제품 .
 <doc/모노노케>   obs:감독  "미야자키 하야오" .
 ```
