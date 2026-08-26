@@ -3,6 +3,8 @@
 문서: `500 Mind Compiler/Q1. Better Developer/_Insights.md` (155줄)
 형식: C (sidecar) · 파일럿 임시 표기
 
+> **상태: 전부 `proposed`.** Claude 가 조사해서 썼고 확인받지 않았다.
+>
 > 항목 번호가 그대로 앵커다. 새로 만든 ID가 아니라 **이미 문서에 있던 번호**다.
 
 ---
