@@ -2,8 +2,8 @@
 
 > 2026-08-25 · `/deep-research` 106 에이전트(웹 출처 24종, 주장 120개 추출 → 25개
 > 적대적 검증 → 11개 생존 · 14개 기각) + 이 vault 자체 실측을 합친 결론.
-> 앞선 판단은 [`learnings/verdict.md`](../learnings/verdict.md), 사용 목적은
-> [`README.md`](../README.md) 「이상향」 절.
+> 앞선 판단은 [`learnings/verdict.md`](../../learnings/verdict.md), 사용 목적은
+> [`README.md`](../../README.md) 「이상향」 절.
 
 ## 한 줄 답
 

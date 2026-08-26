@@ -139,9 +139,9 @@ uv run python -m vault build          # 내 코드
 - [x] 답안지와 같은 날 돌려 대조한다 — **「전부 일치」가 아니라 「다른 숫자마다 이유가 있음」으로 통과.** 아래 참조
 - [x] `q path`가 여러 단계를 순회한다 — **깊이 7 확인.** Design System 시리즈가 `00`부터 `08`까지 순서대로 나온다. 아무도 직접 적지 않은 학습 순서다
 - [x] 빌드 1.3초 · 질의 55ms — **빌드 기준을 1초에서 완화한다.** 답안지의 0.8초는 태그를 안 세고 `part_of`를 이름 조회로 하던 때 값이다. 이 기준이 논증하려던 「상주 서버가 필요 없다」는 1.3초로도 성립한다
-- [x] **「1부 회고」** — [`learnings/part1-retrospective.md`](../learnings/part1-retrospective.md)
+- [x] **「1부 회고」** — [`learnings/part1-retrospective.md`](../../learnings/part1-retrospective.md)
 
-**Phase 5 완료 (2026-08-21). 1부 종료.** 조용히 틀리는 실패를 의심하는 법은 [`learnings/silent-failures.md`](../learnings/silent-failures.md)에 따로 모았다.
+**Phase 5 완료 (2026-08-21). 1부 종료.** 조용히 틀리는 실패를 의심하는 법은 [`learnings/silent-failures.md`](../../learnings/silent-failures.md)에 따로 모았다.
 
 ### 대조 결과 (2026-08-21)
 

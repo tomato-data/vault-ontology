@@ -1,9 +1,20 @@
 # 로드맵 — vault-cli 재구현에서 의미 지식 운영까지
 
 > **Phase 1~9는 2026-08-25에 완료됐다.** 그 결론을 보존한 채, 같은 저장소에서
-> 문서 온톨로지를 지식·판단 온톨로지로 확장하는 **3부 Phase 10~19를 새로 시작한다.**
+> 문서 온톨로지를 지식·판단 온톨로지로 확장하는 **3부 Phase 10~20를 새로 시작한다.**
 > 2부의 최종 판단은 [`../learnings/verdict.md`](../learnings/verdict.md), 현재 재개
 > 지점은 [`NEXT.md`](NEXT.md)에 있다.
+
+## docs/ 구조
+
+| | |
+|---|---|
+| [`NEXT.md`](NEXT.md) | **재개 지점.** 지금 어디까지 왔고 다음에 무엇을 하는가 |
+| [`phases/`](phases/) | Phase 가이드 20개. 무엇을 만들고 무엇을 만들지 않는가 |
+| [`part3/`](part3/) | 3부 산출물 — 역량 질문·경계·결정·위험·관계 어휘 |
+| [`pilot/`](pilot/) | **지금 하는 작업.** Phase 11 파일럿의 문서·표기·측정 기록 |
+| [`notes/`](notes/) | 조사 결과와 설계 기록 — IRI 정책·검색 구조·템플릿 정책 |
+| [`backlog/`](backlog/) | 나중에 할 것 — CLI 이관·vault 운영 |
 
 ## 이 프로젝트가 답하려는 질문
 
@@ -39,7 +50,7 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
    Phase 6~9      │         RDF 트리플  ← 온톨로지 본론              │
    ─────────      │         SPARQL · RDFS/OWL/SKOS · 추론           │
                   │                     ↓                          │
-   Phase 10~19    │  문서와 지식 개체 분리 · 의미 사실 · SHACL       │
+   Phase 10~20    │  문서와 지식 개체 분리 · 의미 사실 · SHACL       │
    ───────────    │  목적 제한 추론 · 설명 · 제안/승인 · 제한 운영     │
                   └────────────────────────────────────────────────┘
 ```
@@ -62,8 +73,15 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
 - 개발 원칙과 삶의 원칙, 개인 경험과 기술 결정처럼 **영역 사이의 연결**을 주요
   역량 질문으로 다룬다.
 - 전체 자동 변환이 아니라 영역별 표본에서 시작해 가치가 확인된 범위로 확장한다.
-- 현재 그래프에서 제외된 900 Archive도 과거 생각과 판단의 계보를 위해 적용 범위에
-  넣되, 현재 유효한 지식과 섞지 않는 read-only/archive 경계를 먼저 설계한다.
+- 900 Archive는 **밴드가 아니라 문서 단위로** 참여한다. 210개 전부에 frontmatter가
+  없으므로 자동 빌드에는 계속 넣지 않고, 질문이 필요로 하는 문서만 archived 상태와
+  시점을 붙여 손으로 넣는다 ([`part3-decisions.md`](part3/decisions.md) D3).
+- 100 Private Log는 참여시키되 **Claude가 원문을 열지 않는다.** 라벨링은 토마토가
+  직접 하고, Claude는 결과 annotation만 본다 (D4).
+- **모든 대역이 판단을 담고 있지는 않다.** 실측 결과 `601 Books`의 챕터 필사
+  914개와 `700 Life Stack` 전체는 저자의 말이거나 사전적 참조이지 내 주장이
+  아니다. 합쳐서 vault의 27%가 3부 범위에서 빠진다
+  ([`competency-questions.md`](part3/competency-questions.md)의 실측 절).
 
 ---
 
@@ -73,35 +91,52 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
 
 | Phase | 가이드 | 만드는 것 | 배우는 것 | 답안지의 대응 |
 |---|---|---|---|---|
-| **1** | [phase01](phase01.md) | frontmatter 파서 | 텍스트를 구조로 — 정규식의 한계선 | `split_frontmatter` |
-| **2** | [phase02](phase02.md) | 위키링크 파서 | 파싱 함정이 곧 통계 오류다 | `link_target` `strip_code` |
-| **3** | [phase03](phase03.md) | 스캔 · 링크 해석 | **이름은 식별자가 아니다** (NFC · 대소문자 · 동명이인) | `scan_vault` `resolve_link` |
-| **4** | [phase04](phase04.md) | 검증 = 거부 | 제약을 검사 가능한 형태로 | `validate_frontmatter` |
-| **5** | [phase05](phase05.md) | SQLite 그래프 | 노드·엣지 모델링 · 재귀 CTE 이행 폐쇄 | `cmd_build` `cmd_q` |
+| **1** | [phase01](phases/phase01.md) | frontmatter 파서 | 텍스트를 구조로 — 정규식의 한계선 | `split_frontmatter` |
+| **2** | [phase02](phases/phase02.md) | 위키링크 파서 | 파싱 함정이 곧 통계 오류다 | `link_target` `strip_code` |
+| **3** | [phase03](phases/phase03.md) | 스캔 · 링크 해석 | **이름은 식별자가 아니다** (NFC · 대소문자 · 동명이인) | `scan_vault` `resolve_link` |
+| **4** | [phase04](phases/phase04.md) | 검증 = 거부 | 제약을 검사 가능한 형태로 | `validate_frontmatter` |
+| **5** | [phase05](phases/phase05.md) | SQLite 그래프 | 노드·엣지 모델링 · 재귀 CTE 이행 폐쇄 | `cmd_build` `cmd_q` |
 
 ### 2부 — 온톨로지 (답안지 없음)
 
 | Phase | 가이드 | 만드는 것 | 배우는 것 |
 |---|---|---|---|
-| **6** | [phase06](phase06.md) | RDF 트리플로 재모델링 | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 |
-| **7** | [phase07](phase07.md) | SPARQL 질의 | 그래프 패턴 · property path `+` · `^` 역방향 |
-| **8** | [phase08](phase08.md) | 어휘 설계 (RDFS/OWL/SKOS) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 |
-| **9** | [phase09](phase09.md) | 추론 (owlrl) | 물질화 · **열린 세계 가정** · 증가량 측정 · 최종 판단 |
+| **6** | [phase06](phases/phase06.md) | RDF 트리플로 재모델링 | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 |
+| **7** | [phase07](phases/phase07.md) | SPARQL 질의 | 그래프 패턴 · property path `+` · `^` 역방향 |
+| **8** | [phase08](phases/phase08.md) | 어휘 설계 (RDFS/OWL/SKOS) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 |
+| **9** | [phase09](phases/phase09.md) | 추론 (owlrl) | 물질화 · **열린 세계 가정** · 증가량 측정 · 최종 판단 |
 
 ### 3부 — 의미 온톨로지와 지식 운영 (기준 데이터부터 만든다)
 
+> **시작 전에 정한 것** — [`part3-decisions.md`](part3/decisions.md). 파일럿을 앞으로
+> 당긴 이유, 종착점을 Phase 18로 둔 이유, 900·100 대역의 참여 방식이 거기 있다.
+>
+> **Phase 10 산출물** — [`competency-questions.md`](part3/competency-questions.md)(질문 30개·전수 판정) ·
+> [`part3-boundary.md`](part3/boundary.md)(경계·기준선) · [`part3-risks.md`](part3/risks.md)(위험 15) ·
+> [`part3-open-decisions.md`](part3/open-decisions.md)(**미결 8건, 승인 대기**)
+
 | Phase | 가이드 | 만드는 것 | 핵심 관문 | 난이도 |
 |---|---|---|---|---|
-| **10** | [phase10](phase10.md) | Vault 전 영역 문제 계약 · 역량 질문 | 영역별·교차 영역 질문 승인 | 중간 |
-| **11** | [phase11](phase11.md) | artifact/knowledge 분리 · 안정 ID | rename·move·split·merge에서 정체성 보존 | 높음 |
-| **12** | [phase12](phase12.md) | 영역 중립 kernel · domain profile 0.1 | 주관적·객관적 지위 보존 | 높음 |
-| **13** | [phase13](phase13.md) | 전 영역 작성 계약 · gold set 50개 | 영역 편향과 annotation 비용 통과 | **매우 높음** |
-| **14** | [phase14](phase14.md) | asserted/proposed/inferred 그래프 빌더 | provenance와 재빌드 가능성 | 높음 |
-| **15** | [phase15](phase15.md) | SHACL 의미 계약 | gold 위반과 정확히 일치 | 중상 |
-| **16** | [phase16](phase16.md) | 목적 제한 추론 · 운영 규칙 | 새 질문을 답하고 철회 가능함 | **매우 높음** |
-| **17** | [phase17](phase17.md) | 의미 질의 · 근거 설명 | 2주 실사용에서 기존 도구보다 가치 있음 | 높음 |
-| **18** | [phase18](phase18.md) | 제안·승인·철회 workflow | 확정 사실 오염 없이 순효용 확인 | **매우 높음** |
-| **19** | [phase19](phase19.md) | 제한된 지식 운영 | shadow mode·승인·감사·rollback | **매우 높음** |
+| **10** | [phase10](phases/phase10.md) | Vault 전 영역 문제 계약 · 역량 질문 | 영역별·교차 영역 질문 승인 | 중간 |
+| **11** | [phase11](phases/phase11.md) | 라벨링 파일럿 8~10개 | 문서당 15분 · 재라벨링 일치 60% | 낮음 |
+| **12** | [phase12](phases/phase12.md) | 전 영역 작성 계약 · gold set 50개 | 영역 편향과 annotation 비용 통과 | **매우 높음** |
+| **13** | [phase13](phases/phase13.md) | artifact/knowledge 분리 · 안정 ID | rename·move·split·merge에서 정체성 보존 | 높음 |
+| **14** | [phase14](phases/phase14.md) | 영역 중립 kernel · domain profile 0.1 | 주관적·객관적 지위 보존 | 높음 |
+| **15** | [phase15](phases/phase15.md) | asserted/proposed/inferred 그래프 빌더 | provenance와 재빌드 가능성 | 높음 |
+| **16** | [phase16](phases/phase16.md) | SHACL 의미 계약 | gold 위반과 정확히 일치 | 중상 |
+| **17** | [phase17](phases/phase17.md) | 목적 제한 추론 · 운영 규칙 | 새 질문을 답하고 철회 가능함 | **매우 높음** |
+| **18** | [phase18](phases/phase18.md) | 의미 질의 · 근거 설명 | 2주 실사용에서 기존 도구보다 가치 있음 | 높음 |
+
+**3부는 Phase 18에서 끝난다.** 읽기 전용 도구까지 만들고 멈춘다.
+
+| 보류 | 가이드 | 다시 판단하는 시점 |
+|---|---|---|
+| **19** | [phase19](phases/phase19.md) | 제안·승인·철회 workflow — Phase 18의 2주 실사용 결과를 본 뒤 |
+| **20** | [phase20](phases/phase20.md) | 제한된 지식 운영 — 19가 정당화되지 않으면 시작하지 않는다 |
+
+쓰기 기계를 만드는 순간 문제가 정확도에서 거버넌스로 바뀐다. 읽기 전용 도구가
+실제로 쓸모 있다는 증거가 나오기 전에 그 부담을 지지 않는다. 근거는
+[`part3-decisions.md`](part3/decisions.md)의 D2.
 
 ---
 
@@ -121,22 +156,23 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
 | 7 | SPARQL 질의 · SQLite 대조 | ✅ |
 | 8 | 표준 어휘 · 3역할 클래스 계층 | ✅ |
 | 9 | RDFS/OWL RL 추론 · 최종 판단 | ✅ **2부 종료** |
-| 10 | 문제 계약 · 역량 질문 | ⬜ 계획 |
-| 11 | 문서/지식 정체성 분리 | ⬜ 계획 |
-| 12 | 핵심 도메인 온톨로지 | ⬜ 계획 |
-| 13 | 의미 작성 계약 · gold set | ⬜ 계획 |
-| 14 | 의미 사실 그래프 | ⬜ 계획 |
-| 15 | SHACL 의미 검증 | ⬜ 계획 |
-| 16 | 목적 제한 추론 · 운영 규칙 | ⬜ 계획 |
-| 17 | 의미 질의 · 설명 | ⬜ 계획 |
-| 18 | 제안·승인·철회 | ⬜ 계획 |
-| 19 | 제한된 지식 운영 | ⬜ 계획 |
+| 10 | 문제 계약 · 역량 질문 | 🟡 산출물 완료 · **승인 대기** |
+| 11 | 라벨링 파일럿 · 비용 측정 | ⬜ 계획 |
+| 12 | 의미 작성 계약 · gold set | ⬜ 계획 |
+| 13 | 문서/지식 정체성 분리 | ⬜ 계획 |
+| 14 | 핵심 도메인 온톨로지 | ⬜ 계획 |
+| 15 | 의미 사실 그래프 | ⬜ 계획 |
+| 16 | SHACL 의미 검증 | ⬜ 계획 |
+| 17 | 목적 제한 추론 · 운영 규칙 | ⬜ 계획 |
+| 18 | 의미 질의 · 설명 | ⬜ 계획 — **3부 종료 지점** |
+| 19 | 제안·승인·철회 | ⏸ 보류 |
+| 20 | 제한된 지식 운영 | ⏸ 보류 |
 
 ---
 
 ## 3부가 이전보다 어려운 이유
 
-| Phase 1~9 | Phase 10~19 |
+| Phase 1~9 | Phase 10~20 |
 |---|---|
 | 파일·문자열·링크가 입력 | 주장·근거·결정 같은 의미가 입력 |
 | 대부분 결정론적 정답 | 경계가 애매하고 사람의 판정이 필요 |
@@ -148,12 +184,13 @@ Obsidian vault의 문서 4,204개는 위키링크 11,624개로 이미 연결돼 
 | 개발 지식의 비교적 명시적 주장 | 개인 경험·믿음·가치·철학의 관점과 시간성 |
 
 가장 큰 위험은 기술 선택이 아니다. **의미 사실이 Vault에 들어오는 경로가 아직 없다.**
-`supports`나 `contradicts`를 자동으로 확정할 수 없으므로 Phase 13에서 작성 계약과
+`supports`나 `contradicts`를 자동으로 확정할 수 없으므로 Phase 12에서 작성 계약과
 사람 기준 데이터를 먼저 만든다. 이 비용이 감당되지 않으면 전체 Vault 확대를 중단한다.
 
 ### 구현 전에 해결할 선행 결정
 
-1. 현재 `v:Principle`(원칙 유형 문서)과 실제 원칙 개체의 이름·네임스페이스를 분리한다.
+1. ~~현재 `v:Principle`(원칙 유형 문서)과 실제 원칙 개체의 이름·네임스페이스를 분리한다.~~
+   **해결(Phase 13 Step 1, 2026-08-26).** 문서 13종을 `v:PrincipleDocument`처럼 개명했다.
 2. 문서 안 주장·사건·원칙의 최소 단위와 안정 ID를 정한다.
 3. 의미 annotation을 Markdown, block ID, sidecar 중 어디에 둘지 실험한다.
 4. asserted·proposed·inferred graph의 저장 경계와 provenance를 정한다.
@@ -226,7 +263,7 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 
 > **주의 — 기준선이 움직인다.** vault는 자라기도 하고 줄기도 한다.
 > 5일 만에 +163개였고, 2026-08-23에는 **`800 TRPG` 분리로 -2,238개**가 됐다
-> ([`800-trpg-split.md`](800-trpg-split.md)). 답안지 숫자를 그대로 비교하면 안 맞는다.
+> ([`800-trpg-split.md`](notes/800-trpg-split.md)). 답안지 숫자를 그대로 비교하면 안 맞는다.
 > **Phase 5 대조에서는 답안지를 그날 다시 돌려** 같은 날짜 기준선을 뽑고 비교한다.
 >
 > ```bash
@@ -263,6 +300,6 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 
 ## 참고
 
-- [`reference/`](../reference/) — 답안지 (vault-cli `21faa91` 스냅샷). **막히기 전에는 열지 않는다.** Phase 1~5까지만 유효하다
+- [`reference/`](../reference) — 답안지 (vault-cli `21faa91` 스냅샷). **막히기 전에는 열지 않는다.** Phase 1~5까지만 유효하다
 - vault 안의 `Vault 온톨로지 — 스키마 정본` · `Vault 온톨로지 — 지식베이스 그래프화` — 스키마 SSOT와 프로젝트 배경
 - vault 안의 `Vault 의미 온톨로지 — 지식 운영 로드맵` — 3부의 북극성과 현재/목표 비교

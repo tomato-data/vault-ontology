@@ -141,35 +141,36 @@ REFACTOR  개선점 검토 (없으면 "없다"고 판단하는 것도 결과) �
 
 | Phase | 만드는 것 | 배우는 것 | 상태 |
 |---|---|---|---|
-| **1** | [frontmatter 파서](docs/phase01.md) | 텍스트를 구조로 — 정규식의 한계선 | ✅ |
-| **2** | [위키링크 파서](docs/phase02.md) | 파싱 함정이 곧 통계 오류다 | ✅ |
-| **3** | [스캔 · 링크 해석](docs/phase03.md) | **이름은 식별자가 아니다** (NFC · 대소문자 · 동명이인) | ✅ |
-| **4** | [검증 = 거부](docs/phase04.md) | 제약을 검사 가능한 형태로 | ✅ |
-| **5** | [SQLite 그래프](docs/phase05.md) | 노드·엣지 모델링 · 재귀 CTE 이행 폐쇄 | ✅ |
+| **1** | [frontmatter 파서](docs/phases/phase01.md) | 텍스트를 구조로 — 정규식의 한계선 | ✅ |
+| **2** | [위키링크 파서](docs/phases/phase02.md) | 파싱 함정이 곧 통계 오류다 | ✅ |
+| **3** | [스캔 · 링크 해석](docs/phases/phase03.md) | **이름은 식별자가 아니다** (NFC · 대소문자 · 동명이인) | ✅ |
+| **4** | [검증 = 거부](docs/phases/phase04.md) | 제약을 검사 가능한 형태로 | ✅ |
+| **5** | [SQLite 그래프](docs/phases/phase05.md) | 노드·엣지 모델링 · 재귀 CTE 이행 폐쇄 | ✅ |
 
 ### 2부 — 온톨로지 (답안지 없음)
 
 | Phase | 만드는 것 | 배우는 것 | 상태 |
 |---|---|---|---|
-| **6** | [RDF 재모델링](docs/phase06.md) | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 | ✅ |
-| **7** | [SPARQL 질의](docs/phase07.md) | 그래프 패턴 · property path `+` · 역방향 `^` | ✅ |
-| **8** | [어휘 설계 (RDFS/OWL/SKOS)](docs/phase08.md) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 | ✅ |
-| **9** | [추론 (owlrl)](docs/phase09.md) | 물질화 · **열린 세계 가정** · 증가량 측정 · 최종 판단 | ✅ |
+| **6** | [RDF 재모델링](docs/phases/phase06.md) | **IRI 설계** · 네임스페이스 · 리터럴 vs 리소스 | ✅ |
+| **7** | [SPARQL 질의](docs/phases/phase07.md) | 그래프 패턴 · property path `+` · 역방향 `^` | ✅ |
+| **8** | [어휘 설계 (RDFS/OWL/SKOS)](docs/phases/phase08.md) | **스키마를 데이터로 적는다** · 표준 어휘 재사용 | ✅ |
+| **9** | [추론 (owlrl)](docs/phases/phase09.md) | 물질화 · **열린 세계 가정** · 증가량 측정 · 최종 판단 | ✅ |
 
 ### 3부 — 의미 온톨로지와 지식 운영
 
 | Phase | 만드는 것 | 핵심 관문 | 상태 |
 |---|---|---|---|
-| **10** | [문제 계약 · 역량 질문](docs/phase10.md) | 실제 질문 20개와 기대 답 승인 | 계획 |
-| **11** | [문서/지식 정체성 분리](docs/phase11.md) | rename·move·split·merge 내성 | 계획 |
-| **12** | [핵심 도메인 온톨로지](docs/phase12.md) | 모든 어휘가 질문에 연결 | 계획 |
-| **13** | [의미 작성 계약 · gold set](docs/phase13.md) | 대표 문서 50개와 유지 비용 | 계획 |
-| **14** | [의미 사실 그래프](docs/phase14.md) | asserted/proposed/inferred 분리 | 계획 |
-| **15** | [SHACL 의미 계약](docs/phase15.md) | gold 위반과 일치 | 계획 |
-| **16** | [목적 제한 추론 · 규칙](docs/phase16.md) | 새 질문·설명·철회 가능성 | 계획 |
-| **17** | [의미 질의 · 설명](docs/phase17.md) | 2주 실사용 | 계획 |
-| **18** | [제안·승인·철회](docs/phase18.md) | 확정 사실 오염 방지 | 계획 |
-| **19** | [제한된 지식 운영](docs/phase19.md) | shadow mode·승인·rollback | 계획 |
+| **10** | [문제 계약 · 역량 질문](docs/phases/phase10.md) | 질문 30개 전수 판정 | ✅ 산출물 완료 |
+| **11** | [라벨링 파일럿](docs/phases/phase11.md) | 문서당 15분 · 재라벨링 일치 60% | 진행 중 |
+| **12** | [의미 작성 계약 · gold set](docs/phases/phase12.md) | 대표 문서 50개와 유지 비용 | 계획 |
+| **13** | [문서/지식 정체성 분리](docs/phases/phase13.md) | rename·move·split·merge 내성 | 계획 |
+| **14** | [핵심 도메인 온톨로지](docs/phases/phase14.md) | 모든 어휘가 질문에 연결 | 계획 |
+| **15** | [의미 사실 그래프](docs/phases/phase15.md) | asserted/proposed/inferred 분리 | 계획 |
+| **16** | [SHACL 의미 계약](docs/phases/phase16.md) | gold 위반과 일치 | 계획 |
+| **17** | [목적 제한 추론 · 규칙](docs/phases/phase17.md) | 새 질문·설명·철회 가능성 | 계획 |
+| **18** | [의미 질의 · 설명](docs/phases/phase18.md) | 2주 실사용 — **3부 종착점** | 계획 |
+| **19** | [제안·승인·철회](docs/phases/phase19.md) | 확정 사실 오염 방지 | ⏸ 보류 |
+| **20** | [제한된 지식 운영](docs/phases/phase20.md) | shadow mode·승인·rollback | ⏸ 보류 |
 
 Phase 1~9의 가이드와 결론은 완료 상태로 보존한다. 3부 전체 설계, 난이도, 선행
 결정과 중단 규칙은 [`docs/README.md`](docs/README.md), 현재 재개 지점은
@@ -179,8 +180,9 @@ Phase 1~9의 가이드와 결론은 완료 상태로 보존한다. 3부 전체 �
 “Vault 전체”는 모든 문서를 즉시 전수 변환한다는 뜻이 아니다. 000~700·900 대역의 대표
 표본과 교차 영역 질문에서 시작해 유용성이 확인된 범위로 확장한다. 기술적 주장과
 개인적 믿음·가치·해석은 같은 진리 조건으로 취급하지 않으며 관점과 시점을 보존한다.
-현재 그래프가 제외하는 900 Archive는 현재 지식과 섞지 않는 별도 archive 경계를
-먼저 설계한 뒤 과거 생각과 판단의 변화 계보에 사용한다.
+900 Archive는 「폐기」가 아니라 **「관심이 옅어진 것」**이다(PARA). 밴드가 아니라
+질문이 지목한 문서만 손으로 편입한다. 실측 결과 **vault의 31%가 3부 범위 밖**이다 —
+책 챕터 필사 914개는 저자의 말이고, 700 Life Stack은 판단이 아니라 사전이다.
 
 ### 성공 기준
 
@@ -372,8 +374,8 @@ Claude가 짠 `vault-cli`(단일 파일 1,142줄)를 **커밋된 `HEAD` 그대�
 1. [`docs/README.md`](docs/README.md) — 전체 로드맵과 성공 기준
 2. [`learnings/part1-retrospective.md`](learnings/part1-retrospective.md) — 손으로 짜본 것과 읽기만 한 것의 차이
 3. [`learnings/silent-failures.md`](learnings/silent-failures.md) — **크래시가 없고 숫자도 그럴듯한데 틀린** 실패를 의심하는 법 여섯 가지
-4. [`docs/phase05.md`](docs/phase05.md) — 재귀 CTE 여섯 줄. Phase 7의 `builds_on+` 한 줄이 무엇을 줄여주는지 보려면 여기부터
-5. [`docs/phase06.md`](docs/phase06.md) ~ [`phase09.md`](docs/phase09.md) — 온톨로지 본론
+4. [`docs/phase05.md`](docs/phases/phase05.md) — 재귀 CTE 여섯 줄. Phase 7의 `builds_on+` 한 줄이 무엇을 줄여주는지 보려면 여기부터
+5. [`docs/phase06.md`](docs/phases/phase06.md) ~ [`phase09.md`](docs/phases/phase09.md) — 온톨로지 본론
 6. [`learnings/verdict.md`](learnings/verdict.md) — 실측에 근거한 최종 판단
 
 ---

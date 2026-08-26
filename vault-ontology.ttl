@@ -12,6 +12,30 @@
 @prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+
+#################################################################
+# Version, and the two policies that keep this file loadable
+# without a network. Phase 14 Step 4.
+#
+# ONE FILE. Phase 14 sketched ontology/{artifact,kernel,profiles,
+# provenance,alignments}.ttl - six files for 46 triples. Split when
+# a real seam appears, not before. The trigger is written down:
+# a second PROFILE (a band with vocabulary the rest cannot read), or
+# 200 triples, whichever comes first.
+#
+# NO owl:imports, EVER. dcterms, skos, foaf and prov appear here as
+# prefixes only; their ontology files are never pulled in. So the
+# reasoner sees THIS file and nothing else, every run is reproducible
+# offline, and a reused term carries exactly the local constraints
+# written below - which is what made dcterms:hasPart safe to adopt
+# where dcterms:isPartOf was not.
+#################################################################
+
+<https://tomato.vault/schema/> a owl:Ontology ;
+    owl:versionIRI <https://tomato.vault/schema/0.1> ;
+    owl:versionInfo "0.1" ;
+    rdfs:comment "The vault's schema. History lives in docs/phases/ - phase08 built it, phase13 renamed the document classes, phase14 stripped every rdfs:domain." .
 
 #################################################################
 # Classes — the type hierarchy is by ROLE, not by subject.
@@ -20,6 +44,19 @@
 # concept/procedure/reference answers no query. What earns a
 # superclass is the role a note plays: did I write it, did it
 # come from elsewhere, or is it scaffolding.
+#
+# Every leaf carries the `Document` suffix. Phase 13 put it there.
+# Before it, `v:Principle` named the FILE whose `type:` is principle —
+# but that name reads as the principle itself, which is what the file
+# is about, not what it is. Two resources, one name. The suffix is the
+# whole fix: a name ending in Document is a note on disk, and the bare
+# name is left free for the knowledge entity Phase 13 introduces.
+#
+# There is deliberately NO compatibility axiom. An
+# `owl:equivalentClass v:Principle` would keep the old name resolving,
+# and under the OWL RL closure of Phase 9 it would type every document
+# as `v:Principle` again — reinstating the exact ambiguity this rename
+# removes. Nothing reads the generated .vault.ttl, so nothing needs it.
 #################################################################
 
 v:Document   a rdfs:Class ;
@@ -32,56 +69,185 @@ v:Imported   a rdfs:Class ; rdfs:subClassOf v:Document ;
 v:Structural a rdfs:Class ; rdfs:subClassOf v:Document ;
     rdfs:comment "Scaffolding, not content. Query: exclude these when counting real notes or finding orphans." .
 
-# Content — the ten authored types.
-v:Concept    rdfs:subClassOf v:Content .
-v:Procedure  rdfs:subClassOf v:Content .
-v:Reference  rdfs:subClassOf v:Content .
-v:Principle  rdfs:subClassOf v:Content .
-v:Decision   rdfs:subClassOf v:Content .
-v:Case       rdfs:subClassOf v:Content .
-v:Log        rdfs:subClassOf v:Content .
-v:Reflection rdfs:subClassOf v:Content .
-v:ProjectDoc rdfs:subClassOf v:Content .
-v:Tradeoff   rdfs:subClassOf v:Content .
+# Content — the authored types.
+v:ConceptDocument    rdfs:subClassOf v:Content .
+v:ProcedureDocument  rdfs:subClassOf v:Content .
+v:ReferenceDocument  rdfs:subClassOf v:Content .
+v:PrincipleDocument  rdfs:subClassOf v:Content .
+v:DecisionDocument   rdfs:subClassOf v:Content .
+v:CaseDocument       rdfs:subClassOf v:Content .
+v:LogDocument        rdfs:subClassOf v:Content .
+v:ReflectionDocument rdfs:subClassOf v:Content .
+v:ProjectDocument    rdfs:subClassOf v:Content .
+v:TradeoffDocument   rdfs:subClassOf v:Content .
+
+# A note ABOUT someone else's work that is nonetheless MINE: the film, game
+# and show notes whose body is a review I wrote. They sat under source-note
+# and therefore under v:Imported, so the query v:Content answers - my own
+# thinking - was missing 141 documents. Measured 2026-08-26: 602 Frames 116
+# with a 감상평 section, 603 Game 25 game notes with a 리뷰 section.
+# 601 Books and 604 YouTube stay v:Imported: they are transcription, and
+# 604 has a 감상 section in exactly ZERO of its 90 notes.
+v:ReviewDocument     rdfs:subClassOf v:Content .
 
 # Imported — one type.
-v:SourceNote rdfs:subClassOf v:Imported .
+v:SourceNoteDocument rdfs:subClassOf v:Imported .
 
-# Structural — two types.
-v:Hub        rdfs:subClassOf v:Structural .
-v:Template   rdfs:subClassOf v:Structural .
+# Structural — one type. `template` was dropped 2026-08-26: a blank form
+# now carries the type of the document it produces, so nothing is left here
+# but the hub.
+v:HubDocument        rdfs:subClassOf v:Structural .
 
 v:Folder a rdfs:Class ;
     rdfs:comment "A directory, a resource in its own right since Phase 6." .
+
+#################################################################
+# Knowledge entities — Phase 14 Step 1.
+#
+# NOT the document. `_Insights.md` is one v:ReflectionDocument that
+# holds 24 separate insights; `By Subquestion/` holds 27 documents
+# whose TITLE is a question. One document class, three different
+# kinds of thing - which is why these exist at all.
+#
+# Only two. The phase sketched thirteen candidates and eleven had no
+# competency question behind them (Claim has no counterpart in the
+# vault at all: technical assertions are written as `패턴 N:`).
+#
+# There is deliberately no v:KnowledgeEntity superclass. No question
+# asks for "every knowledge entity", and a class that answers no
+# query is not written down.
+#
+# MEASURED GAP, kept on purpose: `패턴` is the vault's most common
+# entity - 135 items across 32 documents - and no competency question
+# requests it. The questions cluster on 400/200/500 and rarely make
+# 300 Runtime the subject. Not a deletion, a recorded hole: add the
+# class when a question needs it.
+#################################################################
+
+v:Section a rdfs:Class ;
+    rdfs:comment "A heading and what it opens. Minted only for the 49 documents whose numbered item headings are addressed individually. NOT a v:Document - Phase 13 split them and the reasoner must not rejoin them." .
+
+v:Insight a rdfs:Class ;
+    rdfs:comment "A belief with a subject and a time, written as `인사이트 N:`. Query: how a belief changed and what changed it (C08); which values recur (C07). A parser writes this from the heading prefix - it is never inferred." .
+
+v:Question a rdfs:Class ;
+    rdfs:comment "A question I am holding open. Query: which band answers this subquestion, and which have no answer (C27); what to reread when revising a guideline (C11)." .
 
 #################################################################
 # Properties we own. Each is a subproperty of a standard, so a
 # tool that knows the standard understands ours.
 #################################################################
 
+# NO domain, NO range. Both said "whatever builds_on touches is something I
+# wrote" - and that is false: a note of mine can build on a source-note I only
+# transcribed. Measured 2026-08-26: the two declarations typed 27 documents
+# v:Content that are v:Imported or v:Structural, so the query v:Content exists
+# to answer - my own thinking, source-notes excluded - was wrong by 27.
 v:builds_on a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:subPropertyOf dcterms:references ;
-    rdfs:domain v:Content ; rdfs:range v:Content ;
     rdfs:comment "Curated prerequisites. Query: what must I read before this note (q path). Declared transitive; the closure is NOT materialised until Phase 9." .
 
+# NO domain, NO range. A link may point at a SECTION, and a section is not a
+# document - typing it v:Document would undo the split Phase 13 just made.
+# The declarations bought nothing anyway: measured 2026-08-26, zero resources
+# reached v:Document by inference. Every document is typed by its own `type:`.
 v:links_to a owl:ObjectProperty ;
     rdfs:subPropertyOf dcterms:references ;
-    rdfs:domain v:Document ; rdfs:range v:Document ;
     rdfs:comment "A body wikilink that resolved. Query: neighbours of a note (q near, the forward half)." .
 
 v:linked_by a owl:ObjectProperty ;
     owl:inverseOf v:links_to ;
     rdfs:comment "The backlink. Query: what points at this note (q near, the reverse half). Not materialised until Phase 9; Phase 7 read it with ^." .
 
+# NO domain, NO range. Folders are already typed by isPartOf's range and
+# documents by their own `type:`; both declarations typed nothing (measured).
 v:hub a owl:ObjectProperty ;
     rdfs:subPropertyOf foaf:primaryTopic ;
-    rdfs:domain v:Folder ; rdfs:range v:Document ;
     rdfs:comment "The note that represents a folder. Query: given a folder, its landing note." .
 
 #################################################################
-# Standard properties we reuse directly. We add local domain/range
-# so THIS graph can reason over them; that scopes the reused term
-# to the vault and does not change its meaning elsewhere.
+# Semantic relations — Phase 14, from the 30 competency questions.
+#
+# snake_case, so a frontmatter key and its RDF name are ONE string
+# and no lookup table sits between them. `v:builds_on` already broke
+# the camelCase convention; this follows it rather than the standard.
+#
+# Eight, with no domain and no range. Phase 14 Step 3 measured what
+# such declarations bought on the existing four properties: 27 wrong
+# types and nothing right. These carry none.
+#
+# NOT transitive: derived_from. PROV does not hold derivation
+# transitive in general, and Phase 9 measured OWL RL materialisation
+# at 2.80x the triples for zero qualitatively new useful facts.
+# NOT symmetric: informs. C09's "mutually reinforcing" is a case
+# where both directions hold, not a claim that the relation is
+# symmetric. If both hold, both get written.
+# NO declared inverses: `^v:applies` in SPARQL already answers the
+# reverse, as Phase 7 showed.
+#################################################################
+
+v:derived_from a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasDerivedFrom ;
+    rdfs:comment "A came out of B. Query: the tradeoff and source behind a decision (C02); the event behind a principle (C04); which log entry a principle was promoted from (C28). Absorbs five candidates - the target's own type already says what KIND of source it was." .
+
+v:contradicts a owl:ObjectProperty, owl:SymmetricProperty ;
+    rdfs:comment "Both cannot hold. Query: decisions whose source was later refuted (C03); the 300-209-400 triangle where judgements disagree (C06). Symmetric, so it is written once." .
+
+v:diverges_from a owl:ObjectProperty ;
+    rdfs:comment "Stands on B but changed part of it. Query: where my principle departs from the author's claim (C13). NOT contradicts - having lived with it and revised it is not a denial." .
+
+v:applies a owl:ObjectProperty ;
+    rdfs:comment "This judgement applied that principle. Query: decisions that applied a principle (C21); which principles a case followed (C29)." .
+
+v:violates a owl:ObjectProperty ;
+    rdfs:comment "Should have applied that principle and did not. Query: which principles a case broke (C29). Kept apart from v:applies: the polarity is opposite, and a record of breaking one is the evidence for fixing it." .
+
+v:informs a owl:ObjectProperty ;
+    rdfs:subPropertyOf prov:wasInfluencedBy ;
+    rdfs:comment "Fed into it. Not the ground, but it flowed in. Query: personal criteria surfacing in technical decisions (C09); a reaction becoming reflection or creation (C15)." .
+
+v:expresses a owl:ObjectProperty ;
+    rdfs:comment "This judgement enacts that value. Query: values that recur across 500 and 100/600/700 (C07)." .
+
+v:answered_by a owl:ObjectProperty ;
+    rdfs:domain v:Question ;
+    rdfs:comment "This question finds its answer there. Query: which band answers a subquestion and which have none (C27); what to reread when revising a guideline (C11). The domain is the ONE that earns its place: writing answered_by is what makes something a question." .
+
+#################################################################
+# States. Values on a document or a fact, not relations.
+#################################################################
+
+v:status a owl:ObjectProperty ;
+    rdfs:comment "Query: what did I set down and stop pursuing (C17)." .
+
+v:archived a owl:Thing ;
+    rdfs:comment "Interest faded. NOT deprecated (superseded) and NOT invalid (refuted) - this vault follows PARA and 900 is a place you come back from. The other two are absent because no question asks for them: C12 was rejected for exactly this reason." .
+
+v:source_unknown a owl:DatatypeProperty ;
+    rdfs:comment "I looked and found nothing. Query: past documents whose source cannot be recovered (C02, C13). In RDF a missing triple means UNKNOWN; this one says SEARCHED AND ABSENT, which is a different fact and the open world assumption's whole point." .
+
+v:as_of a owl:DatatypeProperty ;
+    rdfs:subPropertyOf dcterms:date ;
+    rdfs:comment "When the thing described happened - dcterms:created is when I wrote it down. Query: a belief's state at each point in time (C08)." .
+
+v:needs_review a owl:DatatypeProperty ;
+    rdfs:comment "Query: what should be revisited now (C30); which beliefs to ask 'do you still hold this' about (C08). Must be retractable, so it is a value and not a relation." .
+
+#################################################################
+# Standard properties we reuse directly.
+#
+# A local domain/range scopes a reused term to this vault without
+# changing its meaning elsewhere - but only TWO survive the test
+# "is that sentence true?" (Phase 14 Step 3, measured 2026-08-26):
+#
+#   isPartOf's object is always a folder    true   -> types 773
+#   subject's object is always a tag        true   -> types 245
+#   builds_on's object is always mine       FALSE  -> mistyped 27
+#   links_to's object is always a document  false once sections land
+#
+# Everything else typed nothing at all, because a document is already
+# typed by its own `type:`. A declaration that infers nothing is not
+# free: it is a wrong inference waiting for the data to arrive.
 #################################################################
 
 # NO rdfs:domain here on purpose. isPartOf is shared: a document is part of
@@ -92,14 +258,24 @@ v:hub a owl:ObjectProperty ;
 dcterms:isPartOf rdfs:range v:Folder ;
     rdfs:comment "Folder membership, derived from the path. Query: every note under a folder." .
 
-dcterms:subject  rdfs:domain v:Document ; rdfs:range skos:Concept ;
+# The direction is reversed on purpose. `<section> dcterms:isPartOf <doc>`
+# would hit the range above and type the DOCUMENT a v:Folder. Turning it
+# around costs nothing and the range then types sections for free, exactly
+# as isPartOf's range types folders. No domain: a folder may one day have
+# parts too, and that is the mistake Phase 9 made one line up.
+dcterms:hasPart rdfs:range v:Section ;
+    rdfs:comment "A heading inside a document. Query: which items a document holds, and which item a semantic fact points at." .
+
+# The range STAYS - every object of subject is a tag, which is what types 245
+# tags skos:Concept. The domain went: a document is already typed by `type:`.
+dcterms:subject  rdfs:range skos:Concept ;
     rdfs:comment "A tag the note carries. The tag is a skos:Concept, so its hierarchy is walkable. Query: notes on a topic, nesting included (q tag)." .
 
-dcterms:replaces rdfs:domain v:Document ; rdfs:range v:Document ;
+dcterms:replaces
     rdfs:comment "This note supersedes an older one. Often points at a deleted note, which is the normal case, not a fault." .
 
-dcterms:created  rdfs:domain v:Document ;
+dcterms:created
     rdfs:comment "When the note was made. Central to the dated types, incidental to the rest." .
 
-dcterms:abstract rdfs:domain v:Document ;
+dcterms:abstract
     rdfs:comment "The note's own summary line. Required of the content types by the schema of record." .

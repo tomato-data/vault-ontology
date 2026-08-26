@@ -45,6 +45,10 @@ v:Concept       a rdfs:Class ; rdfs:subClassOf v:Document .
 v:Procedure     a rdfs:Class ; rdfs:subClassOf v:Document .
 ```
 
+> **Phase 13에서 개명했다.** 리프 13종은 지금 `v:ConceptDocument`처럼 접미를
+> 갖는다. 접미 없는 이름은 지식 개체 몫이다. 이 문서는 Phase 8 당시의 기록이라
+> 그대로 둔다 — [`phase13.md`](phase13.md) Step 1 참고.
+
 **여기서 이 Phase의 핵심 질문이 나온다.**
 
 > vault의 `type` 13가지 값에 실제로 계층이 있는가?

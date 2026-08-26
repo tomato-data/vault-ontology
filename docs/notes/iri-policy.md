@@ -20,7 +20,7 @@
 
 ### 이름은 이미 탈락했다
 
-Phase 3 실측이 근거다 ([`learnings/phase03-qa.md`](../learnings/phase03-qa.md)).
+Phase 3 실측이 근거다 ([`learnings/phase03-qa.md`](../../learnings/phase03-qa.md)).
 
 | 고장 | 규모 |
 |---|---:|
@@ -142,7 +142,7 @@ def doc_iri(relative):
 `part_of`가 형제 파일을 가리키고 계층이 2단에서 끊겼다.
 
 RDF에서는 IRI가 공짜라 그 타협이 필요 없다. 경위와 실측은
-[`../learnings/phase06-qa.md`](../learnings/phase06-qa.md) 의 「모델링」 절.
+[`../learnings/phase06-qa.md`](../../learnings/phase06-qa.md) 의 「모델링」 절.
 
 **`doc:`와 `folder:`를 가른 이유**는 같은 경로가 둘 다일 수 있어서다.
 `200 Dev/Network`는 폴더이고, `200 Dev/Network/Network.md`를 옮기면 `.md`를 뗀

@@ -25,7 +25,7 @@ Phase 5~6이 줄 답을 못 쓰게 된다. 반대로 몇 개는 지금 안 하�
 - [x] **죽은 어휘 12개 삭제** — 2026-08-18. `document-standards` Changelog에 근거를 남겼다
 - [x] **`800 TRPG` 분리 (2026-08-23)** — vault 밖으로 완전히 뺐다
       → `~/Desktop/reference/TRPG images/800 TRPG/` (독립 Git 저장소).
-      경위·측정·Phase 6·9 영향은 [`800-trpg-split.md`](800-trpg-split.md).
+      경위·측정·Phase 6·9 영향은 [`800-trpg-split.md`](../notes/800-trpg-split.md).
       **이 항목이 아래 「Phase 6에서 정식화」의 800 TRPG 재포함 판단을 다시 정의한다** —
       「제외 구역을 되찾을까」가 아니라 **「두 저장소를 한 그래프로 합칠까」**가 됐다
 
@@ -73,7 +73,7 @@ Phase 5~6이 줄 답을 못 쓰게 된다. 반대로 몇 개는 지금 안 하�
 > 가장 선명한 예였던 `800 TRPG`(1,834파일, `id`·`name_en`·`name_de`·`category`·`rarity`)는
 > **2026-08-23에 vault 밖으로 나갔다.** 근거가 하나 줄었지만 결론은 안 바뀐다 —
 > 오히려 가장 이질적인 구역이 빠져서 **남은 것들이 더 순수한 도메인 스키마**가 됐다.
-> 그리고 800은 이제 「합칠까」 쪽 문제다 → [`800-trpg-split.md`](800-trpg-split.md)
+> 그리고 800은 이제 「합칠까」 쪽 문제다 → [`800-trpg-split.md`](../notes/800-trpg-split.md)
 
 「위반」으로 정하면 진짜 지식을 지우게 되고, 「구역별 허용 목록」으로 정하면
 구역이 늘 때마다 스키마를 고쳐야 한다. **Phase 6이 제3의 답을 준다.**
@@ -123,7 +123,7 @@ Phase 5가 끝나면 손으로 짠 도구가 답안지와 같은 일을 한다.
 - [ ] **구역별 도메인 필드** — 네임스페이스가 답이다. `phase06.md`가 이미 800 TRPG로 예를 들어뒀다
 
 ```turtle
-<doc/CIDR>      v:type    v:Concept .
+<doc/CIDR>      v:type    v:ConceptDocument .
 <doc/현자의돌>   trpg:type trpg:완제품 .
 <doc/모노노케>   obs:감독  "미야자키 하야오" .
 ```
@@ -136,7 +136,7 @@ Phase 5가 끝나면 손으로 짠 도구가 답안지와 같은 일을 한다.
       「제외 구역을 되찾을까」가 아니라 **「출처가 다른 두 코퍼스를 한 그래프로 합칠까」**다.
       판정 후보는 이미 있다 — 분리 전 실측에서 `800 TRPG` ↔ `600 .../도해 연금술/`이
       **양방향 113+1회로 묶여 있었다.** 그러나 두 코퍼스를 함께 물어야만 답할 수 있는
-      질의는 아직 없다. 그런 질의가 생길 때 합친다. → [`800-trpg-split.md`](800-trpg-split.md)
+      질의는 아직 없다. 그런 질의가 생길 때 합친다. → [`800-trpg-split.md`](../notes/800-trpg-split.md)
 
 ---
 
@@ -145,8 +145,8 @@ Phase 5가 끝나면 손으로 짠 도구가 답안지와 같은 일을 한다.
 - [x] **태그를 리터럴로 둘까 리소스로 둘까** — 리소스로 정했다. 계층을 그래프 안에 둔다
 - [x] **`skos:broader` 계층을 만들까** — 만들었다. 상위 태그 `Stack`을 직접 단 문서가 없어도 하위 문서 945개를 찾는다
 
-결정 과정은 [`../learnings/phase06-qa.md`](../learnings/phase06-qa.md)와
-[`../learnings/phase08-qa.md`](../learnings/phase08-qa.md)에 정리했다.
+결정 과정은 [`../learnings/phase06-qa.md`](../../learnings/phase06-qa.md)와
+[`../learnings/phase08-qa.md`](../../learnings/phase08-qa.md)에 정리했다.
 
 ---
 

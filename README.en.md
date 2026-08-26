@@ -116,48 +116,50 @@ Parsers suit TDD unusually well, because every trap has the shape "for this inpu
 
 | Phase | What gets built | What it teaches | Status |
 |---|---|---|---|
-| **1** | [frontmatter parser](docs/phase01.md) | Text into structure — where regex stops | ✅ |
-| **2** | [wikilink parser](docs/phase02.md) | A parsing trap is a statistics error | ✅ |
-| **3** | [scan · link resolution](docs/phase03.md) | **A name is not an identifier** (NFC · case · duplicates) | ✅ |
-| **4** | [validation = refusal](docs/phase04.md) | Turning constraints into something checkable | ✅ |
-| **5** | [SQLite graph](docs/phase05.md) | Node/edge modelling · transitive closure via recursive CTE | ✅ |
+| **1** | [frontmatter parser](docs/phases/phase01.md) | Text into structure — where regex stops | ✅ |
+| **2** | [wikilink parser](docs/phases/phase02.md) | A parsing trap is a statistics error | ✅ |
+| **3** | [scan · link resolution](docs/phases/phase03.md) | **A name is not an identifier** (NFC · case · duplicates) | ✅ |
+| **4** | [validation = refusal](docs/phases/phase04.md) | Turning constraints into something checkable | ✅ |
+| **5** | [SQLite graph](docs/phases/phase05.md) | Node/edge modelling · transitive closure via recursive CTE | ✅ |
 
 ### Part 2 — Ontology (no answer key)
 
 | Phase | What gets built | What it teaches | Status |
 |---|---|---|---|
-| **6** | [remodel as RDF](docs/phase06.md) | **IRI design** · namespaces · literal vs resource | ✅ |
-| **7** | [SPARQL queries](docs/phase07.md) | Graph patterns · property path `+` · inverse `^` | ✅ |
-| **8** | [vocabulary design (RDFS/OWL/SKOS)](docs/phase08.md) | **Writing the schema as data** · reusing standard vocabularies | ✅ |
-| **9** | [inference (owlrl)](docs/phase09.md) | Materialisation · **open world assumption** · measuring growth · the final call | ✅ |
+| **6** | [remodel as RDF](docs/phases/phase06.md) | **IRI design** · namespaces · literal vs resource | ✅ |
+| **7** | [SPARQL queries](docs/phases/phase07.md) | Graph patterns · property path `+` · inverse `^` | ✅ |
+| **8** | [vocabulary design (RDFS/OWL/SKOS)](docs/phases/phase08.md) | **Writing the schema as data** · reusing standard vocabularies | ✅ |
+| **9** | [inference (owlrl)](docs/phases/phase09.md) | Materialisation · **open world assumption** · measuring growth · the final call | ✅ |
 
 ### Part 3 — Semantic ontology and knowledge operations
 
 | Phase | What gets built | Gate | Status |
 |---|---|---|---|
-| **10** | [Problem contract and competency questions](docs/phase10.md) | 20 real questions with approved expected answers | Planned |
-| **11** | [Artifact/knowledge identity split](docs/phase11.md) | Identity survives rename, move, split, and merge | Planned |
-| **12** | [Core domain ontology](docs/phase12.md) | Every term serves a competency question | Planned |
-| **13** | [Semantic authoring contract and gold set](docs/phase13.md) | 50 labelled notes with sustainable authoring cost | Planned |
-| **14** | [Semantic assertion graph](docs/phase14.md) | Asserted, proposed, and inferred facts stay separate | Planned |
-| **15** | [SHACL semantic contract](docs/phase15.md) | Results match gold violations | Planned |
-| **16** | [Purpose-bound inference and rules](docs/phase16.md) | New answers are explainable and retractable | Planned |
-| **17** | [Semantic queries and explanations](docs/phase17.md) | Two-week real-use trial | Planned |
-| **18** | [Proposal, approval, and retraction](docs/phase18.md) | No unapproved fact contaminates the asserted graph | Planned |
-| **19** | [Bounded knowledge operations](docs/phase19.md) | Shadow mode, approval, audit, and rollback | Planned |
+| **10** | [Problem contract and competency questions](docs/phases/phase10.md) | 30 questions, every one adjudicated by running it | ✅ Delivered |
+| **11** | [Labelling pilot](docs/phases/phase11.md) | 15 min per note · 60% agreement on relabel | In progress |
+| **12** | [Semantic authoring contract and gold set](docs/phases/phase12.md) | 50 labelled notes with sustainable authoring cost | Planned |
+| **13** | [Artifact/knowledge identity split](docs/phases/phase13.md) | Identity survives rename, move, split, and merge | Planned |
+| **14** | [Core domain ontology](docs/phases/phase14.md) | Every term serves a competency question | Planned |
+| **15** | [Semantic assertion graph](docs/phases/phase15.md) | Asserted, proposed, and inferred facts stay separate | Planned |
+| **16** | [SHACL semantic contract](docs/phases/phase16.md) | Results match gold violations | Planned |
+| **17** | [Purpose-bound inference and rules](docs/phases/phase17.md) | New answers are explainable and retractable | Planned |
+| **18** | [Semantic queries and explanations](docs/phases/phase18.md) | Two-week real-use trial — **where part 3 ends** | Planned |
+| **19** | [Proposal, approval, and retraction](docs/phases/phase19.md) | No unapproved fact contaminates the asserted graph | ⏸ Held |
+| **20** | [Bounded knowledge operations](docs/phases/phase20.md) | Shadow mode, approval, audit, and rollback | ⏸ Held |
 
 Phases 1–9 remain closed and preserved. The full Part 3 plan, risks, prerequisites, and stop rules
 are in [`docs/README.md`](docs/README.md); [`docs/NEXT.md`](docs/NEXT.md) is the resume point.
 Vector retrieval is a separate track and is not implemented by these phases.
 
-“Whole vault” does not mean annotating every note up front. The work starts with representative
-samples across zones 000–700 and 900 plus cross-domain competency questions, then expands only where it
-proves useful. Technical claims, personal beliefs, values, and interpretations retain different
+“Whole vault” does not mean annotating every note up front. Measurement put **31% of the vault
+outside part 3** — 914 transcribed book chapters are the author's words, not mine, and 700 Life Stack
+is a dictionary rather than a set of judgements. 900 Archive is not deprecation but PARA's “interest
+has faded”, so a question names the documents it needs instead of the band joining wholesale. Technical claims, personal beliefs, values, and interpretations retain different
 epistemic status, perspective, and time context.
 The current graph excludes `900 Archive`; Part 3 must reintroduce it behind an explicit read-only
 archive boundary so past beliefs and decisions do not masquerade as current facts.
 
-Per-phase guides are in [`docs/`](docs/); Q&A and retrospectives are in [`learnings/`](learnings/). [`docs/NEXT.md`](docs/NEXT.md) records the closed state and follow-up boundary.
+Per-phase guides are in [`docs/`](docs); Q&A and retrospectives are in [`learnings/`](learnings). [`docs/NEXT.md`](docs/NEXT.md) records the closed state and follow-up boundary.
 
 ### Success Criteria
 
@@ -303,8 +305,8 @@ There are three moments it may be opened: stuck for over 30 minutes · **the Pha
 1. [`docs/README.md`](docs/README.md) — the full roadmap and success criteria
 2. [`learnings/part1-retrospective.md`](learnings/part1-retrospective.md) — the difference between building it and reading about it
 3. [`learnings/silent-failures.md`](learnings/silent-failures.md) — six ways to suspect a failure that **doesn't crash and produces plausible numbers**
-4. [`docs/phase05.md`](docs/phase05.md) — six lines of recursive CTE. Required reading before Phase 7's one-line `builds_on+` means anything
-5. [`docs/phase06.md`](docs/phase06.md) – [`phase09.md`](docs/phase09.md) — the ontology proper
+4. [`docs/phase05.md`](docs/phases/phase05.md) — six lines of recursive CTE. Required reading before Phase 7's one-line `builds_on+` means anything
+5. [`docs/phase06.md`](docs/phases/phase06.md) – [`phase09.md`](docs/phases/phase09.md) — the ontology proper
 6. [`docs/NEXT.md`](docs/NEXT.md) — where things stand and what's next
 
 > Note: `docs/` and `learnings/` are written in Korean.
