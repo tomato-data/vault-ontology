@@ -70,6 +70,9 @@ principle→ PrincipleDocument    tradeoff    → TradeoffDocument
 decision → DecisionDocument     source-note → SourceNoteDocument
 case     → CaseDocument         hub         → HubDocument
                                 template    → TemplateDocument
+
+> **2026-08-26 갱신.** `template`은 값이 없어졌고 `review`가 들어왔다
+> (`v:ReviewDocument`). 위는 개명 당시의 13종이다.
 ```
 
 `project-doc`만 예외다. 기계적으로 붙이면 `ProjectDocDocument`로 말을 더듬는다.

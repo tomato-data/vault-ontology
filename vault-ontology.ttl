@@ -69,7 +69,7 @@ v:Imported   a rdfs:Class ; rdfs:subClassOf v:Document ;
 v:Structural a rdfs:Class ; rdfs:subClassOf v:Document ;
     rdfs:comment "Scaffolding, not content. Query: exclude these when counting real notes or finding orphans." .
 
-# Content — the ten authored types.
+# Content — the authored types.
 v:ConceptDocument    rdfs:subClassOf v:Content .
 v:ProcedureDocument  rdfs:subClassOf v:Content .
 v:ReferenceDocument  rdfs:subClassOf v:Content .
@@ -81,12 +81,22 @@ v:ReflectionDocument rdfs:subClassOf v:Content .
 v:ProjectDocument    rdfs:subClassOf v:Content .
 v:TradeoffDocument   rdfs:subClassOf v:Content .
 
+# A note ABOUT someone else's work that is nonetheless MINE: the film, game
+# and show notes whose body is a review I wrote. They sat under source-note
+# and therefore under v:Imported, so the query v:Content answers - my own
+# thinking - was missing 141 documents. Measured 2026-08-26: 602 Frames 116
+# with a 감상평 section, 603 Game 25 game notes with a 리뷰 section.
+# 601 Books and 604 YouTube stay v:Imported: they are transcription, and
+# 604 has a 감상 section in exactly ZERO of its 90 notes.
+v:ReviewDocument     rdfs:subClassOf v:Content .
+
 # Imported — one type.
 v:SourceNoteDocument rdfs:subClassOf v:Imported .
 
-# Structural — two types.
+# Structural — one type. `template` was dropped 2026-08-26: a blank form
+# now carries the type of the document it produces, so nothing is left here
+# but the hub.
 v:HubDocument        rdfs:subClassOf v:Structural .
-v:TemplateDocument   rdfs:subClassOf v:Structural .
 
 v:Folder a rdfs:Class ;
     rdfs:comment "A directory, a resource in its own right since Phase 6." .

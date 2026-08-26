@@ -17,7 +17,7 @@ reference → v:ReferenceDocument    project-doc → v:ProjectDocument    ← �
 principle → v:PrincipleDocument    tradeoff    → v:TradeoffDocument
 decision  → v:DecisionDocument     source-note → v:SourceNoteDocument
 case      → v:CaseDocument         hub         → v:HubDocument
-                                   template    → v:TemplateDocument
+                                   review      → v:ReviewDocument
 ```
 
 `project-doc`만 예외다. 기계적으로 붙이면 `ProjectDocDocument`로 말을 더듬는다.

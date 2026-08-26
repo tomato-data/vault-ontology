@@ -120,3 +120,35 @@ TEMPLATE_PATH = re.compile(r"(^|/)_?[Tt]emplates?/|(^|/)(_|\d{4}-)?template\.md$
 5. **209의 둘을 `reference`로 하면** `SUBDIR_TYPES`에 걸려 경고가 뜬다. 표를 넓히든, 다른 type을 고르든, 209 밖으로 옮기든.
 6. **중복 2쌍을 어디에 남기나.** core Templates 플러그인으로 실제로 꽂아 쓰는지에 따라 갈린다.
 7. **폴더 이동을 지금 하나?** 정규식만 고치면 이동 없이 14/14가 잡힌다.
+
+---
+
+## 해결 (2026-08-26) — 관례 B, 그리고 `template` 값 삭제
+
+이 문서가 남긴 7개 항목의 답이 나왔다. **관례 B**(빈 양식은 낳을 문서의 type)로
+가고, `template` 값을 13값에서 **뺐다**. `review`가 그 자리에 들어와 여전히 13값이다.
+
+결정적이었던 것은 도구다.
+
+```
+000 Index/Templates/     Obsidian 코어 Templates 플러그인이 내용을 그대로 꽂는다
+                         → 양식이 type: template 이면 새 노트가 전부 template 으로 시작한다
+                         → 그 9개가 낳을 문서 type 을 달고 있던 것은 실수가 아니었다
+```
+
+「양식인가」는 이름과 폴더가 이미 말하므로, 정본의 **「파생 가능한 사실은
+frontmatter에 쓰지 않는다」**와도 맞는다.
+
+바꾼 것은 다른 곳의 14개다 (`400/499` 3 · `320.4/_Template` 5 · `209/templates` 2 ·
+`210 Ops/guides` 2 · `302.7`·`302.8` 각 1). 낳는 문서가 이미 옆에 있어서 판정은
+추측이 아니었다 — `adr/`의 실제 ADR 17개가 전부 `project-doc`이고, Levit 공고도
+`project-doc`이다.
+
+| 이 문서가 남긴 질문 | 답 |
+|---|---|
+| `template`을 13값에 남기나 | **뺀다.** 쓰는 문서가 0이 된다 |
+| 12값이 되나 | 아니다. `review`가 들어와 **13값 유지** |
+| 스키마 정본 | v1.12에서 갱신 |
+| `vault/schema.py` | `TYPES`에서 제거, 이유를 주석으로 |
+| `vault-ontology.ttl` | `v:TemplateDocument` 삭제. `v:Structural`은 이제 `hub` 하나 |
+| 스킬 어휘 목록 | 20개 파일에서 `template` → `review` (두 사본 바이트 동일 유지) |

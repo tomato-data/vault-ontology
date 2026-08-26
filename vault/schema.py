@@ -16,13 +16,19 @@ TYPES = {
     "tradeoff",
     "case",
     "source-note",
+    "review",
     "reflection",
     "project-doc",
     "reference",
     "log",
     "hub",
-    "template",
 }
+
+# `template` was removed 2026-08-26. A blank form now carries the type of the
+# document it produces, so a note made from an Obsidian template starts out
+# correctly typed instead of needing a hand edit. That the file is a form is
+# said by its name and its folder, and the schema's own rule is that a fact
+# derivable from the path does not go in the frontmatter.
 
 # The four the schema marks 판단 — a person decides them, and a reader picks
 # among them without opening the file. Measured 2026-08-18: these carry a
