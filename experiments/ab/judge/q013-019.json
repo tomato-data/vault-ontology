@@ -1,0 +1,9 @@
+{
+"13": ["DB Connection Pool 모니터링 구현", "DB Connection Pool은 85%까지만, 나머지는 headroom", "07 뼈대 — 커넥션 풀", "06. 외부 연동과 DB 연동", "04. 알아두면 좋을 몇 가지 주의 사항", "02. 서버 성능 개선 기초", "Step Functions + Lambda 전환 Q&A", "Backend DB Practices 적용 기록"],
+"14": ["Trade-offs - Flutter vs React Native", "Decision Node - Mobile Cross-Platform Framework Selection", "Flutter vs React Native - 2026년 솔직한 비교 요약"],
+"15": ["Trade-offs - REST vs GraphQL", "Decision Node - REST vs GraphQL", "REST API vs GraphQL 선택 기준"],
+"16": ["푸시 알림 시스템 진화", "sync 엔드포인트 BackgroundTasks + 새 DB 세션 패턴", "FastAPI BackgroundTasks + 새 DB 세션 패턴", "07-notification-push", "모바일 푸시 알림 아키텍처 — FCM 중계 구조", "Decision Node - 푸시 알림 전달 메커니즘", "Trade-offs - 푸시 알림 전달 메커니즘", "FastAPI sync asyncio 이벤트 루프 함정 (2026-04)"],
+"17": ["asyncio.gather와 SQL 통합을 통한 API 성능 최적화", "asyncio.gather와 SQL 통합 두 가지 병렬화 전략", "API 성능 최적화 대응 (2026-01)", "N+1 쿼리 문제 해결 및 SQL 통합 패턴", "N+1 쿼리 일괄 최적화", "20 뼈대 — N+1 측정", "IO-bound 서비스는 asyncio를 우선하라"],
+"18": ["Trade-offs - Docker vs Native vs LXC", "Go 배포 표준 — Docker 오버헤드 신화와 컨테이너 선택지"],
+"19": ["Docker - 개발, 배포 환경을 override, profiles로 관리", "EC2에서 Docker 사용 모범 사례", "dev, staging, prod 구분", "Backend 배포 원칙 (ECR + ECS Shell Script)", "ECS 배포 스크립트 패턴", "03-03 도커 친화적인 애플리케이션"]
+}

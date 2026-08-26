@@ -1,0 +1,9 @@
+{
+"34": ["11 뼈대 — 마이그레이션 3가지 실패", "11 post — 마이그레이션 3가지 실패", "Alembic 마이그레이션 실패 사례와 복구", "Alembic Migration의 멱등성 문제", "Alembic 트랜잭션 DDL과 마이그레이션 동시성 관리", "프로덕션 마이그레이션 실행 모델 — 일회성 ECS task", "Quick Reference"],
+"35": ["Multi-Provider OAuth 아키텍처 패턴", "중앙 SSO(Keycloak) 분리 — 효용성 리서치", "Keycloak 통합 가이드", "인증 아키텍처 패턴", "authentication", "JWT 인증 시스템 진화", "02-authentication", "인증 시스템 아키텍처"],
+"36": ["Heap (힙) — 메모리 영역", "Chapter 9-3 동적 메모리 할당", "Chapter 9. 메모리", "Chapter 9-4 가비지 컬렉션과 메모리 버그"],
+"37": ["Heap (힙) — 자료구조", "Chapter 4-1 트리 기초", "Chapter 13. 자료 구조 2"],
+"38": ["Stack (스택)", "Chapter 3-1 핵심 개념", "Finding Palindrome Queue and Stack"],
+"39": ["Queue (큐)", "Chapter 3-1 핵심 개념", "Chapter 12. 자료 구조 1", "Finding Palindrome Queue and Stack"],
+"40": ["Message Queue 완벽 가이드", "Chapter 11-1 이벤트 스트림 전송", "03. 메시징", "Chapter 4-2 데이터플로우 모드", "01. 동기 연동과 비동기 연동"]
+}

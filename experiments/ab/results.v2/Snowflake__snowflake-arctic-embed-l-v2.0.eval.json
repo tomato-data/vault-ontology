@@ -1,0 +1,1171 @@
+{
+  "model_id": "Snowflake/snowflake-arctic-embed-l-v2.0",
+  "embedding_settings": {
+    "model_id": "Snowflake/snowflake-arctic-embed-l-v2.0",
+    "dim": 1024,
+    "chunks": 43715,
+    "max_seq_length": 1024,
+    "precision": "fp32",
+    "normalized": true,
+    "dtype": "float32",
+    "batch_size": 64,
+    "device": "mps",
+    "load_seconds": 361.9,
+    "encode_seconds": 1479.3,
+    "chunks_per_second": 29.6,
+    "vector_mb": 170.8,
+    "platform": "macOS-26.4.1-arm64-arm-64bit"
+  },
+  "chunking": {
+    "strategy": "heading-based, then paragraph split, then hard character cut",
+    "max_chars": 1200,
+    "min_chars": 80,
+    "overlap": 0,
+    "heading_path_prepended": true,
+    "metadata_prefix": "title + summary + tags (vault frontmatter)",
+    "chunks_per_doc_cap": null,
+    "measured_on": "2026-08-25 (home M5 Pro)",
+    "docs": 3862,
+    "chunks": 43715,
+    "token_len_median": 189,
+    "token_len_p95": 550,
+    "token_len_p99": 672,
+    "token_len_max": 905,
+    "tokenizer": "BAAI/bge-m3 (XLM-R); arctic-embed-l-v2.0 gives identical counts",
+    "max_seq_length": 1024,
+    "truncation": "none (1024 >= max 905)",
+    "note": "이전 기록은 docs 3857 / chunks 43635 / max 767 / max_seq_length 768 이었다. vault 가 자라 45개 청크가 768 을 넘었고, 어느 팔도 돌기 전에 1024 로 올려 네 팔에 동일 적용했다."
+  },
+  "overall": {
+    "n": 40,
+    "recall@5": 0.423,
+    "recall@10": 0.674,
+    "mrr": 0.858
+  },
+  "cross_lingual": {
+    "n": 20,
+    "recall@5": 0.341,
+    "recall@10": 0.61,
+    "mrr": 0.833
+  },
+  "same_lingual": {
+    "n": 20,
+    "recall@5": 0.519,
+    "recall@10": 0.75,
+    "mrr": 0.883
+  },
+  "by_category_UNDERPOWERED": {
+    "구조형": {
+      "n": 3,
+      "recall@5": 0.333,
+      "recall@10": 0.583,
+      "mrr": 0.667
+    },
+    "상황형": {
+      "n": 8,
+      "recall@5": 0.537,
+      "recall@10": 0.796,
+      "mrr": 1.0
+    },
+    "영→한": {
+      "n": 10,
+      "recall@5": 0.414,
+      "recall@10": 0.672,
+      "mrr": 0.783
+    },
+    "한→영": {
+      "n": 10,
+      "recall@5": 0.277,
+      "recall@10": 0.554,
+      "mrr": 0.883
+    },
+    "한→한": {
+      "n": 4,
+      "recall@5": 0.368,
+      "recall@10": 0.579,
+      "mrr": 0.792
+    },
+    "함정": {
+      "n": 5,
+      "recall@5": 0.737,
+      "recall@10": 0.895,
+      "mrr": 0.9
+    }
+  },
+  "trap": {
+    "n": 5,
+    "trap_outranked_gold": 0,
+    "gold_at_rank1": 4
+  },
+  "query_encode_ms_avg": 5.7,
+  "search_ms_median": 3.55,
+  "per_query": [
+    {
+      "id": 1,
+      "cat": "한→한",
+      "q": "레디스는 스레드가 하나인데 어떻게 그렇게 빠른가?",
+      "gold_ranks": {
+        "Redis가 싱글 스레드인데도 빠른 이유": 1
+      },
+      "n_gold": 1,
+      "hit5": 1,
+      "hit10": 1,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Redis가 싱글 스레드인데도 빠른 이유",
+        "Redis",
+        "2026-05-20",
+        "02.5 Q & A",
+        "Chapter 7-3 직렬성"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 2,
+      "cat": "한→한",
+      "q": "동시에 읽고 쓸 때 데이터가 어긋나는 걸 DB가 어떤 단계로 막아주나",
+      "gold_ranks": {
+        "트랜잭션 격리 수준 심화": 34,
+        "PostgreSQL - 트랜잭션 격리 수준 설정과 성능": 80,
+        "ACID와 트랜잭션": 37,
+        "Chapter 7-2 약한 격리 수준": 6,
+        "04. DB와 동시성": 13
+      },
+      "n_gold": 5,
+      "hit5": 0,
+      "hit10": 1,
+      "first_rank": 6,
+      "rr": 0.16666666666666666,
+      "top5": [
+        "02. 잘못된 데이터 공유로 인한 문제 예시",
+        "6장 동시성, 데이터가 꼬이기 전에 잡아야 한다",
+        "학습 타이머 잔여 위험 — 업계 표준 해법 리서치",
+        "대량 데이터 일괄 처리 시 역순 패턴",
+        "04. 알아두면 좋을 몇 가지 주의 사항"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 3,
+      "cat": "한→한",
+      "q": "인덱스를 걸어놨는데 실제로 안 타는 것 같다. 어떻게 확인하나",
+      "gold_ranks": {
+        "23 뼈대 — idx_scan이 0인 인덱스의 함정": 2,
+        "인덱스 최적화 성능 비교": 12,
+        "미사용 인덱스 감사 — idx_scan 함정": 11,
+        "14 뼈대 — 슈퍼유저 EXPLAIN": 18,
+        "RLS 아래 인덱스 — 슈퍼유저로 측정하면 놓치는 tenant_id 술어와 index-only scan": 10,
+        "인덱스 설계 btree-GIN-trigram과 성능 측정": 1,
+        "인덱싱 최적화": 8
+      },
+      "n_gold": 7,
+      "hit5": 2,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "인덱스 설계 btree-GIN-trigram과 성능 측정",
+        "23 뼈대 — idx_scan이 0인 인덱스의 함정",
+        "02. 조회 트래픽을 고려한 인덱스 설계",
+        "02.5 Q & A",
+        "3.1 인덱스 설정"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 4,
+      "cat": "한→한",
+      "q": "파이썬은 왜 아직도 스레드로 병렬 처리가 제대로 안 되나",
+      "gold_ranks": {
+        "Python GIL이 30년간 유지된 이유 — Reference Counting 부채와 PEP 703": 30,
+        "Python - CPython GIL과 진정한 병렬성의 한계": 5,
+        "Python 동작 원리와 동시성 (Thread, Coroutine, GIL)": 6,
+        "Python 스레딩 설명 (Python Threading Explained in 8 Minutes)": 1,
+        "Python - 스레드와 스레드풀 완전 가이드": 3,
+        "01.5 Q & A": 2
+      },
+      "n_gold": 6,
+      "hit5": 4,
+      "hit10": 5,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Python 스레딩 설명 (Python Threading Explained in 8 Minutes)",
+        "01.5 Q & A",
+        "Python - 스레드와 스레드풀 완전 가이드",
+        "03.5 Q & A",
+        "Python - CPython GIL과 진정한 병렬성의 한계"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 5,
+      "cat": "한→영",
+      "q": "FastAPI 프로젝트 폴더를 어떤 식으로 나눠야 하나",
+      "gold_ranks": {
+        "fastapi-app-structure": 5,
+        "project structure": 1,
+        "01-Project-Structure": 10,
+        "FastAPI Pragmatic Architecture 가이드": 8,
+        "Conclusion": 7,
+        "00-fastapi-template": 6,
+        "FastAPI Pragmatic vs Strict Clean Architecture": 19
+      },
+      "n_gold": 7,
+      "hit5": 2,
+      "hit10": 6,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "project structure",
+        "FastAPI 어디까지 써봤나",
+        "Category API",
+        "3-15 프론트엔드 빌드",
+        "fastapi-app-structure"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 6,
+      "cat": "한→영",
+      "q": "어떤 ORM을 쓸지 장단점을 비교해놓은 게 있나",
+      "gold_ranks": {
+        "orm-comparison": 1,
+        "ORM과 ODM 완벽가이드": 2,
+        "data-modeling": 4,
+        "Rails Puma 서버 구성과 ActiveRecord ORM": 29,
+        "Ruby on Rails 구현 패턴": 12,
+        "Trade-offs - Django vs FastAPI": 35
+      },
+      "n_gold": 6,
+      "hit5": 3,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "orm-comparison",
+        "ORM과 ODM 완벽가이드",
+        "2-2 모델로 데이터베이스 관리하기",
+        "data-modeling",
+        "99-benchmark-results"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 7,
+      "cat": "한→영",
+      "q": "오래 걸리는 작업을 요청과 분리해서 뒤에서 돌리는 방법",
+      "gold_ranks": {
+        "background-jobs": 28,
+        "Trade-offs - 장기 실행 작업 처리 방식": 1,
+        "Decision Node - 장기 실행 작업 처리 방식": 6,
+        "Celery Architecture": 16,
+        "09-background-processing": 30,
+        "FastAPI 비동기 HTTP 클라이언트 패턴": 21
+      },
+      "n_gold": 6,
+      "hit5": 1,
+      "hit10": 2,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Trade-offs - 장기 실행 작업 처리 방식",
+        "LLM을 백엔드에 태우기 — 소재 인덱스",
+        "범위 조금씩 축소하기",
+        "백엔드 개선 계획 (동시성 + 외부 연동)",
+        "순서 의존적 요청 패턴"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 8,
+      "cat": "한→영",
+      "q": "결제 기능을 붙이려면 무엇을 고려해야 하나",
+      "gold_ranks": {
+        "payment-integration": 2,
+        "PG 결제 서비스 구현 가이드": 1,
+        "Registry Pattern": 15,
+        "ACID와 트랜잭션": null,
+        "07-gumroad": 17,
+        "05-spree": 10,
+        "Checkout Engine — 워크플로우 체화 프로젝트": 6,
+        "phase09-qa": 11
+      },
+      "n_gold": 8,
+      "hit5": 2,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "PG 결제 서비스 구현 가이드",
+        "payment-integration",
+        "08. 연동 서비스 이중화",
+        "7. Procedural vs OO — AI 시대에 객체지향이 중요한 진짜 이유",
+        "Trade-offs - Strategy Pattern vs Direct Implementation"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 21,
+      "cat": "한→영",
+      "q": "비즈니스 규칙을 어느 계층에 둘지 정리한 문서",
+      "gold_ranks": {
+        "01-business-logic-architecture": 14,
+        "Layered Architecture": 2,
+        "DDD 준수 비교 분석": 58,
+        "10. 전체 그림": 1,
+        "10. Factory as Belief Layer — 결정과 행위를 분리하는 두 가지 황금률": 52
+      },
+      "n_gold": 5,
+      "hit5": 2,
+      "hit10": 2,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "10. 전체 그림",
+        "Layered Architecture",
+        "SKILL",
+        "trade-offs",
+        "1. 객체의 네 분류"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 22,
+      "cat": "한→영",
+      "q": "테이블 스키마를 어떻게 설계했는지 기록",
+      "gold_ranks": {
+        "database-design": 1,
+        "다중 기관 스키마 설계 및 리팩토링": 27,
+        "E-Project_서비스_아키텍처": 10,
+        "PostgreSQL 스키마 분리 전략": 6,
+        "PostgreSQL 스키마 설계 전략 (public 비우기, 커스텀 스키마 활용)": 8,
+        "진화가능 택소노미와 하이브리드 RLS — 불변 UUID 앵커·FK 우회 가드": null,
+        "감사로그 설계": 21
+      },
+      "n_gold": 7,
+      "hit5": 1,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "database-design",
+        "Chapter 5 메타데이터 쿼리",
+        "architecture-design",
+        "Logical Structure",
+        "데이터베이스 계층구조"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 23,
+      "cat": "한→영",
+      "q": "어떤 테스트를 어느 수준까지 짤지 정한 방침",
+      "gold_ranks": {
+        "testing-strategies": 9,
+        "07-testing-strategies": 3,
+        "FastAPI 테스트 기준점 — 오픈소스 벤치마크 기반 테스트 전략": 10,
+        "0010-test-suite-strategy": 31,
+        "테스트 전략 및 커버리지 확장": 5,
+        "백엔드 테스트 전략 및 에러 핸들링 통일 가이드": 6,
+        "11. 테스트 작성 원칙": 1,
+        "10 뼈대 — 테스트 기준선": 32,
+        "10 post — 테스트 기준선": 22
+      },
+      "n_gold": 9,
+      "hit5": 3,
+      "hit10": 6,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "11. 테스트 작성 원칙",
+        "고품질 테스트 프레임워크",
+        "07-testing-strategies",
+        "_개발 규율집 (Project Discipline Bible)",
+        "테스트 전략 및 커버리지 확장"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 24,
+      "cat": "한→영",
+      "q": "누가 무엇을 할 수 있는지 권한을 어떻게 나눴나",
+      "gold_ranks": {
+        "03-authorization": 8,
+        "Privacy Compliance": 11,
+        "02. 인증과 인가": 2,
+        "7.3 유저 관리와 Role-Based Access Control(RBAC)": 78,
+        "역할 기반 UI 조건부 렌더링 및 권한 제어": 10
+      },
+      "n_gold": 5,
+      "hit5": 1,
+      "hit10": 3,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "Chapter 03. 나머지",
+        "02. 인증과 인가",
+        "Chapter 9 합치는 것이 나은가 분리하는 것이 나은가",
+        "16 뼈대 — IaC 관리 주체 충돌",
+        "02. OS 계정과 권한"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 25,
+      "cat": "한→영",
+      "q": "Flutter 코드를 쓸 때 지켜야 할 규칙 모음",
+      "gold_ranks": {
+        "flutter_rules": 1,
+        "Flutter — 글로벌 상태 변화 구독은 didChangeDependencies가 아닌 addListener로": 32,
+        "Flutter 테스트는 concurrency를 명시적으로 고정하고 unit과 widget 사이클을 분리하라": 6,
+        "Flutter 성능 최적화 패턴": 15,
+        "Flutter 모바일 성능 최적화 패턴": 3,
+        "Flutter 프로젝트 CLAUDE.md — destructive 명령 경계": 10,
+        "Best Practices 감사 및 개선 (2026-04)": 17
+      },
+      "n_gold": 7,
+      "hit5": 2,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "flutter_rules",
+        "Mobile",
+        "Flutter 모바일 성능 최적화 패턴",
+        "플랫폼별 테스트 환경 비용 카탈로그",
+        "Flutter 첫 셋업 iOS 함정 모음"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 26,
+      "cat": "한→영",
+      "q": "분산 작업 큐를 어떤 구조로 돌리고 있나",
+      "gold_ranks": {
+        "Celery Architecture": 3,
+        "Celery 구성 요소와 Producer-Consumer 패턴": 31,
+        "09-background-processing": 10,
+        "background-jobs": 15,
+        "PostgreSQL로 전체 기술 스택 대체하기": 21
+      },
+      "n_gold": 5,
+      "hit5": 1,
+      "hit10": 2,
+      "first_rank": 3,
+      "rr": 0.3333333333333333,
+      "top5": [
+        "Queue (큐)",
+        "TensorFlow",
+        "Celery Architecture",
+        "Kubernetes - Elastic Search",
+        "S1 뼈대 — 저장소에 무엇을 두는가"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 9,
+      "cat": "영→한",
+      "q": "how should I design indexes for read-heavy traffic",
+      "gold_ranks": {
+        "02. 조회 트래픽을 고려한 인덱스 설계": 1,
+        "인덱싱 최적화": 4,
+        "03.5 Q & A": 6,
+        "02.5 Q & A": 8,
+        "RLS 아래 인덱스 — 슈퍼유저로 측정하면 놓치는 tenant_id 술어와 index-only scan": 7
+      },
+      "n_gold": 5,
+      "hit5": 2,
+      "hit10": 5,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "02. 조회 트래픽을 고려한 인덱스 설계",
+        "03 인덱스 설계",
+        "3장 성능을 좌우하는 DB 설계와 쿼리",
+        "인덱싱 최적화",
+        "개발 서적 노트 가이드라인"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 10,
+      "cat": "영→한",
+      "q": "reliably publishing events with a database write",
+      "gold_ranks": {
+        "04. 트랜잭션 아웃박스 패턴": null,
+        "Chapter 11-2 데이터베이스와 스트림": 1,
+        "7. 도메인 이벤트": 10,
+        "Chapter 6-3 Event Backbone과 Event Sourcing": 20,
+        "이벤트 소싱과 CQRS": 6
+      },
+      "n_gold": 5,
+      "hit5": 1,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Chapter 11-2 데이터베이스와 스트림",
+        "8.4 도메인 이벤트에서 읽기 모델을 만든다",
+        "Chapter 12-3 정확성을 향하여",
+        "09-background-processing",
+        "Chapter 7-3 Data Module과 Polyglot Persistence"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 11,
+      "cat": "영→한",
+      "q": "why is a single-threaded server still fast",
+      "gold_ranks": {
+        "Redis가 싱글 스레드인데도 빠른 이유": 1,
+        "03. 논블로킹 IO로 성능 더 높이기": 18,
+        "01. 네트워크 IO와 자원 효율": 28,
+        "06. 단일 스레드로 처리하기": 21,
+        "F2 뼈대 — FastAPI가 for문으로 느리다는 오해": 10,
+        "Chapter 12-1 프로세스와 IO 멀티플렉싱과 스레드": 41,
+        "01.5 Q & A": 2
+      },
+      "n_gold": 7,
+      "hit5": 2,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Redis가 싱글 스레드인데도 빠른 이유",
+        "01.5 Q & A",
+        "Trade-offs - Singleton vs Factory for External API Clients",
+        "01. 서버와 동시 실행",
+        "Python - 스레드와 스레드풀 완전 가이드"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 12,
+      "cat": "영→한",
+      "q": "where do I start when tuning server performance",
+      "gold_ranks": {
+        "02. 서버 성능 개선 기초": 1,
+        "프로젝트 성능 최적화 전략 가이드": 18,
+        "performance tuning": 2,
+        "01. 처리량과 응답 시간": 11,
+        "3. 주요 측정 지표": 10,
+        "성능지표, TPS 이해와 실무 활용": 8,
+        "4. 성능 테스트 설계 시 고려 사항": 16
+      },
+      "n_gold": 7,
+      "hit5": 2,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "02. 서버 성능 개선 기초",
+        "performance tuning",
+        "데이터베이스 튜닝",
+        "Backend",
+        "Chapter 20 성능을 고려한 설계"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 27,
+      "cat": "영→한",
+      "q": "how memory is laid out and managed at runtime",
+      "gold_ranks": {
+        "Chapter 9. 메모리": 5,
+        "Heap (힙) — 메모리 영역": 2,
+        "Stack (스택)": 3,
+        "Chapter 9-3 동적 메모리 할당": 8,
+        "Chapter 9-2 Core i7 메모리 시스템과 메모리 매핑": 6,
+        "Chapter 6-2 지역성과 메모리 계층 구조": 13,
+        "Chapter 7-2 재배치와 동적 링킹": 4
+      },
+      "n_gold": 7,
+      "hit5": 4,
+      "hit10": 6,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "Chapter 1-2 하드웨어 구성과 운영체제",
+        "Heap (힙) — 메모리 영역",
+        "Stack (스택)",
+        "Chapter 7-2 재배치와 동적 링킹",
+        "Chapter 9. 메모리"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 28,
+      "cat": "영→한",
+      "q": "what basis vectors mean in linear algebra",
+      "gold_ranks": {
+        "Chapter 6. 기저(Basis)": 4,
+        "선형 조합, 범위 및 기저 벡터": 1,
+        "Basis Theorem": 6,
+        "선형 변환 및 행렬": 2,
+        "Chapter 4. 벡터공간": 11,
+        "Chapter 7. 차원(Dimension)": 12,
+        "벡터공간의 정의와 속성": 5
+      },
+      "n_gold": 7,
+      "hit5": 4,
+      "hit10": 5,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "선형 조합, 범위 및 기저 벡터",
+        "선형 변환 및 행렬",
+        "Lemma 설명 2",
+        "Chapter 6. 기저(Basis)",
+        "벡터공간의 정의와 속성"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 29,
+      "cat": "영→한",
+      "q": "establishing a baseline before writing tests",
+      "gold_ranks": {
+        "10 뼈대 — 테스트 기준선": 20,
+        "10 post — 테스트 기준선": 12,
+        "11. 테스트 작성 원칙": 1,
+        "TDD vs 일반 테스트": 2
+      },
+      "n_gold": 4,
+      "hit5": 2,
+      "hit10": 2,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "11. 테스트 작성 원칙",
+        "TDD vs 일반 테스트",
+        "_개발 규율집 (Project Discipline Bible)",
+        "11.2 테스트",
+        "Chapter 7-2 리팩토링, 코드로 테스트하기, 속성 기반 테스트"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 30,
+      "cat": "영→한",
+      "q": "coding rules and discipline for a project",
+      "gold_ranks": {
+        "_개발 규율집 (Project Discipline Bible)": 8,
+        "프로젝트 CLAUDE.md 템플릿 (일반 개발)": 15,
+        "네이밍 컨벤션": 11,
+        "209 Principles": 7,
+        "flutter_rules": 3,
+        "Object Design Style Guide 준수 보고서": 130
+      },
+      "n_gold": 6,
+      "hit5": 1,
+      "hit10": 3,
+      "first_rank": 3,
+      "rr": 0.3333333333333333,
+      "top5": [
+        "프로젝트 문서 구조 가이드",
+        "개발자의 자기개발 - 동기부여",
+        "flutter_rules",
+        "Chapter 9-2 사용자를 기쁘게 하라, 오만과 편견",
+        "SKILL"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 31,
+      "cat": "영→한",
+      "q": "recurrent neural networks for text sentiment classification",
+      "gold_ranks": {
+        "09-2 순환 신경망으로 IMDB 리뷰 분류하기": 5,
+        "09-1 순차 데이터와 순환 신경망": 2,
+        "09-3 LSTM과 GRU 셀": 8
+      },
+      "n_gold": 3,
+      "hit5": 2,
+      "hit10": 3,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "07-1 인공 신경망",
+        "09-1 순차 데이터와 순환 신경망",
+        "혼자 공부하는 머신러닝 + 딥러닝",
+        "7.6 Towards Deep Learning",
+        "09-2 순환 신경망으로 IMDB 리뷰 분류하기"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 32,
+      "cat": "영→한",
+      "q": "preparing for a technical interview from my resume",
+      "gold_ranks": {
+        "기술면접 숙지 지도 — 이력서·포트폴리오 역산": 20,
+        "면접 대비 기술 정리": 2,
+        "면접 대비 공부 로드맵": 7,
+        "이력서 — 정본": 85,
+        "Chapter IV 면접 전 준비": 4,
+        "Chapter V 행동 질문": 5,
+        "면접 준비": 3
+      },
+      "n_gold": 7,
+      "hit5": 4,
+      "hit10": 5,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "면접",
+        "면접 대비 기술 정리",
+        "면접 준비",
+        "Chapter IV 면접 전 준비",
+        "Chapter V 행동 질문"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 13,
+      "cat": "상황형",
+      "q": "지금 프로젝트에서 DB 커넥션이 자꾸 모자라서 터진다. 뭘 읽어보면 좋을까",
+      "gold_ranks": {
+        "DB Connection Pool은 85%까지만, 나머지는 headroom": 5,
+        "DB Connection Pool 모니터링 구현": 4,
+        "07 뼈대 — 커넥션 풀": 6,
+        "06. 외부 연동과 DB 연동": 1,
+        "04. 알아두면 좋을 몇 가지 주의 사항": 3,
+        "02. 서버 성능 개선 기초": 2,
+        "Step Functions + Lambda 전환 Q&A": 40,
+        "Backend DB Practices 적용 기록": 7
+      },
+      "n_gold": 8,
+      "hit5": 5,
+      "hit10": 7,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "06. 외부 연동과 DB 연동",
+        "02. 서버 성능 개선 기초",
+        "04. 알아두면 좋을 몇 가지 주의 사항",
+        "DB Connection Pool 모니터링 구현",
+        "DB Connection Pool은 85%까지만, 나머지는 headroom"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 14,
+      "cat": "상황형",
+      "q": "모바일 앱을 하나 만들어야 하는데 어떤 프레임워크로 갈지 못 정하겠다",
+      "gold_ranks": {
+        "Decision Node - Mobile Cross-Platform Framework Selection": 1,
+        "Trade-offs - Flutter vs React Native": 6,
+        "Flutter vs React Native - 2026년 솔직한 비교 요약": 9
+      },
+      "n_gold": 3,
+      "hit5": 1,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Decision Node - Mobile Cross-Platform Framework Selection",
+        "게임 엔진 vs 프레임워크",
+        "Chapter 8-2 Mobile Application과 Micro Frontend",
+        "Desktop App의 Frontend",
+        "401.0 Architecture Playbook Hub"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 15,
+      "cat": "상황형",
+      "q": "API를 REST로 낼지 GraphQL로 낼지 판단 근거가 필요하다",
+      "gold_ranks": {
+        "Decision Node - REST vs GraphQL": 3,
+        "Trade-offs - REST vs GraphQL": 2,
+        "REST API vs GraphQL 선택 기준": 1
+      },
+      "n_gold": 3,
+      "hit5": 3,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "REST API vs GraphQL 선택 기준",
+        "Trade-offs - REST vs GraphQL",
+        "Decision Node - REST vs GraphQL",
+        "Trade-offs - HTTP API vs REST API Gateway",
+        "Chapter 4 보충 내부 서비스 통신에서 RPC의 실질적 이점"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 16,
+      "cat": "상황형",
+      "q": "푸시 알림을 붙여야 하는데 예전에 하면서 무슨 문제를 겪었었지",
+      "gold_ranks": {
+        "푸시 알림 시스템 진화": 1,
+        "읽음 추적 및 뱃지 동기화 시스템": 11,
+        "sync 엔드포인트 BackgroundTasks + 새 DB 세션 패턴": 29,
+        "FastAPI BackgroundTasks + 새 DB 세션 패턴": 25,
+        "07-notification-push": 19,
+        "모바일 푸시 알림 아키텍처 — FCM 중계 구조": 6,
+        "Decision Node - 푸시 알림 전달 메커니즘": 3,
+        "Trade-offs - 푸시 알림 전달 메커니즘": 2,
+        "FastAPI sync asyncio 이벤트 루프 함정 (2026-04)": 21
+      },
+      "n_gold": 9,
+      "hit5": 3,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "푸시 알림 시스템 진화",
+        "Trade-offs - 푸시 알림 전달 메커니즘",
+        "Decision Node - 푸시 알림 전달 메커니즘",
+        "20260722 UX대개편 배포 롤백 — PITR + 인스턴스 rename swap",
+        "CloudWatch Alarms와 알림 설정"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 17,
+      "cat": "상황형",
+      "q": "응답이 느린 API를 여러 쿼리 병렬로 돌려서 개선한 경험",
+      "gold_ranks": {
+        "asyncio.gather와 SQL 통합을 통한 API 성능 최적화": 1,
+        "asyncio.gather와 SQL 통합 두 가지 병렬화 전략": 4,
+        "API 성능 최적화 대응 (2026-01)": 2,
+        "N+1 쿼리 문제 해결 및 SQL 통합 패턴": 19,
+        "N+1 쿼리 일괄 최적화": 3,
+        "20 뼈대 — N+1 측정": 6,
+        "IO-bound 서비스는 asyncio를 우선하라": 10
+      },
+      "n_gold": 7,
+      "hit5": 4,
+      "hit10": 6,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "asyncio.gather와 SQL 통합을 통한 API 성능 최적화",
+        "API 성능 최적화 대응 (2026-01)",
+        "N+1 쿼리 일괄 최적화",
+        "asyncio.gather와 SQL 통합 두 가지 병렬화 전략",
+        "포트폴리오 — Notion 본문 (붙여넣기용)"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 33,
+      "cat": "상황형",
+      "q": "N+1 때문에 쿼리가 폭발하는데 어떻게 잡았었나",
+      "gold_ranks": {
+        "N+1 문제 해결전략": 2,
+        "N+1 쿼리 일괄 최적화": 18,
+        "20 뼈대 — N+1 측정": 5,
+        "N+1 쿼리 해결 패턴": 1,
+        "N+1 쿼리 문제 해결 및 SQL 통합 패턴": 4,
+        "N+1 문제와 로딩 전략": 3,
+        "DB 쿼리 최적화 패턴": 10,
+        "20 post — N+1 측정": 8,
+        "DB Connection Pool과 N+1 쿼리 최적화 가이드": 21
+      },
+      "n_gold": 9,
+      "hit5": 5,
+      "hit10": 7,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "N+1 쿼리 해결 패턴",
+        "N+1 문제 해결전략",
+        "N+1 문제와 로딩 전략",
+        "N+1 쿼리 문제 해결 및 SQL 통합 패턴",
+        "20 뼈대 — N+1 측정"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 34,
+      "cat": "상황형",
+      "q": "마이그레이션 돌리다 실패한 적이 있는데 뭐가 문제였지",
+      "gold_ranks": {
+        "11 뼈대 — 마이그레이션 3가지 실패": 2,
+        "11 post — 마이그레이션 3가지 실패": 1,
+        "Alembic 마이그레이션 실패 사례와 복구": 3,
+        "Alembic Migration의 멱등성 문제": 7,
+        "Alembic 트랜잭션 DDL과 마이그레이션 동시성 관리": 4,
+        "프로덕션 마이그레이션 실행 모델 — 일회성 ECS task": 19,
+        "Quick Reference": 5
+      },
+      "n_gold": 7,
+      "hit5": 5,
+      "hit10": 6,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "11 post — 마이그레이션 3가지 실패",
+        "11 뼈대 — 마이그레이션 3가지 실패",
+        "Alembic 마이그레이션 실패 사례와 복구",
+        "Alembic 트랜잭션 DDL과 마이그레이션 동시성 관리",
+        "Quick Reference"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 35,
+      "cat": "상황형",
+      "q": "인증 구조를 여러 제공자로 확장해야 한다",
+      "gold_ranks": {
+        "Multi-Provider OAuth 아키텍처 패턴": 4,
+        "인증 아키텍처 패턴": 7,
+        "중앙 SSO(Keycloak) 분리 — 효용성 리서치": 6,
+        "Keycloak 통합 가이드": 10,
+        "authentication": 2,
+        "JWT 인증 시스템 진화": 9,
+        "02-authentication": 1,
+        "인증 시스템 아키텍처": 17
+      },
+      "n_gold": 8,
+      "hit5": 3,
+      "hit10": 7,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "02-authentication",
+        "authentication",
+        "Network - 인증 아키텍처 - 헤더 기반 vs Best Practice 비교",
+        "Multi-Provider OAuth 아키텍처 패턴",
+        "Terraform - ACM SSL 단계 분리"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 18,
+      "cat": "구조형",
+      "q": "컨테이너로 돌리는 것과 그냥 띄우는 것의 오버헤드 차이",
+      "gold_ranks": {
+        "Trade-offs - Docker vs Native vs LXC": 138,
+        "Go 배포 표준 — Docker 오버헤드 신화와 컨테이너 선택지": 1
+      },
+      "n_gold": 2,
+      "hit5": 1,
+      "hit10": 1,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Go 배포 표준 — Docker 오버헤드 신화와 컨테이너 선택지",
+        "10 · Portal — 컨테이너 너머로 렌더하기",
+        "03-05 컨테이너 배치 전략",
+        "Chapter 9-1 Lift and Shift와 Virtualize the Application",
+        "02-03 도커 컨테이너 다루기"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 19,
+      "cat": "구조형",
+      "q": "도커에서 개발용과 배포용 설정을 분리하는 법",
+      "gold_ranks": {
+        "Docker - 개발, 배포 환경을 override, profiles로 관리": 10,
+        "EC2에서 Docker 사용 모범 사례": 13,
+        "dev, staging, prod 구분": 18,
+        "Backend 배포 원칙 (ECR + ECS Shell Script)": 8,
+        "ECS 배포 스크립트 패턴": 16,
+        "03-03 도커 친화적인 애플리케이션": 2
+      },
+      "n_gold": 6,
+      "hit5": 1,
+      "hit10": 3,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "01-02 도커를 사용하는 의의",
+        "03-03 도커 친화적인 애플리케이션",
+        "Chapter 02. 도커 컨테이너 배포",
+        "01-01 도커란 무엇인가",
+        "2025-06-23"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 20,
+      "cat": "구조형",
+      "q": "쿠버네티스에 파드를 어떤 전략으로 올리나",
+      "gold_ranks": {
+        "7.1 파드 배포 전략": 2,
+        "6.2 작업 관리 앱을 쿠버네티스에 배포하기": 30,
+        "파드 배포 전략 - maxUnavailable, maxSurge": 10,
+        "파드의 세분화에 대한 의문": 5
+      },
+      "n_gold": 4,
+      "hit5": 2,
+      "hit10": 3,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "Chapter 07. 쿠버네티스 활용",
+        "7.1 파드 배포 전략",
+        "5.6 파드",
+        "Chapter 05. 쿠버네티스 입문",
+        "파드의 세분화에 대한 의문"
+      ],
+      "trap": null,
+      "trap_rank": null
+    },
+    {
+      "id": 36,
+      "cat": "함정",
+      "q": "프로그램이 실행 중에 동적으로 할당한 객체가 저장되는 메모리 공간",
+      "gold_ranks": {
+        "Heap (힙) — 메모리 영역": 1,
+        "Chapter 9-3 동적 메모리 할당": 3,
+        "Chapter 9. 메모리": 2,
+        "Chapter 9-4 가비지 컬렉션과 메모리 버그": 38
+      },
+      "n_gold": 4,
+      "hit5": 3,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Heap (힙) — 메모리 영역",
+        "Chapter 9. 메모리",
+        "Chapter 9-3 동적 메모리 할당",
+        "Chapter 1-2 하드웨어 구성과 운영체제",
+        "Stack (스택)"
+      ],
+      "trap": "Heap (힙) — 자료구조",
+      "trap_rank": 7
+    },
+    {
+      "id": 37,
+      "cat": "함정",
+      "q": "가장 크거나 작은 값을 O(log n)에 꺼내는 완전 이진 트리",
+      "gold_ranks": {
+        "Heap (힙) — 자료구조": 21,
+        "Chapter 4-1 트리 기초": 3,
+        "Chapter 13. 자료 구조 2": 2
+      },
+      "n_gold": 3,
+      "hit5": 2,
+      "hit10": 2,
+      "first_rank": 2,
+      "rr": 0.5,
+      "top5": [
+        "Chapter 14. 이진 탐색 트리",
+        "Chapter 13. 자료 구조 2",
+        "Chapter 4-1 트리 기초",
+        "02.5 Q & A",
+        "03.5 Q & A"
+      ],
+      "trap": "Heap (힙) — 메모리 영역",
+      "trap_rank": null
+    },
+    {
+      "id": 38,
+      "cat": "함정",
+      "q": "나중에 넣은 것이 먼저 나오는 LIFO 자료구조",
+      "gold_ranks": {
+        "Stack (스택)": 1,
+        "Chapter 3-1 핵심 개념": 5,
+        "Finding Palindrome Queue and Stack": 10
+      },
+      "n_gold": 3,
+      "hit5": 2,
+      "hit10": 3,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Stack (스택)",
+        "Chapter 12. 자료 구조 1",
+        "Queue (큐)",
+        "Heap (힙) — 자료구조",
+        "Chapter 3-1 핵심 개념"
+      ],
+      "trap": "어떤 기술 스택을 깊이 있게 익혀야 하는가?",
+      "trap_rank": null
+    },
+    {
+      "id": 39,
+      "cat": "함정",
+      "q": "먼저 들어온 것이 먼저 나가는 FIFO 자료구조",
+      "gold_ranks": {
+        "Queue (큐)": 1,
+        "Chapter 3-1 핵심 개념": 3,
+        "Chapter 12. 자료 구조 1": 2,
+        "Finding Palindrome Queue and Stack": 7
+      },
+      "n_gold": 4,
+      "hit5": 3,
+      "hit10": 4,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "Queue (큐)",
+        "Chapter 12. 자료 구조 1",
+        "Chapter 3-1 핵심 개념",
+        "Stack (스택)",
+        "Heap (힙) — 자료구조"
+      ],
+      "trap": "Message Queue 완벽 가이드",
+      "trap_rank": 178
+    },
+    {
+      "id": 40,
+      "cat": "함정",
+      "q": "서비스끼리 비동기로 메시지를 주고받게 하는 미들웨어",
+      "gold_ranks": {
+        "Message Queue 완벽 가이드": 2,
+        "Chapter 11-1 이벤트 스트림 전송": 4,
+        "03. 메시징": 1,
+        "Chapter 4-2 데이터플로우 모드": 7,
+        "01. 동기 연동과 비동기 연동": 3
+      },
+      "n_gold": 5,
+      "hit5": 4,
+      "hit10": 5,
+      "first_rank": 1,
+      "rr": 1.0,
+      "top5": [
+        "03. 메시징",
+        "Message Queue 완벽 가이드",
+        "01. 동기 연동과 비동기 연동",
+        "Chapter 11-1 이벤트 스트림 전송",
+        "5장 비동기 연동, 언제 어떻게 써야 할까"
+      ],
+      "trap": "Queue (큐)",
+      "trap_rank": 200
+    }
+  ]
+}

@@ -12,7 +12,10 @@ def main(model_id, chunks_path, out_dir, batch=64):
 
     t0 = time.perf_counter()
     model = SentenceTransformer(model_id, device="mps")
-    model.max_seq_length = 768      # chunks top out at 767 tokens — nothing is truncated
+    model.max_seq_length = 1024     # chunks top out at 905 tokens — nothing is truncated
+    # 768 was lossless for the 08-25 chunk set (max 767). The vault grew and 45 of
+    # 43,715 chunks now run to 905, so 768 would silently truncate 0.10% of the
+    # corpus. Raised before any arm ran, so all four still share one setting.
     # NO .half(): fp16 on MPS deadlocks in mps_copy_/copy_and_sync when the
     # result is pulled back with .cpu(). Measured: hung 22 min at 0% CPU.
     load_s = time.perf_counter() - t0

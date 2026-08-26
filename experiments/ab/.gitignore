@@ -2,6 +2,10 @@
 chunks.json
 chunks_capped.json
 vecs/
-results/
 .venv/
 *.log
+
+# results/ 는 커밋한다. 「재생성 가능」이 아니기 때문이다 — 다시 만들려면
+# 커밋 안 하는 vecs/ 683MB 가 있어야 하고, 그걸 만드는 데 2시간이 든다.
+# pool.json · judge/ · queries.v2.json 도 같은 이유로 남긴다: 골드가 어떻게
+# 만들어졌는지가 결론의 근거다.

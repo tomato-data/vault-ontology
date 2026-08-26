@@ -1,0 +1,8 @@
+{
+"1": ["Redis가 싱글 스레드인데도 빠른 이유"],
+"2": ["트랜잭션 격리 수준 심화", "PostgreSQL - 트랜잭션 격리 수준 설정과 성능", "ACID와 트랜잭션", "Chapter 7-2 약한 격리 수준", "04. DB와 동시성"],
+"3": ["23 뼈대 — idx_scan이 0인 인덱스의 함정", "인덱스 최적화 성능 비교", "미사용 인덱스 감사 — idx_scan 함정", "14 뼈대 — 슈퍼유저 EXPLAIN", "RLS 아래 인덱스 — 슈퍼유저로 측정하면 놓치는 tenant_id 술어와 index-only scan", "인덱스 설계 btree-GIN-trigram과 성능 측정", "인덱싱 최적화"],
+"4": ["Python GIL이 30년간 유지된 이유 — Reference Counting 부채와 PEP 703", "Python - CPython GIL과 진정한 병렬성의 한계", "Python 동작 원리와 동시성 (Thread, Coroutine, GIL)", "Python 스레딩 설명 (Python Threading Explained in 8 Minutes)", "Python - 스레드와 스레드풀 완전 가이드", "01.5 Q & A"],
+"5": ["fastapi-app-structure", "project structure", "01-Project-Structure", "FastAPI Pragmatic Architecture 가이드", "Conclusion", "00-fastapi-template", "FastAPI Pragmatic vs Strict Clean Architecture"],
+"6": ["orm-comparison", "ORM과 ODM 완벽가이드", "data-modeling", "Rails Puma 서버 구성과 ActiveRecord ORM", "Ruby on Rails 구현 패턴", "Trade-offs - Django vs FastAPI"]
+}

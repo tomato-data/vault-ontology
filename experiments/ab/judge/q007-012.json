@@ -1,0 +1,8 @@
+{
+"7": ["background-jobs", "Trade-offs - 장기 실행 작업 처리 방식", "Decision Node - 장기 실행 작업 처리 방식", "Celery Architecture", "09-background-processing", "FastAPI 비동기 HTTP 클라이언트 패턴"],
+"8": ["PG 결제 서비스 구현 가이드", "payment-integration", "Registry Pattern", "ACID와 트랜잭션", "07-gumroad", "05-spree", "Checkout Engine — 워크플로우 체화 프로젝트", "phase09-qa"],
+"9": ["02. 조회 트래픽을 고려한 인덱스 설계", "인덱싱 최적화", "03.5 Q & A", "02.5 Q & A", "RLS 아래 인덱스 — 슈퍼유저로 측정하면 놓치는 tenant_id 술어와 index-only scan"],
+"10": ["04. 트랜잭션 아웃박스 패턴", "Chapter 11-2 데이터베이스와 스트림", "7. 도메인 이벤트", "Chapter 6-3 Event Backbone과 Event Sourcing", "이벤트 소싱과 CQRS"],
+"11": ["Redis가 싱글 스레드인데도 빠른 이유", "03. 논블로킹 IO로 성능 더 높이기", "01. 네트워크 IO와 자원 효율", "06. 단일 스레드로 처리하기", "F2 뼈대 — FastAPI가 for문으로 느리다는 오해", "Chapter 12-1 프로세스와 IO 멀티플렉싱과 스레드", "01.5 Q & A"],
+"12": ["프로젝트 성능 최적화 전략 가이드", "performance tuning", "02. 서버 성능 개선 기초", "01. 처리량과 응답 시간", "3. 주요 측정 지표", "성능지표, TPS 이해와 실무 활용", "4. 성능 테스트 설계 시 고려 사항"]
+}
