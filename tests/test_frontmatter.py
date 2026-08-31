@@ -1,4 +1,4 @@
-from vault.frontmatter import fm_get, fm_list, split_frontmatter
+from vault.frontmatter import fm_block, fm_get, fm_list, split_frontmatter
 
 
 def test_splits_frontmatter_from_body():
@@ -99,3 +99,56 @@ def test_an_inline_scalar_is_not_a_list():
 
 def test_a_key_with_no_items_is_an_empty_list():
     assert fm_list("builds_on:\ncreated: 2026-08-10", "builds_on") == []
+
+
+# The proposed block. Phase 12's authoring contract puts unapproved facts one
+# level in, and approving one is moving a line to column 0. Measured
+# 2026-08-31: the vault holds none yet, so these tests are the only thing
+# standing between a proposal and the asserted graph.
+
+PROPOSED_FM = (
+    "type: principle\n"
+    "derived_from:\n"
+    '  - "[[승인된 것]]"\n'
+    "proposed:\n"
+    "  derived_from:\n"
+    '    - "[[제안된 것]]"\n'
+    "  diverges_from:\n"
+    '    - "[[다른 제안]]"\n'
+    "created: 2026-08-10"
+)
+
+
+def test_a_proposed_relation_does_not_read_as_asserted():
+    # `^` in fm_list anchors at column 0, so the indented copy is invisible.
+    # Loosening that regex to allow indentation would silently promote every
+    # proposal in the vault, which is why this is written down.
+    assert fm_list(PROPOSED_FM, "derived_from") == ["승인된 것"]
+
+
+def test_a_relation_that_exists_only_as_a_proposal_reads_as_absent():
+    assert fm_list(PROPOSED_FM, "diverges_from") == []
+
+
+def test_the_proposed_block_is_not_itself_a_list():
+    assert fm_list(PROPOSED_FM, "proposed") == []
+    assert fm_get(PROPOSED_FM, "proposed") is None
+
+
+def test_reads_the_proposed_block_when_asked_for_it():
+    assert fm_block(PROPOSED_FM, "proposed") == {
+        "derived_from": ["제안된 것"],
+        "diverges_from": ["다른 제안"],
+    }
+
+
+def test_a_block_stops_at_the_next_top_level_key():
+    assert "created" not in fm_block(PROPOSED_FM, "proposed")
+
+
+def test_a_missing_block_is_an_empty_mapping():
+    assert fm_block(LIST_FM, "proposed") == {}
+
+
+def test_a_key_with_no_indented_lines_is_not_a_block():
+    assert fm_block("proposed:\ntype: concept", "proposed") == {}

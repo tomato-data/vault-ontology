@@ -1,6 +1,7 @@
 """Parse the YAML-ish frontmatter block at the top of a vault document."""
 
 import re
+import textwrap
 
 # `---` on its own line opens the block, the next `---` closes it.
 # `re.S` lets `.` cross newlines; `*?` stops at the FIRST closing delimiter.
@@ -47,3 +48,30 @@ def fm_list(fm, key):
             item = item[2:-2]
         items.append(item)
     return items
+
+
+def fm_block(fm, key):
+    """Return {sub_key: [items]} for the indented block under `key`, or {}.
+
+    This is how a proposal is read. Phase 12's contract puts unapproved
+    facts one level in and makes approval the act of moving a line to
+    column 0 — so the indentation is not decoration, it IS the state.
+
+    `fm_list` above cannot see in here: its `^` anchors at column 0. That
+    is the boundary, and it holds by construction rather than by a check,
+    which is why `tests/test_frontmatter.py` states it out loud.
+
+    The block is dedented and handed back to `fm_list`, so an item is
+    peeled exactly the way an asserted one is. Two parsers would be two
+    behaviours to keep in step.
+    """
+    if not fm:
+        return {}
+    # `[ \t]+.*` — every line of the block is indented, so the block ends
+    # by itself at the next key. A blank line ends it too: frontmatter here
+    # never holds one, and accepting it would let the block run to the end.
+    m = re.search(rf"^{re.escape(key)}:[ \t]*\n((?:[ \t]+.*\n?)+)", fm, re.M)
+    if not m:
+        return {}
+    inner = textwrap.dedent(m.group(1))
+    return {sub: fm_list(inner, sub) for sub in re.findall(r"^(\w+):", inner, re.M)}

@@ -233,6 +233,83 @@ predicate 가운데 실제 질의와 저장 형식에 맞는 방식을 실험한
 - 같은 빌드를 두 번 실행해도 결과가 같다.
 - 한 관점의 `Belief`가 무맥락한 전역 `Claim`으로 승격되지 않는다.
 
+### 계약이 이미 절반을 정해 놨다 (2026-08-31)
+
+[`semantic-authoring.md`](../part3/semantic-authoring.md) §2가 자리를 정해 뒀다.
+
+| 상태 | 자리 |
+|---|---|
+| `asserted` | frontmatter **최상위** |
+| `proposed` | frontmatter의 **`proposed:` 블록** (한 단계 안) |
+| `rejected` | **sidecar에만.** 문서의 사실이 아니라 작업 이력이다 |
+| `inferred` | **안 적는다.** 질의 시점에 계산한다 |
+
+**`inferred`를 저장 안 한다는 결정이 이 Step의 절반을 없앤다.** 근거는 Phase 9
+실측 — OWL RL 물질화가 트리플을 2.81배로 늘렸는데 질적으로 새 사실은 0개였고,
+물질화하면 입력이 철회돼도 낡은 결과가 남는다.
+
+**승인은 한 줄을 열 0으로 옮기는 것이다.** 들여쓰기가 장식이 아니라 상태 그 자체다.
+
+### 세 후보의 비용
+
+| 후보 | 비용 |
+|---|---|
+| named graph (`Dataset`·TriG) | **SPARQL 질의 8개 전부에 `GRAPH` 절**. `test_sparql.py`·`test_competency.py`도 함께 |
+| 상태 predicate | **reification이 필요하다** — Step 2가 「주체가 곧 출처」로 기각한 그것 |
+| **별도 산출물** ← 채택 | **0.** `.vault.ttl`은 지금 그대로 asserted 전용 |
+
+`inferred`가 저장되지 않으므로 한 파일에 상태가 섞일 일이 없고, `proposed`는
+**읽지 않는 것**만으로 분리된다. named graph는 섞인 것을 나누는 도구인데 **섞이지
+않는다.**
+
+### 경계가 실제로 지켜지는 자리
+
+```python
+# fm_list
+m = re.search(rf"^{re.escape(key)}:[ \t]*\n(...)", fm, re.M)
+#             ↑ 열 0 에 고정된다
+```
+
+`re.M`에서 `^`는 줄 머리에 붙지만 **들여쓰기를 허용하지 않는다.** 그래서 빌더는
+`proposed:` 안쪽을 볼 수단 자체가 없다. **검사로 막는 게 아니라 구조로 못 닿는다.**
+
+문제는 이것이 **부수 효과**라는 점이다. 누군가 「들여쓴 리스트도 읽게」 정규식을
+느슨하게 하면 **vault의 모든 제안이 조용히 승인된다.** 그래서 세 개를 말로 적어
+잠갔다.
+
+```python
+test_a_proposed_relation_does_not_read_as_asserted
+test_a_relation_that_exists_only_as_a_proposal_reads_as_absent
+test_the_proposed_block_is_not_itself_a_list
+```
+
+읽어야 할 때는 `fm_block`으로 **일부러** 읽는다. 블록을 dedent해서 `fm_list`에
+그대로 넘기므로 항목을 벗기는 방식이 asserted와 같다 — 파서를 둘로 만들면 보조를
+맞춰야 할 동작이 둘이 된다.
+
+### 다섯 불변식
+
+| 불변식 | 어떻게 지켜지나 |
+|---|---|
+| proposed가 기본 질의에 안 나온다 | `fm_list`의 `^`. 테스트 3개로 잠갔다 |
+| inferred를 asserted에서 재생성한다 | 저장을 안 한다. `close()`는 새 그래프를 돌려주고 입력을 안 건드린다 |
+| 철회가 원본 근거를 안 지운다 | 근거는 markdown이고 그래프는 파생물. 철회는 frontmatter 한 줄을 지우는 것이고 본문은 그대로다 |
+| 같은 빌드를 두 번 해도 같다 | **실측했다** (아래) |
+| `Belief`가 전역 `Claim`으로 안 올라간다 | **`v:Claim`이 없다.** Phase 14가 기각했다 — 이 vault의 기술적 주장은 `패턴 N:`으로 쓰인다. 올라갈 자리가 없다 |
+
+### 실측 (2026-08-31)
+
+```
+빌드 두 번 → .vault.ttl 바이트 동일         결정론 확인. 1.7초
+asserted 관계 517   builds_on 433 · derived_from 69 · supersedes 6
+                    informed_by 4 · applies 2 · expresses 1 · contradicts 1 · diverges_from 1
+proposed 블록을 가진 문서 0 · 관계 0
+```
+
+**proposed가 0인데 왜 지금 만드나** — 파일럿에서 라벨 48개 중 **37개(77%)가
+proposed**로 소급 분류됐다. 전수 연결이 시작되면 제안이 asserted보다 많아지고,
+**그때 경계를 만들면 이미 섞인 뒤다.**
+
 ## Step 4 — 증분보다 정확성을 먼저 검증한다
 
 초기 구현은 전체 재빌드로 시작한다. 50개 기준 집합과 전체 Vault 일부를 실측한 뒤
