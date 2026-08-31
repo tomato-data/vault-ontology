@@ -581,6 +581,63 @@ Step 1이 그것을 찾아낸 뒤로 이 Phase가 계속 겨눠 온 과녁이다
     v:expresses <…/_Insights#인사이트%2020:%20"모든%20정답은%20일시적이다"…> .
 ```
 
+### 덧 — 템플릿 9개를 그래프에서 뺐다 (2026-08-31)
+
+빌드마다 rdflib가 같은 경고를 아홉 번 찍고 있었다.
+
+```
+ValueError: Invalid isoformat string: '{{date:YYYY-MM-DD}}'
+```
+
+`000 Index/Templates/` 아홉 개다. **vault가 `type: template`을 지운 결과**로, 각
+템플릿이 **자기가 낳을 문서의 type**을 달고 그래프에 들어와 있었다.
+
+```
+Decision Node Template.md      type: decision      ← q type decision 이 이걸 답한다
+Book Template - 개발.md         type: source-note
+Daily Template.md              type: log
+```
+
+`EXCLUDED_ZONES`에 넣었다. **근거는 vault가 이미 적어 둔 것**이다.
+
+```json
+// .vault-lint.json — Phase 4 부터 있었다
+"skip_frontmatter_in": ["900 Archive", "000 Index/Templates"],
+"_why": "000 Index/Templates 의 frontmatter 는 데이터가 아니라 자리표시자다"
+```
+
+lint가 「이 frontmatter는 데이터가 아니다」라고 이미 말하고 있었고, 그래프 제외는
+**같은 말을 다른 자리에서** 하는 것이다.
+
+```
+트리플 28,380 → 28,338 (−42)     문서 9 · 나가는 링크 13 · 폴더 1
+새 links_to_raw 2                401.0 Hub 가 템플릿을 가리키던 것 (문서는 skip_files 에 이미 있다)
+rdflib 경고 9 → 0
+lint 394                        불변 (lint 는 in_graph 를 안 쓴다)
+gold set 33/33                  불변
+```
+
+#### 다른 템플릿 디렉터리는 안 건드렸다 — 판별이 다르다
+
+전수로 훑으니 템플릿처럼 생긴 자리가 더 있는데, **frontmatter에 자리표시자를 가진
+것은 `000 Index/Templates` 뿐**이다.
+
+```
+000 Index/Templates                        9   ⚠ {{date}} 있음      ← 제외함
+400 Logic Forge/499 Logic Forge Templates  3     case·decision·tradeoff
+200 …/209 Principles/templates             2     reference
+300 …/320.4. Applications/_Template        5     project-doc
+그 밖 _template · 0000-template 등          3     project-doc
+```
+
+**「frontmatter가 데이터가 아니다」는 근거가 나머지에는 안 걸린다.** 저들의 날짜와
+type은 진짜다.
+
+> **남은 미결.** `q type decision`이 아직
+> `499 Logic Forge Templates/Decision Node Template.md`를 답한다. 자리표시자
+> 문제는 아니고 **「템플릿이 자기가 낳을 문서의 type을 단다」**는 문제이며, 이건
+> vault 쪽 정합화의 사안이다. 여기서 정하지 않는다.
+
 ## 산출물
 
 - semantic assertion parser

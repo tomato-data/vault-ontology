@@ -34,6 +34,36 @@ def test_an_excluded_zone_is_not_a_node(tmp_path):
     assert rows(build(tmp_path), "SELECT path FROM node") == [("CIDR.md",)]
 
 
+def test_a_template_is_not_a_node(tmp_path):
+    # A template's frontmatter is a placeholder, not data. It became
+    # visible when the vault dropped `type: template`: each template then
+    # carried the type of the document it produces, and `type: decision`
+    # started answering with the Decision Node Template.
+    make(
+        tmp_path,
+        {
+            "CIDR.md": NOTE.format(body="본문"),
+            "000 Index/Templates/Decision Node Template.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT path FROM node") == [("CIDR.md",)]
+
+
+def test_a_zone_is_counted_by_directory_not_by_prefix(tmp_path):
+    # `000 Index/Templates` must not swallow a sibling that merely starts
+    # with the same letters. Seventh time this boundary has come up.
+    make(
+        tmp_path,
+        {
+            "000 Index/Templates 사용법.md": NOTE.format(body="본문"),
+            "000 Index/Templates/Daily Template.md": NOTE.format(body="본문"),
+        },
+    )
+    assert rows(build(tmp_path), "SELECT path FROM node") == [
+        ("000 Index/Templates 사용법.md",)
+    ]
+
+
 def test_claude_md_is_not_a_node(tmp_path):
     make(tmp_path, {"CIDR.md": NOTE.format(body="본문"), "CLAUDE.md": "지시문"})
     assert rows(build(tmp_path), "SELECT path FROM node") == [("CIDR.md",)]

@@ -11,7 +11,15 @@ from vault.scan import folder_note, resolve_link, scan_vault
 # broke the axis — but on 2026-08-23 it left the vault for a repository of
 # its own. Phase 6 asks whether two corpora that far apart can be merged
 # into one graph at all, which is the question RDF namespaces exist for.
-EXCLUDED_ZONES = ("900 Archive",)
+#
+# `000 Index/Templates` joined on 2026-08-31. A template's frontmatter is a
+# placeholder, not data — `.vault-lint.json` has said exactly that since
+# Phase 4, in `skip_frontmatter_in`. What made it visible was the vault
+# dropping `type: template`: each template now carries the type of the
+# document it PRODUCES, so `q type decision` answered with the Decision
+# Node Template and every build printed nine rdflib warnings about
+# `created: {{date:YYYY-MM-DD}}`.
+EXCLUDED_ZONES = ("900 Archive", "000 Index/Templates")
 EXCLUDED_FILES = ("CLAUDE.md",)
 
 
