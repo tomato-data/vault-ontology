@@ -162,6 +162,44 @@ elevate verdict 쌍    promoted / skip 한 쌍
 라벨링을 한 번에 끝내지 않는다. 일정 간격을 두고 10개 이상을 다시 라벨링해 자기
 일관성을 확인한다. 기준 자체가 흔들리면 자동화 평가도 의미가 없다.
 
+### 결과 — 1차 50개 완료 (2026-08-31)
+
+답안은 [`../part3/gold-set-answers.md`](../part3/gold-set-answers.md).
+
+```
+문서 50 · 의미 관계를 가진 문서 19 (38%)
+   derived_from 24 · informed_by 4 · applies 2 · expresses 1
+   contradicts 1 · diverges_from 1 · answered_by 0
+```
+
+**부착률 38%가 낮은 것이 아니라 정확한 값이다.** 「관계 없음」 31개가 갈래로 나뉘고,
+가장 큰 갈래가 **「관련 문서」 절만 있다**(12쯤)와 **문서 단위로는 관계가 없다**
+(5, 전부 500)다.
+
+#### 라벨보다 어휘·계약에 낸 것이 컸다
+
+```
+산문 출처를 세 갈래로 갈랐다          문서 있음 / 문서 없는 사건 / 갈래만
+source_unknown 은 Claude 가 못 단다   「찾아봤다」는 사람만 할 수 있다
+informs → informed_by               표준과 방향이 반대였다
+                                    「이름은 영어 문법을 따른다」 원칙 신설
+기계 규칙 둘이 열렸다                 > 원본: [[문서]] 34건
+                                    ## 적용 사례 + 선행 Learnings 12건
+                                    → vault 전체 derived_from 0 → 69
+```
+
+#### 관문 판정
+
+```
+보류 30% 초과        0 / 50      ✅ 통과
+문서당 15분 초과      측정 못 함 — 준비를 Claude 가 했다
+                                실사용에서 vault-new 2부가 그 자리라 유효한 대리
+asserted / proposed   50 / 0     ← 파일럿은 77% 가 proposed 였다
+```
+
+**`proposed` 0이 이 배치의 성과다.** 준비를 Claude 가 하고 근거를 본문에서 찾는
+방식으로 바꾸니 위임이 사라졌다.
+
 ## Step 5 — annotation 비용을 측정한다
 
 문서당 다음을 잰다.

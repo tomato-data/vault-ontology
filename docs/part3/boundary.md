@@ -243,7 +243,7 @@ chunk_id  →  artifact IRI  →  section/block  →  knowledge entity
 ### 규칙
 
 - Vector 점수는 **검색 신호이며 asserted graph에 들어가지 않는다.**
-- 의미 유사도만으로 `supports`·`contradicts`·`informs`를 확정하지 않는다.
+- 의미 유사도만으로 `contradicts`·`informed_by`를 확정하지 않는다.
 - 유사 후보는 답이 아니라 **별도 후보**로 표시한다.
 
 ### 부분 의존하는 질문 2개

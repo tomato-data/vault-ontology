@@ -193,7 +193,7 @@ v:builds_on rdfs:subPropertyOf dcterms:references .   # 지금 있는 것
 | 우리 것 | 표준 | 근거 |
 |---|---|---|
 | `v:derived_from` | `prov:wasDerivedFrom` | 「A가 B에서 나왔다」와 의미가 겹친다 |
-| `v:informs` | `prov:wasInfluencedBy` | PROV에서 가장 넓은 영향 관계 |
+| `v:informed_by` | `prov:wasInfluencedBy` | PROV에서 가장 넓은 영향 관계. **둘 다 수동태** — 2026-08-31에 `v:informs`에서 개명 |
 | `v:as_of` | `dcterms:date` | 「자원 생애의 한 시점」 |
 | `v:contradicts` | — | 로컬 |
 | `v:diverges_from` | — | 로컬 |
@@ -344,7 +344,7 @@ source-note 는 절대 Content 가 되지 않는다
 | 질문이 `v:Question` 이다 | RDFS `domain` (`v:answered_by`) | Phase 15 |
 | 인사이트가 `v:Insight` 이다 | **파서가 적는다** (제목 접두에서) | Phase 15 |
 | `contradicts` 의 반대 방향 | OWL `SymmetricProperty` | Phase 15 |
-| `applies`·`informs` 의 역방향 | **질의의 `^`** — 선언하지 않는다 | — |
+| `applies`·`informed_by` 의 역방향 | **질의의 `^`** — 선언하지 않는다 | — |
 | 원칙에 근거가 최소 하나 | SHACL | Phase 16 |
 | 600에 사견이 없다 (C16) | SHACL | Phase 16 |
 | `type` 오분류 (C24) | SHACL | Phase 16 |
@@ -359,7 +359,7 @@ source-note 는 절대 Content 가 되지 않는다
 이행적이라 하지 않고, Phase 9가 이미 쟀다 — OWL RL 물질화는 트리플을 2.81배로
 늘리고 질적으로 새로운 유용한 사실은 0개였다.
 
-`informs`는 **대칭이 아니다.** C09의 「상호보완적」은 양방향이 성립하는 사례이지
+`informed_by`는 **대칭이 아니다.** C09의 「상호보완적」은 양방향이 성립하는 사례이지
 관계가 대칭이라는 뜻이 아니다. 둘 다 참이면 둘 다 적는다.
 
 ## Step 4 — 모듈과 버전 정책을 정한다

@@ -179,7 +179,7 @@ v:hub a owl:ObjectProperty ;
 # NOT transitive: derived_from. PROV does not hold derivation
 # transitive in general, and Phase 9 measured OWL RL materialisation
 # at 2.80x the triples for zero qualitatively new useful facts.
-# NOT symmetric: informs. C09's "mutually reinforcing" is a case
+# NOT symmetric: informed_by. C09's "mutually reinforcing" is a case
 # where both directions hold, not a claim that the relation is
 # symmetric. If both hold, both get written.
 # NO declared inverses: `^v:applies` in SPARQL already answers the
@@ -210,9 +210,16 @@ v:applies a owl:ObjectProperty ;
 # Cost, accepted knowingly: C29 splits - `applied` is now separable from
 # `mentioned`, `applied` from `broke` is not.
 
-v:informs a owl:ObjectProperty ;
+# Renamed from v:informs on 2026-08-31. The old name was ACTIVE - "A informs B"
+# reads as A giving to B - while the Korean test sentence said the opposite,
+# "B flowed into A". The mismatch was invisible in Korean and it made the
+# subPropertyOf below plainly wrong: prov:wasInfluencedBy is PASSIVE, its
+# subject being the thing that was affected. A name that is wrong in English
+# breaks the tie to the standard, not just the reading. There was no data yet,
+# so the rename cost nothing.
+v:informed_by a owl:ObjectProperty ;
     rdfs:subPropertyOf prov:wasInfluencedBy ;
-    rdfs:comment "Fed into it. Not the ground, but it flowed in. Query: personal criteria surfacing in technical decisions (C09); a reaction becoming reflection or creation (C15)." .
+    rdfs:comment "It fed into this. Not the ground, but it flowed in. Query: personal criteria surfacing in technical decisions (C09); a reaction becoming reflection or creation (C15)." .
 
 v:expresses a owl:ObjectProperty ;
     rdfs:comment "This judgement enacts that value. Query: values that recur across 500 and 100/600/700 (C07)." .

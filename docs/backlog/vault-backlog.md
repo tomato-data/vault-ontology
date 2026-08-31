@@ -118,6 +118,37 @@ Phase 5가 끝나면 손으로 짠 도구가 답안지와 같은 일을 한다.
 
 ---
 
+## 400 Logic Forge — 같은 이름 두 벌 (2026-08-31 · 토마토 「정리 대상」 확정)
+
+`Layer 2. Backend/Code-Structure/` 와 `Layer 3. Application/Architecture-Style/` 에
+**같은 이름의 문서가 두 벌** 있다.
+
+```
+Decision Node - Pragmatic vs Clean Architecture     Layer 2 (2026-02-07) · Layer 3 (2026-03-28)
+Trade-offs - Pragmatic vs Clean Architecture        Layer 2            · Layer 3
+```
+
+**내용이 다르다.** Layer 2 는 팀 5명 임계 · 선택지 2개, Layer 3 은 팀 10명 임계 ·
+선택지 3개(절충안). 그리고 세 번째 문서 `Decision Node - Architecture Style Selection`
+(2025-12-06)이 Layer 3 과 같은 10명 임계를 쓴다 — **Layer 2 만 어긋나 있다.**
+
+```
+팀 12명 · 수명 3년
+   Architecture Style Selection   10명 이상  →  Clean
+   Pragmatic vs Clean (Layer 2)   5명 이상 · 수명 5년 미만  →  Pragmatic
+                                                              ← 반대 답
+```
+
+`contradicts` 를 Layer 2 쪽에 달아뒀다 (대칭이라 한 번만).
+
+**정리할 것**
+
+- 두 벌 중 무엇을 남기나. 대체면 `supersedes`, 층위가 다른 문서면 이름을 갈라야 한다
+- Layer 2 의 5명 임계를 고칠 것인가, 세 문서의 임계를 통일할 것인가
+- 이름 중복은 `semantic-identity.md` 의 「중복 이름은 경로로 한정」에 걸린다 —
+  의미 사실이 이 문서들을 가리킬 때마다 경로를 붙여야 한다
+
+---
 ## Phase 6(RDF)에서 정식화
 
 - [ ] **구역별 도메인 필드** — 네임스페이스가 답이다. `phase06.md`가 이미 800 TRPG로 예를 들어뒀다

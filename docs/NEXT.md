@@ -33,9 +33,9 @@ vault 경로는 두 Mac 모두 같다.
 
 **Phase 1~9 완료. 테스트 241개 통과. Phase 10~20 계획 수립.**
 
-재개 지점은 **Phase 12 Step 4 — gold set 50개를 손으로 라벨링**이다.
-목록은 [`part3/gold-set-manifest.md`](part3/gold-set-manifest.md)에 확정돼 있다.
-**앞의 10개를 스톱워치로 재고 관문을 통과해야 나머지 40개로 간다.**
+재개 지점은 **Phase 15 — 의미 사실 그래프 빌더**다.
+gold set 50개가 끝났고 답안은 [`part3/gold-set-answers.md`](part3/gold-set-answers.md)에 있다.
+**Phase 15 의 파서는 그 답을 재현해야 한다.**
 
 | Phase | 내용 | 상태 |
 |---|---|---|
@@ -47,10 +47,11 @@ vault 경로는 두 Mac 모두 같다.
 | 9 | 추론 · 최종 판단 | ✅ |
 | 10 | 문제 계약 · 역량 질문 30개 | ✅ **완료** — 30/30 판정 |
 | 11 | 라벨링 파일럿 — 비용 측정 | 🟡 1차 완료 · **시간·일치율은 Phase 12 Step 4가 잰다** |
-| 12 | 의미 작성 계약 · gold set | 🟡 **Step 1~3 완료** · Step 4~5 |
+| 12 | 의미 작성 계약 · gold set | ✅ **완료** — 50개 · 관계 33건 |
 | 13 | 문서와 지식 개체의 분리 | ✅ **완료** — [`semantic-identity.md`](part3/semantic-identity.md) |
 | 14 | 핵심 도메인 온톨로지 0.1 | ✅ **완료** |
-| 15~18 | 그래프 · SHACL · 추론 · 질의 | 계획 — **Phase 12 Step 4 대기** |
+| 15 | 의미 사실 그래프 빌더 | **다음** — gold-set-answers 를 재현한다 |
+| 16~18 | SHACL · 추론 · 질의 | 계획 |
 | 19~20 | 제안·승인 · 제한 운영 | **보류** — Phase 18 실사용 뒤 판단 |
 
 `vault/`에는 파서·검증·SQLite 그래프·RDF·SPARQL·추론 구현이 모두 들어 있다.
