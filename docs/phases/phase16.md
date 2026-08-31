@@ -84,16 +84,16 @@ Phase 9가 `isPartOf`에 domain을 걸어 폴더 764개를 Document로 잘못 �
 | V1 | 의미 관계가 자기를 안 가리킨다 | **0** | Violation |
 | V2 | 판단 구간(concept·procedure·reference·case)에 `summary` | **22 / 1,008** | Violation |
 | V3 | 섹션은 자기 문서의 fragment다 | **0 / 324** | Violation |
-| W1 | `PrincipleDocument`에 근거가 있다 | **59 / 94** | Warning |
-| W2 | `DecisionDocument`에 근거가 있다 | **40 / 46** | Warning |
-| W3 | 의미 관계가 해석됐다 (`_raw`가 아니다) | **2** | Warning |
+| W1 | `PrincipleDocument`에 근거가 있다 | **43 / 94** | Warning |
+| W2 | `DecisionDocument`에 근거가 있다 | **30 / 46** | Warning |
+| W3 | 의미 관계가 해석됐다 (`_raw`가 아니다) | **17** | Warning |
 
 **V1은 위반 0이라서 Violation으로 걸 수 있다.** 이미 지키고 있는 규칙만 강하게
 걸 수 있다는 것이 이 표의 요지다. 그리고 V1은 빈 규칙이 아니다 — 2026-08-26에
 기계 규칙이 `derived_from`을 자기 자신에 붙인 것이 **2건** 있었고 손으로 잡았다.
 **그때 이 shape가 있었으면 기계가 잡았다.**
 
-W3의 2건은 둘 다 `derived_from: experience`다. 깨진 게 아니라 **문서가 아닌 출처**를
+W3의 17건은 전부 `derived_from: experience`다. 깨진 게 아니라 **문서가 아닌 출처**를
 가리키는 의도된 값이고, 이 Warning이 그것을 계속 눈에 띄게 해서 **별도 값이
 필요한지를 개수로 판정**하게 한다 (Phase 15 Round 6의 미결).
 
@@ -128,6 +128,41 @@ answered_by 의 주체는 Question    0    용례가 0건이라 검사할 것이
 
 위반 경로, severity, 사람이 읽는 메시지까지 테스트한다.
 
+### 28개 fixture (2026-08-31)
+
+`vault-shapes.ttl` 여섯 shape에 손으로 만든 그래프 28개. **fixture가 규칙의 뜻이고,
+실제 vault는 그 뜻이 몇 건에 걸리는지만 말한다.**
+
+경계값을 셋 적어 둔다.
+
+```python
+test_a_structural_link_to_itself_is_not_this_shapes_business
+    links_to 는 본문이다.  자기 이름을 인용한 문서는 기계가 낸 오류가 아니다
+
+test_an_empty_summary_is_still_a_summary
+    SHACL 은 트리플을 센다.  내용이 있느냐는 Python lint 의 `summary too long` 쪽이다
+
+test_a_prefix_match_is_not_enough
+    `.../A` 와 `.../A 부록` 은 앞부분이 같다.  `#` 을 안 요구하면 남의 섹션이 통과한다
+    — `인사이트 1` 이 `인사이트 10` 에 걸리던 것과 같은 실수다
+```
+
+### 조용한 실패 하나 — `sh:severity`의 자리
+
+`sh:sparql` 블랭크 노드 **안에** 심각도를 적었더니 pyshacl이 **안 읽고 기본값
+Violation으로** 보고했다. Warning으로 두려던 셋이 전부 Violation이었다.
+
+```turtle
+✗  sh:sparql [ sh:severity sh:Warning ; sh:select "…" ]
+✓  sh:severity sh:Warning ;
+   sh:sparql [ sh:select "…" ]
+```
+
+**무엇이 잡았나** — 등급별 fixture를 따로 둔 덕이다. `[f["severity"] for f in found]
+== ["warning"]`가 `["violation"]`을 받고 깨졌다. 심각도를 안 세는 테스트였으면
+「검사는 도는데 등급이 전부 틀린」 상태로 넘어갔을 것이고, **등급을 나누는 것이 이
+Phase의 전부라서 그게 가장 비싼 실패였다.**
+
 ## Step 3 — 경고와 거부를 분리한다
 
 - Violation: 승인 그래프에 들어갈 수 없음
@@ -136,6 +171,23 @@ answered_by 의 주체는 Question    0    용례가 0건이라 검사할 것이
 
 처음부터 모든 shape를 거부 규칙으로 만들지 않는다. 기존 393개 lint 위반처럼 누적된
 부채가 도입 자체를 막지 않도록 신규·변경 assertion과 전체 감사 모드를 구분한다.
+
+### 감사 모드는 플래그 하나다
+
+```
+vault validate            violation 만 찍는다.  종료 코드 1
+vault validate --audit    warning 까지 전부
+```
+
+부채 90건을 기본으로 쏟아내면 **아무도 끝까지 안 읽는다.** 그래서 기본은 거부
+대상만 보이고, 마지막 줄이 warning이 몇 건 남아 있는지 알려 준다.
+
+종료 코드는 **violation에만 걸린다.** warning이 90건이어도 0을 돌려주므로,
+pre-commit이나 CI에 걸어도 기존 부채가 새 작업을 막지 않는다 — 이 Step이 요구한
+바로 그것이다.
+
+`--audit` 없이도 그래프는 **매번 새로 빌드한다.** 디스크의 `.vault.ttl`을 읽으면
+방금 만든 위반이 안 보인다.
 
 ## Step 4 — SHACL 보고서를 원문에 연결한다
 
@@ -149,6 +201,23 @@ shape와 메시지
 관련 근거
 수정 방향
 ```
+
+### 한 줄이 곧 열 자리다
+
+```
+200 Dev Knowledge Base/…/monorepo VS polyrepo.md: [violation] 판단 구간 문서에 summary 가 없다 (…)
+500 Mind Compiler/Q7. Who Am I/_Insights.md#인사이트 20: [violation] …
+```
+
+`section_path`가 IRI를 (경로, 제목 전문)으로 되돌리므로 **인사이트 24개짜리 파일에
+대해 「이 파일 어딘가」라고 말하지 않는다.** Phase 15 Step 2의 「주체가 곧 출처」가
+여기서 값을 한다 — 보고서에 따로 붙일 근거 자리가 필요 없었다.
+
+정렬은 **심각도 → 경로 → 제목**이다. 사람이 위에서부터 읽고, 두 번 돌려도 같은
+순서가 나온다.
+
+노드 단위 제약은 초점 노드를 자기 값으로 보고하는데, 그걸 찍으면 경로를 IRI로 한 번
+더 쓰는 것이라 **값이 초점 노드와 같으면 지운다.**
 
 ## Step 5 — 성능과 coverage를 측정한다
 

@@ -22,6 +22,7 @@ from vault.graph import (
 )
 from vault.lint import lint_vault
 from vault.rdf import TTL_NAME, build_graph
+from vault.shacl import findings, format_finding, shapes_graph, summarise
 from vault.scan import nfc
 from vault.tags import tag_vocabulary
 
@@ -41,7 +42,17 @@ def _parser():
     commands.add_parser("lint", parents=[common], help="check against the schema")
     commands.add_parser("build", parents=[common], help="write the graph")
     commands.add_parser("rdf", parents=[common], help="write the RDF graph")
-    commands.add_parser("tags", parents=[common], help="list the tag vocabulary (whitelist)")
+    validate = commands.add_parser(
+        "validate", parents=[common], help="check the graph against the shapes"
+    )
+    validate.add_argument(
+        "--audit",
+        action="store_true",
+        help="report warnings too, not just violations",
+    )
+    commands.add_parser(
+        "tags", parents=[common], help="list the tag vocabulary (whitelist)"
+    )
     new = commands.add_parser(
         "new", parents=[common], help="create a document only if it passes"
     )
@@ -83,11 +94,11 @@ def main(argv=None):
         return 2
 
     if args.command == "lint":
-        findings = lint_vault(args.vault)
-        for path, code, detail in findings:
+        broken = lint_vault(args.vault)
+        for path, code, detail in broken:
             print(f"{path}: {code}" + (f" — {detail}" if detail else ""))
-        print(f"{len(findings):,} violations", file=sys.stderr)
-        return 1 if findings else 0
+        print(f"{len(broken):,} violations", file=sys.stderr)
+        return 1 if broken else 0
 
     if args.command == "build":
         counts = stats(build(args.vault, args.vault / DB_NAME))
@@ -108,6 +119,27 @@ def main(argv=None):
             print(f"  {count:7,}  {prefix}")
         return 0
 
+    if args.command == "validate":
+        # Built here, not read off disk: a stale `.vault.ttl` would let a
+        # violation the author just introduced pass unseen.
+        conforms, found = findings(build_graph(args.vault), shapes_graph())
+        severities, messages = summarise(found)
+        # Without `--audit` only violations print. The vault carries 99
+        # warnings of accumulated debt, and a report nobody can finish
+        # reading is a report nobody reads.
+        shown = (
+            found if args.audit else [f for f in found if f["severity"] == "violation"]
+        )
+        for finding in shown:
+            print(format_finding(finding))
+        counts = (
+            " · ".join(f"{name} {n}" for name, n in severities.most_common()) or "없음"
+        )
+        print(f"\n{counts}", file=sys.stderr)
+        if not args.audit and severities.get("warning"):
+            print("--audit 으로 warning 까지 본다", file=sys.stderr)
+        return 1 if severities.get("violation") else 0
+
     if args.command == "tags":
         for tag, count in tag_vocabulary(args.vault):
             print(f"{count:6,}  {tag}")
@@ -118,9 +150,7 @@ def main(argv=None):
 
     database = args.vault / DB_NAME
     if not database.exists():
-        print(
-            f"vault: {DB_NAME} not found. run `vault build` first.", file=sys.stderr
-        )
+        print(f"vault: {DB_NAME} not found. run `vault build` first.", file=sys.stderr)
         return 2
     return _query(sqlite3.connect(database), args)
 

@@ -1,0 +1,151 @@
+@prefix sh:      <http://www.w3.org/ns/shacl#> .
+@prefix v:       <https://tomato.vault/schema/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Vault 의미 계약 — Phase 16.
+#
+# `vault-ontology.ttl` 이 추론하는 것과 여기가 요구하는 것은 다르다.
+#
+#   OWL     「A 는 B 다」  →  사실을 더 만든다.  열린 세계
+#   SHACL   「A 는 B 여야 한다」  →  아니면 거부한다.  닫힌 세계
+#
+# 두 파일을 절대 합치지 않는다. Phase 9 가 domain/range 를 검증으로
+# 착각해 폴더 764개를 Document 로 잘못 타입한 것이 그 착각의 값이다.
+#
+# 등급은 실측으로 정했다 (Step 1). 위반율이 0% 면 이미 지키는 규칙이라
+# 거부할 수 있고, 60% 를 넘으면 거부가 아무것도 못 쓰게 만든다.
+#
+# 여기가 검사하지 않는 것 — `type` 이 없는 문서. 타입이 없으면 rdf:type
+# 트리플이 안 생기고 shape 는 클래스로 겨눈다. 그건 Python lint 몫이다.
+#################################################################
+
+
+#################################################################
+# `sh:sparql` 이 접두어를 쓰려면 선언이 있어야 한다. SHACL 은 Turtle
+# 의 `@prefix` 를 안 본다 — 질의 문자열은 데이터라서, 그 문자열이 쓸
+# 접두어를 그래프 안에 사실로 적어야 한다.
+#################################################################
+
+v:prefixes
+    sh:declare [ sh:prefix "v" ;       sh:namespace "https://tomato.vault/schema/"^^xsd:anyURI ] ;
+    sh:declare [ sh:prefix "dcterms" ; sh:namespace "http://purl.org/dc/terms/"^^xsd:anyURI ] .
+
+
+#################################################################
+# Violation — 승인 그래프에 들어갈 수 없다
+#################################################################
+
+# 위반 0건. 그런데 빈 규칙이 아니다: 2026-08-26 에 기계 규칙이 209 원칙
+# 20건에 `> 원본:` 을 옮기다 자기 자신을 가리킨 것이 2건 있었고, 별칭
+# (`[[백엔드 테스트 전략…|M-Project 테스트 전략…]]`) 뒤에 숨어 손으로만
+# 잡혔다. 그때 이 shape 가 있었으면 기계가 잡았다.
+v:NoSelfRelation a sh:NodeShape ;
+    sh:targetSubjectsOf v:derived_from, v:contradicts, v:diverges_from,
+        v:applies, v:informed_by, v:expresses, v:answered_by, v:builds_on ;
+    # sh:severity 는 SHAPE 에 붙는다. sh:sparql 블랭크 노드 안에 두면
+    # pyshacl 이 안 읽고 조용히 기본값 Violation 으로 보고한다 — 등급을
+    # 나누는 이 Phase 에서 가장 비싼 조용한 실패다.
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "의미 관계가 자기 자신을 가리킨다 — 별칭 뒤에 숨는 오류다" ;
+        sh:prefixes v:prefixes ;
+        sh:select """
+            SELECT $this ?path ?value WHERE {
+                $this ?path ?value .
+                FILTER(?value = $this)
+                FILTER(?path IN (v:derived_from, v:contradicts, v:diverges_from,
+                                 v:applies, v:informed_by, v:expresses,
+                                 v:answered_by, v:builds_on))
+            }
+        """ ;
+    ] .
+
+# 22 / 1,008 (2026-08-31). Python lint 의 `summary missing` 과 같은 규칙이고 같은 수가
+# 나와야 한다 — 이 Phase 의 유일한 parity 시험이다.
+#
+# 판단 구간만 요구하는 것은 vault 스키마 정본 v1.16 의 「필수 필드
+# 프로파일」이다. log·reflection 은 흐름을 적는 자리라 요약이 값을 안 한다.
+v:JudgementNeedsSummary a sh:NodeShape ;
+    sh:targetClass v:ConceptDocument, v:ProcedureDocument,
+        v:ReferenceDocument, v:CaseDocument ;
+    sh:property [
+        sh:path dcterms:abstract ;
+        sh:minCount 1 ;
+        sh:severity sh:Violation ;
+        sh:message "판단 구간 문서에 summary 가 없다 (스키마 정본 v1.16 필수 필드)" ;
+    ] .
+
+# 0 / 324 (2026-08-31). Phase 15 Round 5 가 파서 쪽에서 세운 불변식을 그래프 쪽에서
+# 다시 세운다 — 섹션이 남의 문서에 붙으면, 빌더가 열지도 않은 파일에
+# 대해 사실을 쓰고 있는 것이다.
+v:SectionBelongsToItsDocument a sh:NodeShape ;
+    sh:targetSubjectsOf dcterms:hasPart ;
+    sh:severity sh:Violation ;
+    sh:sparql [
+        sh:message "섹션이 자기 문서의 fragment 가 아니다" ;
+        sh:prefixes v:prefixes ;
+        sh:select """
+            SELECT $this ?value WHERE {
+                $this dcterms:hasPart ?value .
+                FILTER(!STRSTARTS(STR(?value), CONCAT(STR($this), "#")))
+            }
+        """ ;
+    ] .
+
+
+#################################################################
+# Warning — 들어갈 수 있으나 검토가 필요하다
+#
+# 셋 다 거부하면 vault 가 멈춘다. 부채의 크기가 등급을 정한 것이지
+# 규칙의 중요도가 정한 것이 아니다.
+#################################################################
+
+# 43 / 94 (46%, 2026-08-31). C04 「이 원칙은 어떤 사건에 근거하는가」의 판정이
+# 「원칙 94개 중 사례로 이어진 것 1개」였고, 결론이 「근거가 없는 게
+# 아니라 근거가 링크가 아니다」였다. 이 Warning 이 그 부채의 잔량계다.
+v:PrincipleNeedsGround a sh:NodeShape ;
+    sh:targetClass v:PrincipleDocument ;
+    sh:or (
+        [ sh:path v:derived_from ;     sh:minCount 1 ]
+        [ sh:path v:derived_from_raw ; sh:minCount 1 ]
+    ) ;
+    sh:severity sh:Warning ;
+    sh:message "원칙에 근거가 안 적혀 있다 — 겪은 일이면 derived_from: experience" .
+
+# 30 / 46 (65%, 2026-08-31). 400 Logic Forge 의 Decision Node 는 `Trade-offs - X` 와
+# `Source:` 를 짝으로 갖는 구조인데, 그 짝이 아직 산문이고 관계가 아니다.
+v:DecisionNeedsGround a sh:NodeShape ;
+    sh:targetClass v:DecisionDocument ;
+    sh:or (
+        [ sh:path v:derived_from ;     sh:minCount 1 ]
+        [ sh:path v:applies ;          sh:minCount 1 ]
+        [ sh:path v:derived_from_raw ; sh:minCount 1 ]
+    ) ;
+    sh:severity sh:Warning ;
+    sh:message "결정에 근거가 안 적혀 있다 — tradeoff 나 출처를 derived_from 으로" .
+
+# 17건 (2026-08-31). 전부 `derived_from: experience` 이고 깨진 게 아니라
+# 문서가 아닌 출처를 가리키는 의도된 값이다. 이 Warning 은 고치라는 뜻이
+# 아니라 **개수를 보이게 하는 것**이다: Phase 16 을 쓰는 동안 2 에서 17 로
+# 늘었고, 그 속도가 곧 `experience` 에 별도 값이 필요하다는 신호다.
+# Phase 15 Round 6 이 남긴 미결이 이 숫자로 판정된다.
+v:SemanticLinkShouldResolve a sh:NodeShape ;
+    sh:targetSubjectsOf v:derived_from_raw, v:contradicts_raw,
+        v:diverges_from_raw, v:applies_raw, v:informed_by_raw,
+        v:expresses_raw, v:answered_by_raw ;
+    sh:severity sh:Warning ;
+    sh:sparql [
+        sh:message "의미 관계의 대상이 해석되지 않았다" ;
+        sh:prefixes v:prefixes ;
+        sh:select """
+            SELECT $this ?path ?value WHERE {
+                $this ?path ?value .
+                FILTER(?path IN (v:derived_from_raw, v:contradicts_raw,
+                                 v:diverges_from_raw, v:applies_raw,
+                                 v:informed_by_raw, v:expresses_raw,
+                                 v:answered_by_raw))
+            }
+        """ ;
+    ] .
