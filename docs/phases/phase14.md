@@ -182,7 +182,7 @@ dcterms:hasPart rdfs:range v:Section .
 **domain은 선언하지 않는다.** 폴더도 언젠가 part를 가질 수 있고, Phase 9가 domain
 하나로 폴더 764개를 잘못 타입한 자리가 바로 그 옆이다.
 
-#### 관계 8개 — 둘만 표준에 건다
+#### 관계 8개 — 둘만 표준에 건다 (2026-08-31에 7개가 됐다)
 
 ttl이 이미 쓰는 방식 그대로다. **우리 이름을 표준 아래에 단다.**
 
@@ -198,7 +198,7 @@ v:builds_on rdfs:subPropertyOf dcterms:references .   # 지금 있는 것
 | `v:contradicts` | — | 로컬 |
 | `v:diverges_from` | — | 로컬 |
 | `v:applies` | — | 로컬 |
-| `v:violates` | — | 로컬 |
+| ~~`v:violates`~~ | — | **2026-08-31 삭제.** 주어가 문서가 아니다 — [`relations-v0.md`](../part3/relations-v0.md) |
 | `v:expresses` | — | 로컬 |
 | `v:answered_by` | — | 로컬 |
 
@@ -518,7 +518,8 @@ dcterms:hasPart rdfs:range v:Section   있음 → 섹션으로 타입됨 · 없�
 
 - [x] 클래스 8~12개, 핵심 관계 10~15개 이내에서 시작한다.
       **클래스 3개 신규**(`v:Section`·`v:Insight`·`v:Question`) + 기존 문서 17개,
-      **관계 8개** + 상태 4개. 상한은 목표가 아니다 (관측 7).
+      **관계 8개**(2026-08-31에 `violates`를 빼서 **7개**) + 상태 4개.
+      상한은 목표가 아니다 (관측 7).
 - [x] 모든 어휘가 실제 역량 질문에 연결된다.
       후보 13개 중 11개를 이 규칙으로 삭제했다. **`패턴` 135항목은 요구하는 질문이
       없어 넣지 않고 기록된 공백으로 남겼다.**

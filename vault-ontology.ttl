@@ -199,8 +199,16 @@ v:diverges_from a owl:ObjectProperty ;
 v:applies a owl:ObjectProperty ;
     rdfs:comment "This judgement applied that principle. Query: decisions that applied a principle (C21); which principles a case followed (C29)." .
 
-v:violates a owl:ObjectProperty ;
-    rdfs:comment "Should have applied that principle and did not. Query: which principles a case broke (C29). Kept apart from v:applies: the polarity is opposite, and a record of breaking one is the evidence for fixing it." .
+# v:violates was here until 2026-08-31. Two samples measured it at zero uses,
+# and the excavation that followed explained why: the breaking is real - eight
+# Learnings documents record an accounting rule, an FSD layer rule and an
+# architecture rule being broken - but the SUBJECT is not the document. The
+# code broke the rule; the document is the correction. Attaching v:violates to
+# the document names the wrong thing. And a breach found while writing gets
+# reconciled INTO the writing, so no edge survives to be stored. What stays is
+# detection at authoring time, which is Phase 17's business, not a fact here.
+# Cost, accepted knowingly: C29 splits - `applied` is now separable from
+# `mentioned`, `applied` from `broke` is not.
 
 v:informs a owl:ObjectProperty ;
     rdfs:subPropertyOf prov:wasInfluencedBy ;

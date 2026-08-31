@@ -190,4 +190,5 @@ derived_from:
 | 필드 이름 표기 — `snake_case` vs `camelCase` | 파서를 만들 때. 기존 `builds_on`과 일관되려면 snake |
 | sidecar 파일의 위치와 이름 | Phase 15. 지금은 `experiments/pilot/labels/` |
 | sidecar가 원문과 어긋났을 때 감지 | Phase 16(SHACL)의 몫일 수 있다 |
-| `violates`·`answered_by` 를 남기나 | 파일럿 11개에서 0회. Phase 14 삭제 후보 |
+| ~~`violates` 를 남기나~~ | **2026-08-31 삭제.** 두 표본 0회 + 주어가 문서가 아니다 |
+| `answered_by` 를 남기나 | 파일럿 0회지만 **실물 27개**(`By Subquestion/`)가 있어 남긴다 |

@@ -341,6 +341,17 @@ B는 관계 이름이 파서에 안 남아서 **정본으로는 부적합하다*
 다만 `violates`는 C29(따른 원칙과 어긴 원칙)의 핵심이므로, **파일럿 11개가
 「어긴 기록」을 담은 문서를 안 담았을 뿐일 수 있다.** 지우기 전에 확인이 필요하다.
 
+> **확인 결과 (2026-08-31)**
+>
+> `violates` — **삭제.** 2차 관찰(5일)에서도 0회. 전수로 찾으니 「어긴 기록」은
+> 실제로 있었다(300 Learnings 8건). **그런데 주어가 문서가 아니다** — 코드가
+> 어겼고 문서는 그 교정이다. 그리고 어긋남은 쓰는 시점에 발견되면 조화되어
+> 문서에 흡수된다. 근거는 [`../part3/relations-v0.md`](../part3/relations-v0.md).
+>
+> `answered_by` — **유지.** 파일럿엔 안 나왔지만 `500 */By Subquestion/`에
+> **실물 27개**가 있고 C27이 순수 온톨로지 질문이다. 파일럿이 500을 안 담았을
+> 뿐이라는 가설이 이쪽에서는 맞았다.
+
 `contradicts`는 승인 근거가 강했는데(C03·C06) **한 번만, 그것도 예상과 다른
 자리에서** 나왔다. 문서 사이의 충돌이 아니라 한 문서 안의 모순이었다.
 
@@ -367,7 +378,7 @@ B는 관계 이름이 파서에 안 남아서 **정본으로는 부적합하다*
 - **형식** — A(frontmatter) + C(sidecar) 병용. B는 사람이 읽는 산문으로만
 - **실제로 쓴 어휘** — `derived_from` `as_of` `needs_review` `applies` `informs`
   `contradicts` `diverges_from` `expresses` `status` `source_unknown` (10개)
-- **한 번도 안 쓴 어휘** — `violates` `answered_by` (Phase 14 삭제 후보, 단 확인 필요)
+- **한 번도 안 쓴 어휘** — `violates` `answered_by` → **08-31 판정: violates 삭제 · answered_by 유지**
 - **파서 변경** — `vault/graph.py:83`의 튜플에 관계 필드를 더한다. 한 줄
 - **`derived_from`의 대상이 문서가 아닐 수 있다** — `experience`(3번), vault 밖
   경로(7번). 파서가 이걸 「깨진 링크」로 세면 안 된다
