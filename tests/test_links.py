@@ -60,7 +60,10 @@ def test_a_nested_heading_stays_whole():
     # Obsidian addresses a subheading as `#outer#inner`. Cutting at the
     # second `#` would name the wrong section, so the remainder is kept
     # as written and matched as one string.
-    assert link_parts("Async#2. 체이닝#순차 vs 병렬") == ("Async", "2. 체이닝#순차 vs 병렬")
+    assert link_parts("Async#2. 체이닝#순차 vs 병렬") == (
+        "Async",
+        "2. 체이닝#순차 vs 병렬",
+    )
 
 
 def test_a_block_reference_yields_no_heading():

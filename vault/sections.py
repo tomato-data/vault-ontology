@@ -1,7 +1,7 @@
 """Find the addressable items inside a document.
 
 Phase 13 split the document from the knowledge it holds, and measured where
-that split is real: 46 documents write their content as numbered items, and
+that split is real: 67 documents write content as numbered items, and
 `_Insights.md` is one v:ReflectionDocument carrying 24 separate beliefs. This
 module is the parser for that layer — nothing here mints an IRI or a triple.
 
@@ -32,9 +32,19 @@ ITEM = re.compile(r"^(" + "|".join(ITEM_PREFIXES) + r")[ \t]*(\d+)(?![\d])")
 # this. A fullwidth colon reads the same to a person, so it counts too.
 COLON = re.compile(r"[:：]")
 
-# Three of one prefix. Below that, a document numbering two paragraphs is
-# just a document; above it, the author is addressing items one by one.
-CARRIER_THRESHOLD = 3
+# There is no threshold. Phase 13 reported "49 documents hold three or more
+# numbered items" as a CENSUS — it was answering whether this vault needs a
+# unit below the document — and Phase 15 Step 1 mistook that filter for a
+# minting rule. Measured 2026-08-31, the filter cost more than it bought:
+#
+#   items      292 -> 324, so the threshold gated documents, not items
+#   hidden      10 principle documents whose `사례 N — 사건 (날짜)` is the
+#               grounding C04 asks for and could not find
+#   fragility   16 documents held exactly three items, so deleting one line
+#               took all three sections with it
+#
+# Safe to drop: no document repeats an item heading (0 collisions), and the
+# 292 are a subset of the 324, so no existing section identity moves.
 
 # `인사이트 20: … (2026-03-22)` — when the item says it holds, which is not
 # when the file was written. The bracket is required: measured 2026-08-31,
@@ -54,18 +64,11 @@ def _headings(body):
 def item_headings(body):
     """The document's addressable items, in order, exactly as written.
 
-    Empty unless the document carries at least three numbered items of one
-    prefix. The threshold decides the DOCUMENT, not the heading: once a
-    document is addressed item by item, its lone `패턴 1` is addressable too.
+    One is enough. A `사례 1` standing alone inside a principle is the
+    event that principle came out of, and how many siblings it has says
+    nothing about whether it is a thing worth pointing at.
     """
-    items = [text for _, text in _headings(body) if ITEM.match(text)]
-    counts = {}
-    for text in items:
-        prefix = ITEM.match(text).group(1)
-        counts[prefix] = counts.get(prefix, 0) + 1
-    if not counts or max(counts.values()) < CARRIER_THRESHOLD:
-        return []
-    return items
+    return [text for _, text in _headings(body) if ITEM.match(text)]
 
 
 def resolve_anchor(headings, anchor):

@@ -27,21 +27,18 @@ def test_three_numbered_items_make_a_carrier():
     ]
 
 
-def test_two_items_are_below_the_threshold():
-    # Phase 13 measured the rule: three numbered item headings of one
-    # prefix is what says a document is addressed item by item. Two is a
-    # document that happens to number two paragraphs.
-    body = "### 인사이트 1: 하나\n\n### 인사이트 2: 둘\n"
-    assert item_headings(body) == []
+def test_one_numbered_item_is_enough():
+    # A `사례 1` standing alone inside a principle is the event that
+    # principle came out of — C04's question — and it stays addressable
+    # whether or not it has siblings. Ten principle documents are this
+    # shape, and a threshold of three hid every one of them.
+    body = "## 적용 사례\n### 사례 1 — E-Project (2026-04-29)\n본문\n"
+    assert item_headings(body) == ["사례 1 — E-Project (2026-04-29)"]
 
 
-def test_a_carrier_pulls_in_its_other_numbered_items():
-    # Once a document is addressed item by item, every numbered item in it
-    # is addressable — the threshold decides the DOCUMENT, not the heading.
-    body = (
-        "### 인사이트 1: 하나\n### 인사이트 2: 둘\n### 인사이트 3: 셋\n### 패턴 1: 넷\n"
-    )
-    assert item_headings(body)[-1] == "패턴 1: 넷"
+def test_items_of_different_prefixes_all_count():
+    body = "### 인사이트 1: 하나\n### 패턴 1: 둘\n"
+    assert item_headings(body) == ["인사이트 1: 하나", "패턴 1: 둘"]
 
 
 def test_an_unnumbered_heading_is_not_an_item():
@@ -156,3 +153,44 @@ def test_a_date_outside_parentheses_is_not_the_items_date():
 
 def test_the_first_date_wins():
     assert item_date("사례 2 (2026-01-01): 2026-02-02 까지 이어짐") == "2026-01-01"
+
+
+# Split and merge, at the item level. A move or a rename does not appear
+# here on purpose: `item_headings` reads the body and never the path, so
+# there is nothing for a path change to break.
+
+SIX = "".join(f"### 인사이트 {n}: 항목 {n}\n" for n in range(1, 7))
+FOUR = "".join(f"### 인사이트 {n}: 항목 {n}\n" for n in range(1, 5))
+
+
+def test_splitting_a_carrier_evenly_keeps_both_halves():
+    first, second = (
+        SIX[: SIX.index("### 인사이트 4")],
+        SIX[SIX.index("### 인사이트 4") :],
+    )
+    assert len(item_headings(first)) == 3
+    assert len(item_headings(second)) == 3
+
+
+def test_splitting_a_small_document_still_keeps_every_item():
+    # This is what dropping the threshold bought. Under a rule of three,
+    # four items split two and two left NEITHER half qualifying and six
+    # section IRIs vanished from a move that looks like tidying.
+    first, second = (
+        FOUR[: FOUR.index("### 인사이트 3")],
+        FOUR[FOUR.index("### 인사이트 3") :],
+    )
+    assert item_headings(first) + item_headings(second) == item_headings(FOUR)
+
+
+def test_deleting_one_item_costs_only_that_item():
+    body = "### 인사이트 1: 하나\n### 인사이트 2: 둘\n### 인사이트 3: 셋\n"
+    assert item_headings(body.replace("### 인사이트 2: 둘\n", "")) == [
+        "인사이트 1: 하나",
+        "인사이트 3: 셋",
+    ]
+
+
+def test_merging_two_carriers_keeps_every_item():
+    merged = SIX[: SIX.index("### 인사이트 4")] + SIX[SIX.index("### 인사이트 4") :]
+    assert len(item_headings(merged)) == 6

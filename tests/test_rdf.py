@@ -280,3 +280,57 @@ def test_the_iri_goes_back_to_a_path():
 
 def test_a_percent_survives_the_round_trip():
     assert doc_path(doc_iri("100% 확실.md")) == "100% 확실.md"
+
+
+# Phase 15 Step 4. The graph is derived and thrown away, never updated in
+# place. These say what that buys, because an incremental build is exactly
+# where a stale edge would survive.
+
+
+def test_building_twice_yields_the_same_graph(tmp_path):
+    root = make(tmp_path, SMALL)
+    assert build_graph(root).isomorphic(build_graph(root))
+
+
+def test_the_same_build_serialises_to_the_same_bytes(tmp_path):
+    root = make(tmp_path, SMALL)
+    first = build_graph(root).serialize(format="turtle")
+    assert build_graph(root).serialize(format="turtle") == first
+
+
+def test_a_deleted_note_leaves_no_stale_edge(tmp_path):
+    # The whole case for rebuilding instead of updating. `CIDR` links to
+    # `Network`; deleting the target must turn a resolved edge back into
+    # raw text, and an incremental pass is where it would not.
+    root = make(tmp_path, SMALL)
+    cidr = doc_iri("200 Dev/Network/CIDR.md")
+    network = doc_iri("200 Dev/Network/Network.md")
+    assert (cidr, V.links_to, network) in build_graph(root)
+
+    (root / "200 Dev/Network/Network.md").unlink()
+    after = build_graph(root)
+    assert (cidr, V.links_to, network) not in after
+    assert (cidr, V.links_to_raw, Literal("Network")) in after
+
+
+def test_a_renamed_note_carries_its_links(tmp_path):
+    root = make(tmp_path, SMALL)
+    (root / "200 Dev/Network/CIDR.md").rename(root / "200 Dev/Network/CIDR 표기법.md")
+    after = build_graph(root)
+    assert (doc_iri("200 Dev/Network/CIDR.md"), None, None) not in after
+    assert (
+        doc_iri("200 Dev/Network/CIDR 표기법.md"),
+        V.links_to,
+        doc_iri("200 Dev/Network/Network.md"),
+    ) in after
+
+
+def test_the_graph_can_be_thrown_away_and_remade(tmp_path):
+    root = make(tmp_path, SMALL)
+    out = root / TTL_NAME
+    build_graph(root).serialize(destination=out, format="turtle")
+    kept = Graph().parse(out, format="turtle")
+
+    out.unlink()
+    build_graph(root).serialize(destination=out, format="turtle")
+    assert Graph().parse(out, format="turtle").isomorphic(kept)
