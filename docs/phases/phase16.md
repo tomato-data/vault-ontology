@@ -29,6 +29,94 @@ Phase 4의 Python lint가 문서 스키마를 검사하듯, SHACL은 의미 그�
 
 같은 규칙을 양쪽에 구현할 때는 같은 fixture에서 결과가 일치해야 한다.
 
+### 경계는 「무엇을 보는가」로 갈렸다 (2026-08-31)
+
+```
+lint    파일을 본다     →  그래프에 못 들어온 문서까지 본다
+SHACL   그래프를 본다   →  타입이 붙은 뒤의 의미 구조를 본다
+```
+
+**「`type`이 없다」는 SHACL이 구조적으로 못 잡는다.** `type`이 없으면 `rdf:type`
+트리플이 아예 안 생기고, shape는 클래스로 겨눈다. 실물이 하나 있다.
+
+```
+000 Index/Dots/2026-10 도쿄 여행 계획.md    type missing · created missing
+```
+
+경로에서 파생되는 `dcterms:isPartOf`로 겨누면 잡히긴 한다. **그런데 766개 폴더가
+함께 걸린다.**
+
+```sparql
+SELECT ?d WHERE { ?d dcterms:isPartOf ?f . FILTER NOT EXISTS { ?d a ?c } }
+→ 766   전부 폴더다
+```
+
+Phase 9가 `isPartOf`에 domain을 걸어 폴더 764개를 Document로 잘못 타입했던 **바로
+그 자리**다. 그때는 추론, 이번엔 검증 타깃. **세 번째로 같은 경계에 걸렸고, 답도
+같다 — `isPartOf`는 문서와 폴더가 공유한다.**
+
+**그래서 lint를 SHACL로 교체하지 않는다.** 겹치는 규칙은 하나뿐이고 그것이 parity
+시험이 된다.
+
+| 규칙 | 구현 | 실측 |
+|---|---|---|
+| `type` 있음 · 값이 어휘 안 | **Python lint 전용** | SHACL이 못 본다 |
+| `created` 있음 · 날짜로 파싱됨 | **Python lint 전용** | 위와 같은 문서 |
+| 위키링크 해석 | **Python lint 전용** | 깨진 링크 369건 |
+| 판단 구간에 `summary` | **양쪽 — parity** | 둘 다 **22건** |
+| 의미 관계의 구조 | **SHACL 신규** | 아래 |
+
+### 후보 아홉을 재고 다섯을 남겼다
+
+「사람이 실제로 고칠 의향이 있는 규칙만」이 이 Phase의 지침이다. 위반율이 그것을
+그대로 말해 준다.
+
+```
+0%        이미 지키고 있다        →  Violation 으로 걸 수 있다
+2~6%      고칠 만한 부채          →  Violation.  22건은 고치면 된다
+60~87%    구조적 부채             →  Warning.  거부하면 아무것도 못 쓴다
+100%      규칙이 아니라 관측       →  기각
+아무도 안 정함                    →  기각
+```
+
+| | shape | 위반 | 등급 |
+|---|---|---|---|
+| V1 | 의미 관계가 자기를 안 가리킨다 | **0** | Violation |
+| V2 | 판단 구간(concept·procedure·reference·case)에 `summary` | **22 / 1,008** | Violation |
+| V3 | 섹션은 자기 문서의 fragment다 | **0 / 324** | Violation |
+| W1 | `PrincipleDocument`에 근거가 있다 | **59 / 94** | Warning |
+| W2 | `DecisionDocument`에 근거가 있다 | **40 / 46** | Warning |
+| W3 | 의미 관계가 해석됐다 (`_raw`가 아니다) | **2** | Warning |
+
+**V1은 위반 0이라서 Violation으로 걸 수 있다.** 이미 지키고 있는 규칙만 강하게
+걸 수 있다는 것이 이 표의 요지다. 그리고 V1은 빈 규칙이 아니다 — 2026-08-26에
+기계 규칙이 `derived_from`을 자기 자신에 붙인 것이 **2건** 있었고 손으로 잡았다.
+**그때 이 shape가 있었으면 기계가 잡았다.**
+
+W3의 2건은 둘 다 `derived_from: experience`다. 깨진 게 아니라 **문서가 아닌 출처**를
+가리키는 의도된 값이고, 이 Warning이 그것을 계속 눈에 띄게 해서 **별도 값이
+필요한지를 개수로 판정**하게 한다 (Phase 15 Round 6의 미결).
+
+#### 기각한 셋
+
+```
+Insight 에 as_of 필수        73/121   아무도 정한 적 없는 규칙이다.  만들면 내가 만든 부채다
+Question 에 answered_by 필수  56/56   100%는 규칙이 아니라 「answered_by 를 안 쓴다」는 관측이다
+answered_by 의 주체는 Question    0    용례가 0건이라 검사할 것이 없다.  domain 이 이미 말한다
+```
+
+#### 헛것을 세는 shape를 하나 잡았다
+
+처음 쓴 「모든 문서에 `created`가 있다」가 위반 0을 냈다. **모집단도 0이었다.**
+
+```sparql
+?d a ?c . ?c rdfs:subClassOf* v:Document      → 0건
+```
+
+`.vault.ttl`에는 온톨로지가 안 실려 있어서 `subClassOf`가 한 건도 없다. **아무것도
+검사하지 않은 shape가 깨끗하다고 보고한다.** Phase 9의 「아무것도 추론 못 하는
+선언」과 같은 것이 검증 쪽에도 있다 — **shape마다 모집단을 함께 재는 것이 규칙이다.**
+
 ## Step 2 — shape를 RED 테스트로 작성한다
 
 각 shape에 네 fixture를 둔다.
