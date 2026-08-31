@@ -8,9 +8,15 @@ from rdflib.namespace import DCTERMS, RDF, SKOS, XSD
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.graph import in_graph
-from vault.links import link_target
+from vault.links import link_parts
 from vault.scan import folder_note, resolve_link, scan_vault
-from vault.sections import item_date, item_headings, item_prefix, iter_links_by_item
+from vault.sections import (
+    item_date,
+    item_headings,
+    item_prefix,
+    iter_links_by_item,
+    resolve_anchor,
+)
 
 BASE = "https://tomato.vault/"
 V = Namespace(BASE + "schema/")
@@ -204,25 +210,45 @@ def node_triples(relative, text):
             yield section, V.as_of, Literal(as_of, datatype=XSD.date)
 
 
+# The document relations, unchanged since Phase 6. They say how one note
+# stands to another as a WRITING - what it was built on, what it replaced.
+STRUCTURAL = ("builds_on", "supersedes")
+
+# Phase 14's seven, in the order the ontology declares them. These say how
+# one piece of thinking stands to another, which is the whole of part 3.
+SEMANTIC = (
+    "derived_from",
+    "contradicts",
+    "diverges_from",
+    "applies",
+    "informed_by",
+    "expresses",
+    "answered_by",
+)
+
 # The frontmatter relations, in the order the schema of record names them.
-NAMED = ("builds_on", "supersedes")
+NAMED = STRUCTURAL + SEMANTIC
 
 # A resolved edge's predicate. `supersedes` reuses the Dublin Core term;
-# `builds_on` and `links_to` stay ours (subproperties of dcterms:references
-# in the schema). An unresolved edge keeps our `_raw` predicate regardless -
-# a broken link has no standard, it is just text we could not place.
+# the rest stay ours, and the seven are subproperties of PROV or nothing at
+# all. An unresolved edge keeps our `_raw` predicate regardless - a broken
+# link has no standard, it is just text we could not place.
 RESOLVED = {
     "builds_on": V.builds_on,
     "supersedes": DCTERMS.replaces,
     "links_to": V.links_to,
+    **{kind: V[kind] for kind in SEMANTIC},
 }
 
 
-def edge_triples(relative, text, resolve):
+def edge_triples(relative, text, resolve, headings):
     """Yield (subject, predicate, object) for one note's relations.
 
     `resolve(target) -> path | None` is passed in, so this module never
     learns how resolution works — a dict's `.get` is a valid resolver.
+    `headings(path) -> that document's items` is injected the same way. It
+    is the only place the builder asks about a file it is not walking, and
+    it is needed because an anchor is checked against its TARGET.
 
     A target that does not land keeps its text on a `_raw` predicate:
 
@@ -243,15 +269,15 @@ def edge_triples(relative, text, resolve):
 
     for kind in NAMED:
         for item in fm_list(fm, kind):
-            yield from _edge(subject, kind, link_target(item), resolve)
+            yield from _edge(subject, kind, *link_parts(item), resolve, headings)
 
     # A link written under an item belongs to the ITEM. The gold set
     # measured why: 500's documents carry no relation of their own because
     # each insight links for itself, and hanging all of them off the file
     # is what made that band unlabelable.
-    for item, target, _ in iter_links_by_item(body):
+    for item, target, heading in iter_links_by_item(body):
         source = section_iri(relative, item) if item else subject
-        yield from _edge(source, "links_to", target, resolve)
+        yield from _edge(source, "links_to", target, heading, resolve, headings)
 
     # Derived from the path, and the target is the FOLDER — not the note
     # that happens to represent it. That note is a sibling, not a container.
@@ -260,15 +286,46 @@ def edge_triples(relative, text, resolve):
         yield subject, DCTERMS.isPartOf, folder_iri(directory)
 
 
-def _edge(subject, kind, target, resolve):
-    """One relation, as a resource when it lands and as text when it does not."""
+def _edge(subject, kind, target, heading, resolve, headings):
+    """One relation, as a resource when it lands and as text when it does not.
+
+    A heading sends the edge one level down, onto the item it names - but
+    only when the TARGET document actually holds that item. When it does
+    not, the two kinds part company:
+
+        links_to      falls back to the document
+        the seven     stay raw
+
+    That asymmetry is semantic-identity.md's, stated in as many words: a
+    broken body link is tolerated, a broken semantic fact is not. 58 of the
+    vault's 59 `#` links point at an ordinary heading and mean "go read
+    this part" - the document is where they land. A `derived_from` naming
+    an item that is not there is a claim about nothing, and filing it
+    against the whole document would hide that.
+    """
     landed = resolve(target)
+    # Kept whole so lint can report what was MEANT, not just which file
+    # went missing.
+    written = f"{target}#{heading}" if heading else target
+
     if landed is None:
-        yield subject, V[kind + "_raw"], Literal(target)
-    elif landed.endswith(".md"):
-        yield subject, RESOLVED[kind], doc_iri(landed)
+        yield subject, V[kind + "_raw"], Literal(written)
+        return
     # An attachment is neither a relation nor a broken link — Phase 4 cost
     # us 582 false reports before that was clear.
+    if not landed.endswith(".md"):
+        return
+
+    if heading:
+        matched = resolve_anchor(headings(landed) or (), heading)
+        if matched:
+            yield subject, RESOLVED[kind], section_iri(landed, matched)
+            return
+        if kind in SEMANTIC:
+            yield subject, V[kind + "_raw"], Literal(written)
+            return
+
+    yield subject, RESOLVED[kind], doc_iri(landed)
 
 
 def folder_triples(path, hub=None):
@@ -349,12 +406,18 @@ def build_graph(root):
     is_node = set(inside)
     folders, tags = set(), set()
 
+    # Read once, then index the items. An anchor is checked against the
+    # document it POINTS AT, so every document's headings have to be known
+    # before the first edge is written.
+    texts = {r: (root / r).read_text(encoding="utf-8") for r in inside}
+    headings = {r: item_headings(split_frontmatter(t)[1]) for r, t in texts.items()}.get
+
     for relative in inside:
-        text = (root / relative).read_text(encoding="utf-8")
+        text = texts[relative]
         for triple in node_triples(relative, text):
             graph.add(triple)
         for triple in edge_triples(
-            relative, text, _resolver(index, targets, is_node, relative)
+            relative, text, _resolver(index, targets, is_node, relative), headings
         ):
             graph.add(triple)
 

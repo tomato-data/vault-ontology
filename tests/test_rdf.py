@@ -2,6 +2,8 @@ from rdflib import Graph, Literal, URIRef
 from rdflib.namespace import DCTERMS, RDF, SKOS, XSD
 
 from vault.rdf import (
+    NAMED,
+    RESOLVED,
     TTL_NAME,
     V,
     build_graph,
@@ -84,9 +86,18 @@ RESOLVE = {
 }.get
 
 
+# What items each document holds, injected the way `resolve` is. Only
+# `_Insights` has any, so an anchor lands there and nowhere else.
+HEADINGS = {
+    "500 Mind/Q1. Better/_Insights.md": ["인사이트 1: 첫 번째 (2026-03-22)"]
+}.get
+
+
 def edges(relative, text):
     """(predicate, object) pairs, subject guarded by the last test."""
-    return sorted((str(p), str(o)) for _, p, o in edge_triples(relative, text, RESOLVE))
+    return sorted(
+        (str(p), str(o)) for _, p, o in edge_triples(relative, text, RESOLVE, HEADINGS)
+    )
 
 
 def with_field(field, value, body="본문"):
@@ -141,7 +152,7 @@ def test_a_note_at_the_root_is_part_of_nothing():
 
 def test_an_edge_from_a_note_with_no_items_leaves_the_note():
     text = with_field("builds_on", "CIDR", body="[[CIDR]] 참조")
-    subjects = {s for s, _, _ in edge_triples("a.md", text, RESOLVE)}
+    subjects = {s for s, _, _ in edge_triples("a.md", text, RESOLVE, HEADINGS)}
     assert subjects == {doc_iri("a.md")}
 
 
@@ -453,9 +464,86 @@ def test_a_subject_is_the_document_or_one_of_its_own_sections():
     subjects = set()
     for triples in (
         node_triples(INSIGHTS_DOC, ITEMS),
-        edge_triples(INSIGHTS_DOC, ITEMS, RESOLVE),
+        edge_triples(INSIGHTS_DOC, ITEMS, RESOLVE, HEADINGS),
     ):
         subjects |= {s for s, _, _ in triples}
     assert subjects - {doc_iri(INSIGHTS_DOC)}
     for subject in subjects:
         assert section_path(subject)[0] == INSIGHTS_DOC
+
+
+# Phase 15 Round 6. The seven semantic relations enter the graph, and an
+# anchor is read against the TARGET document's items.
+
+SEM_RESOLVE = {
+    "CIDR": "200 Dev/CIDR.md",
+    "_Insights": "500 Mind/Q1. Better/_Insights.md",
+}.get
+
+
+def sem_edges(text):
+    return sorted(
+        (str(p), str(o))
+        for _, p, o in edge_triples("a.md", text, SEM_RESOLVE, HEADINGS)
+    )
+
+
+def test_every_named_relation_has_a_predicate():
+    assert set(NAMED) <= set(RESOLVED)
+
+
+def test_a_derived_from_becomes_its_own_predicate():
+    assert sem_edges(with_field("derived_from", "CIDR")) == [
+        (str(V.derived_from), str(doc_iri("200 Dev/CIDR.md")))
+    ]
+
+
+def test_each_of_the_seven_is_carried():
+    for kind in (
+        "contradicts",
+        "diverges_from",
+        "applies",
+        "informed_by",
+        "expresses",
+        "answered_by",
+    ):
+        assert sem_edges(with_field(kind, "CIDR")) == [
+            (str(V[kind]), str(doc_iri("200 Dev/CIDR.md")))
+        ]
+
+
+def test_a_relation_pointing_at_an_item_lands_on_the_section():
+    # The gold set's only section reference is exactly this shape.
+    text = with_field("expresses", "_Insights#인사이트 1")
+    assert sem_edges(text) == [
+        (str(V.expresses), str(section_iri(INSIGHTS_DOC, INSIGHT)))
+    ]
+
+
+def test_a_semantic_anchor_that_names_nothing_refuses_to_fall_back():
+    # semantic-identity.md: a broken body link is tolerated, a broken
+    # semantic fact is not. Falling back to the document would file the
+    # claim against the wrong thing and say nothing about it.
+    text = with_field("derived_from", "_Insights#없는 항목")
+    assert sem_edges(text) == [(str(V.derived_from_raw), "_Insights#없는 항목")]
+
+
+def test_a_body_anchor_that_names_nothing_still_lands_on_the_document():
+    # 58 of the vault's 59 `#` links point at an ordinary heading. They are
+    # navigation, and the document is where they land.
+    text = NOTE.replace("본문", "[[_Insights#평범한 제목]] 참조")
+    assert sem_edges(text) == [(str(V.links_to), str(doc_iri(INSIGHTS_DOC)))]
+
+
+def test_an_unresolved_relation_keeps_the_anchor_it_was_given():
+    # So lint can report what was meant, not just which file was missing.
+    text = with_field("derived_from", "없는 문서#인사이트 1")
+    assert sem_edges(text) == [(str(V.derived_from_raw), "없는 문서#인사이트 1")]
+
+
+def test_a_source_that_is_not_a_document_stays_as_written():
+    # `derived_from: experience` says the source is lived, not written.
+    # It is not a broken link, and `v:supersedes_raw` set the precedent
+    # for a raw form that is the normal case.
+    text = "---\ntype: case\nderived_from:\n  - experience\ncreated: 2026-08-10\n---\n본문\n"
+    assert sem_edges(text) == [(str(V.derived_from_raw), "experience")]
