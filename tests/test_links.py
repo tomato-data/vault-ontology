@@ -1,4 +1,4 @@
-from vault.links import iter_links, link_target, strip_code
+from vault.links import iter_links, link_parts, link_target, strip_code
 
 
 def test_a_plain_link_is_the_target():
@@ -36,6 +36,41 @@ def test_surrounding_space_is_trimmed():
 def test_a_body_that_is_only_a_separator_has_no_target():
     assert link_target("#Notation") == ""
     assert link_target("|alias") == ""
+
+
+# `link_parts` keeps what `link_target` throws away. Phase 15 needs the
+# heading; the other three callers (graph, lint, create) still want the
+# document alone, so the old name stays and delegates.
+
+
+def test_parts_of_a_plain_link_have_no_heading():
+    assert link_parts("CIDR") == ("CIDR", "")
+
+
+def test_parts_keep_the_heading():
+    assert link_parts("CIDR#Notation") == ("CIDR", "Notation")
+
+
+def test_the_alias_comes_off_before_the_heading_is_read():
+    assert link_parts("CIDR#Notation|see here") == ("CIDR", "Notation")
+    assert link_parts(r"CIDR#Notation\|see here") == ("CIDR", "Notation")
+
+
+def test_a_nested_heading_stays_whole():
+    # Obsidian addresses a subheading as `#outer#inner`. Cutting at the
+    # second `#` would name the wrong section, so the remainder is kept
+    # as written and matched as one string.
+    assert link_parts("Async#2. 체이닝#순차 vs 병렬") == ("Async", "2. 체이닝#순차 vs 병렬")
+
+
+def test_a_block_reference_yields_no_heading():
+    # Measured 2026-08-31: the vault holds zero `^` references, so this
+    # records that they parse to nothing rather than to a section.
+    assert link_parts("CIDR^a1b2c3") == ("CIDR", "")
+
+
+def test_parts_of_a_same_document_anchor_have_no_document():
+    assert link_parts("#Notation") == ("", "Notation")
 
 
 def test_keeps_text_that_is_not_code():

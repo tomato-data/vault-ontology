@@ -3,21 +3,39 @@
 import re
 
 
-def link_target(raw):
-    r"""Return the document a `[[...]]` body points at.
+def link_parts(raw):
+    r"""Split a `[[...]]` body into the document and the heading it names.
 
-    Cut at the FIRST separator. The order matters: an escaped pipe `\|` must
-    go before a bare `|`, or the backslash stays glued to the target and a
-    working link reads as broken.
+    The order is fixed by what nests inside what. The alias comes off
+    first — it is display text and may hold anything, `#` included. An
+    escaped pipe `\|` must go before a bare `|`, or the backslash stays
+    glued to the target and a working link reads as broken.
 
-    Cutting is safe because these characters cannot reach the target: `|` is
-    banned in note names, and `#`/`^` are read as separators before anything
-    else, so a note whose name holds one is unreachable by wikilink anyway.
+    A block reference `^id` is dropped, not returned: measured 2026-08-31,
+    the vault holds zero of them, so there is nothing to address.
+
+    The heading is the WHOLE remainder. Obsidian writes a subheading as
+    `doc#outer#inner`, and cutting at the second `#` would name the outer
+    section instead of the inner one — a wrong answer where keeping the
+    string whole is merely an unmatched one.
     """
-    target = raw
-    for separator in ("\\|", "|", "#", "^"):
-        target = target.split(separator, 1)[0]
-    return target.strip()
+    text = raw
+    for separator in ("\\|", "|"):
+        text = text.split(separator, 1)[0]
+    text = text.split("^", 1)[0]
+    document, _, heading = text.partition("#")
+    return document.strip(), heading.strip()
+
+
+def link_target(raw):
+    """Return the document a `[[...]]` body points at, heading discarded.
+
+    Three of the four callers — the SQLite graph, lint, and create — ask
+    where a link LANDS, and a section lands in its document. Only the RDF
+    builder needs the heading, so the split lives in `link_parts` and this
+    name keeps meaning what it always meant.
+    """
+    return link_parts(raw)[0]
 
 
 # A fence line: three backticks or tildes, optionally with a language tag.

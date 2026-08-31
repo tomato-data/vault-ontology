@@ -37,6 +37,15 @@ vault 경로는 두 Mac 모두 같다.
 gold set 50개가 끝났고 답안은 [`part3/gold-set-answers.md`](part3/gold-set-answers.md)에 있다.
 **Phase 15 의 파서는 그 답을 재현해야 한다.**
 
+> **2026-08-31 · vault 쪽 전 디렉토리 정합화 완료** — 정본은 vault 의
+> `000 Index/Dots/전 디렉토리 정합화 — 마스터 플랜.md`. Phase 15 에 주는 것 둘:
+> ① type 교정 35건(`_Compile Log` 18 reflection→log · `Incident Response` 17
+> project-doc→case)으로 **type 분포 숫자가 움직였다** — gold set 50개 문서의 type 은
+> 안 바뀌었으므로 답안 재현에는 영향 없고, 회귀 대조에서 숫자가 다르면 정정으로 기록.
+> ② 500 결정 — `By Subquestion/` 문서는 type 을 안 바꾸고 **빌더가 경로에서
+> `v:Question` 을 유도한다** (「파생 가능한 사실은 frontmatter 에 안 적는다」).
+> 그래프 빌더의 소소한 추가 요구다. 스키마 정본은 v1.16 (case=event 독법 · 필수 필드 프로파일).
+
 | Phase | 내용 | 상태 |
 |---|---|---|
 | 1~4 | frontmatter · 위키링크 · 스캔 · lint | ✅ |
