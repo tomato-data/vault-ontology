@@ -28,3 +28,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["vault"]
+
+# The two `.ttl` files are data of record and live beside the code, not
+# inside the package — `vault-ontology.ttl` is read by tests and docs as a
+# document. They still have to travel with an install, or `vault validate`
+# on an installed tool cannot find its own shapes.
+[tool.hatch.build.targets.wheel.force-include]
+"vault-shapes.ttl" = "vault/vault-shapes.ttl"
+"vault-ontology.ttl" = "vault/vault-ontology.ttl"

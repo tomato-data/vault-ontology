@@ -26,9 +26,21 @@ ORDER = {"violation": 0, "warning": 1, "info": 2}
 
 
 def shapes_graph(root=None):
-    """Load the shapes. `root` defaults to this repository."""
-    path = Path(root) if root else Path(__file__).parent.parent
-    return Graph().parse(path / SHAPES_NAME, format="turtle")
+    """Load the shapes, from the repository or from an install.
+
+    Two places because the file is in two situations. In the repository it
+    sits beside `vault-ontology.ttl` at the root, where it reads as a
+    document of record; installed, it travels inside the package. Checking
+    the package first means an installed tool never reaches out to a
+    checkout that may not be there.
+    """
+    if root:
+        return Graph().parse(Path(root) / SHAPES_NAME, format="turtle")
+    here = Path(__file__).parent
+    for candidate in (here / SHAPES_NAME, here.parent / SHAPES_NAME):
+        if candidate.exists():
+            return Graph().parse(candidate, format="turtle")
+    raise FileNotFoundError(f"{SHAPES_NAME} not found beside {here}")
 
 
 def _where(node):
