@@ -6,11 +6,15 @@
   "heading_path_prepended": true,
   "metadata_prefix": "title + summary + tags (vault frontmatter)",
   "chunks_per_doc_cap": null,
-  "docs": 3857,
-  "chunks": 43635,
-  "token_len_median": 213,
-  "token_len_p95": 613,
-  "token_len_max": 767,
-  "max_seq_length": 768,
-  "truncation": "none (768 >= max 767)"
+  "measured_on": "2026-08-25 (home M5 Pro)",
+  "docs": 3862,
+  "chunks": 43715,
+  "token_len_median": 189,
+  "token_len_p95": 550,
+  "token_len_p99": 672,
+  "token_len_max": 905,
+  "tokenizer": "BAAI/bge-m3 (XLM-R); arctic-embed-l-v2.0 gives identical counts",
+  "max_seq_length": 1024,
+  "truncation": "none (1024 >= max 905)",
+  "note": "이전 기록은 docs 3857 / chunks 43635 / max 767 / max_seq_length 768 이었다. vault 가 자라 45개 청크가 768 을 넘었고, 어느 팔도 돌기 전에 1024 로 올려 네 팔에 동일 적용했다."
 }

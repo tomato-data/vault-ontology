@@ -1,0 +1,9 @@
+{
+"20": ["7.1 파드 배포 전략", "파드 배포 전략 - maxUnavailable, maxSurge", "6.2 작업 관리 앱을 쿠버네티스에 배포하기", "파드의 세분화에 대한 의문"],
+"21": ["01-business-logic-architecture", "Layered Architecture", "DDD 준수 비교 분석", "10. 전체 그림", "10. Factory as Belief Layer — 결정과 행위를 분리하는 두 가지 황금률"],
+"22": ["다중 기관 스키마 설계 및 리팩토링", "E-Project_서비스_아키텍처", "database-design", "PostgreSQL 스키마 분리 전략", "PostgreSQL 스키마 설계 전략 (public 비우기, 커스텀 스키마 활용)", "진화가능 택소노미와 하이브리드 RLS — 불변 UUID 앵커·FK 우회 가드", "감사로그 설계"],
+"23": ["FastAPI 테스트 기준점 — 오픈소스 벤치마크 기반 테스트 전략", "0010-test-suite-strategy", "testing-strategies", "07-testing-strategies", "테스트 전략 및 커버리지 확장", "백엔드 테스트 전략 및 에러 핸들링 통일 가이드", "11. 테스트 작성 원칙", "10 뼈대 — 테스트 기준선", "10 post — 테스트 기준선"],
+"24": ["03-authorization", "Privacy Compliance", "02. 인증과 인가", "7.3 유저 관리와 Role-Based Access Control(RBAC)", "역할 기반 UI 조건부 렌더링 및 권한 제어"],
+"25": ["flutter_rules", "Flutter — 글로벌 상태 변화 구독은 didChangeDependencies가 아닌 addListener로", "Flutter 테스트는 concurrency를 명시적으로 고정하고 unit과 widget 사이클을 분리하라", "Flutter 성능 최적화 패턴", "Flutter 모바일 성능 최적화 패턴", "Flutter 프로젝트 CLAUDE.md — destructive 명령 경계", "Best Practices 감사 및 개선 (2026-04)"],
+"26": ["Celery Architecture", "Celery 구성 요소와 Producer-Consumer 패턴", "09-background-processing", "background-jobs", "PostgreSQL로 전체 기술 스택 대체하기"]
+}

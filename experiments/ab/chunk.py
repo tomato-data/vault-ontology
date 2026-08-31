@@ -5,9 +5,9 @@ beats a fixed window. Each chunk carries the note title, summary and tags as a
 prefix — the vault already has that metadata, and it is the cheap stand-in for
 Anthropic-style contextual retrieval.
 """
-import json, re, sys
+import json, pathlib, re, sys
 from pathlib import Path
-sys.path.insert(0, "/Users/ghibli/Desktop/Code/vault-ontology")
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[2]))  # repo root — derived, not hardcoded
 import logging; logging.getLogger("rdflib").setLevel(logging.CRITICAL)
 from vault.scan import scan_vault
 from vault.frontmatter import split_frontmatter, fm_get, fm_list
