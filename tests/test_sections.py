@@ -1,4 +1,9 @@
-from vault.sections import item_headings, iter_links_by_item, resolve_anchor
+from vault.sections import (
+    item_date,
+    item_headings,
+    iter_links_by_item,
+    resolve_anchor,
+)
 
 # A real one, shortened. `_Insights.md` in 500 holds 24 of these.
 INSIGHTS = """\
@@ -117,3 +122,37 @@ def test_a_link_in_code_is_not_a_link():
 def test_a_same_document_anchor_names_no_other_node():
     body = "## 제목\n[[#제목]]\n"
     assert list(iter_links_by_item(body)) == []
+
+
+# The date an item states for itself. 74 of the vault's 292 items carry one,
+# and C08 — how a belief changed and when — is what asks for it.
+
+
+def test_a_trailing_date_is_the_items_own():
+    assert item_date("인사이트 20: 죽음관과 단기적 행복 (2026-03-22)") == "2026-03-22"
+
+
+def test_a_date_followed_by_more_inside_the_parentheses():
+    assert item_date("패턴 7: 제안-only (2026-07-14 · 자동 분류 #7)") == "2026-07-14"
+
+
+def test_a_range_is_dated_by_where_it_started():
+    assert (
+        item_date("사례 3 — 테스트 사이클 (2026-04-29 ~ 04-30): raw 보존")
+        == "2026-04-29"
+    )
+
+
+def test_an_item_may_state_no_date():
+    assert item_date("인사이트 1: 첫 번째") is None
+
+
+def test_a_date_outside_parentheses_is_not_the_items_date():
+    # Measured 2026-08-31: all 74 dated items write it in parentheses, and
+    # none writes it bare. Requiring the bracket keeps a date that belongs
+    # to the TITLE — a retrospective on 2026-05, say — out of `as_of`.
+    assert item_date("패턴 3: 2026-05 회고에서 나온 것") is None
+
+
+def test_the_first_date_wins():
+    assert item_date("사례 2 (2026-01-01): 2026-02-02 까지 이어짐") == "2026-01-01"

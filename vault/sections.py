@@ -36,6 +36,12 @@ COLON = re.compile(r"[:：]")
 # just a document; above it, the author is addressing items one by one.
 CARRIER_THRESHOLD = 3
 
+# `인사이트 20: … (2026-03-22)` — when the item says it holds, which is not
+# when the file was written. The bracket is required: measured 2026-08-31,
+# all 74 dated items use it and none writes the date bare, so demanding it
+# keeps a date that belongs to the TITLE out of `as_of`.
+AS_OF = re.compile(r"\((\d{4}-\d{2}-\d{2})")
+
 
 def _headings(body):
     """Yield (level, text) for every heading, code blanked out first."""
@@ -73,6 +79,27 @@ def resolve_anchor(headings, anchor):
         if anchor in (heading, COLON.split(heading, 1)[0].strip()):
             return heading
     return None
+
+
+def item_date(heading):
+    """The date an item states for itself, or None.
+
+    This is `v:as_of` and not `dcterms:created`: it says when the belief
+    held, while the file's `created` says when it was typed up. C08 — how a
+    belief changed and when — needs the first and gets nothing from the
+    second, because 24 insights share one file date.
+
+    The first date wins. A range (`2026-04-29 ~ 04-30`) is dated by where
+    it started, which is what a range's `as_of` means.
+
+    Only the heading is read. The `**Last Updated**` line at the foot of a
+    document looks like an item's update date and is not one: of 11 lines
+    matching that shape, 10 sat under the LAST item and 8 were the file's
+    own footer. Three genuine `> **날짜 갱신 (…)**:` blocks survive, which
+    is too few to write a rule for.
+    """
+    match = AS_OF.search(heading)
+    return match.group(1) if match else None
 
 
 def iter_links_by_item(body):
