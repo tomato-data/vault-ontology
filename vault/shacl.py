@@ -12,7 +12,6 @@ reports on what is written and not on what could be worked out.
 from collections import Counter
 from pathlib import Path
 
-import pyshacl
 from rdflib import Graph
 from rdflib.namespace import SH
 
@@ -52,6 +51,12 @@ def findings(data, shapes):
     sees. A report graph would put the caller back in the business of
     walking blank nodes to answer "what broke, and where do I go".
     """
+    # Imported here, not at the top. `vault/__main__.py` loads every
+    # module to build its parser, and a top-level import made `vault lint`
+    # die on an installation without pyshacl — a new optional dependency
+    # must not take the old commands down with it.
+    import pyshacl
+
     conforms, report, _ = pyshacl.validate(
         data, shacl_graph=shapes, advanced=True, inference="none"
     )

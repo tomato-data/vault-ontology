@@ -51,8 +51,10 @@ uv run python -m vault ask review               # 무효화된 근거에 선 것
 > 가진 문서 148개 중 **개인 대역이 4개**뿐이라, C09·C15(개인 경험이 기술 판단에)가
 > 답할 데이터를 못 가졌다. 라벨링이 기술 쪽에만 붙었다는 뜻이고, 그걸 메울지가
 > 실사용에서 나올 판단이다.
-Phase 15 가 gold 답안 33건을 전부 재현했고 (`uv run python -m tools.measure_phase15`),
-`.vault.ttl` 은 28,380 트리플이다 — 섹션 324 · `v:Insight` 121 · `v:Question` 56 · 의미 관계 78.
+
+`.vault.ttl` 은 28,436 트리플이다 — 섹션 324 · `v:Insight` 121 · `v:Question` 56 ·
+의미 관계 159. 회귀 확인은 `tools/measure_phase15` (gold 33/33) ·
+`measure_phase16` (SHACL) · `measure_phase17` (규칙) · `measure_phase18` (질문).
 
 > **2026-08-31 · vault 쪽 전 디렉토리 정합화 완료** — 정본은 vault 의
 > `000 Index/Dots/전 디렉토리 정합화 — 마스터 플랜.md`. Phase 15 에 주는 것 둘:
