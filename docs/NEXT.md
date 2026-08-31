@@ -33,7 +33,7 @@ vault 경로는 두 Mac 모두 같다.
 
 **Phase 1~9 완료. 테스트 241개 통과. Phase 10~20 계획 수립.**
 
-재개 지점은 **Phase 16 — SHACL 의미 계약**이다.
+재개 지점은 **Phase 17 — 목적 제한 추론**이다.
 Phase 15 가 gold 답안 33건을 전부 재현했고 (`uv run python -m tools.measure_phase15`),
 `.vault.ttl` 은 28,380 트리플이다 — 섹션 324 · `v:Insight` 121 · `v:Question` 56 · 의미 관계 78.
 
@@ -60,7 +60,8 @@ Phase 15 가 gold 답안 33건을 전부 재현했고 (`uv run python -m tools.m
 | 13 | 문서와 지식 개체의 분리 | ✅ **완료** — [`semantic-identity.md`](part3/semantic-identity.md) |
 | 14 | 핵심 도메인 온톨로지 0.1 | ✅ **완료** |
 | 15 | 의미 사실 그래프 빌더 | ✅ **완료** — gold 답안 33/33 재현 |
-| 16~18 | SHACL · 추론 · 질의 | 계획 |
+| 16 | SHACL 의미 계약 | ✅ **완료** — shape 6개 · parity 22=22 |
+| 17~18 | 추론 · 질의 | 계획 |
 | 19~20 | 제안·승인 · 제한 운영 | **보류** — Phase 18 실사용 뒤 판단 |
 
 `vault/`에는 파서·검증·SQLite 그래프·RDF·SPARQL·추론 구현이 모두 들어 있다.

@@ -228,6 +228,62 @@ shape와 메시지
 각 단계에서 실행 시간, 오탐, 누락, 위반 분포를 기록한다. 엔진 교체는 실제 병목이
 나온 뒤에만 검토한다.
 
+### 실측 (2026-08-31 · `tools/measure_phase16.py`)
+
+```
+gold set 50      트리플    526    0.21s   violation  1 · warning  4
+확대 표본 500     트리플  4,070    0.87s   violation  9 · warning  8
+전체 vault       트리플 28,436    3.54s   violation 22 · warning 90
+```
+
+**트리플이 54배 늘 때 시간은 17배 늘었다.** 병목이 없으므로 엔진을 안 건드린다.
+비교값으로, 그래프를 만드는 데 1.86초가 걸린다.
+
+```
+shape 별      PrincipleNeedsGround 43 · DecisionNeedsGround 30
+             JudgementNeedsSummary 22 · SemanticLinkShouldResolve 17
+             NoSelfRelation 0 · SectionBelongsToItsDocument 0
+
+parity        SHACL 22 · Python lint 22 · 일치
+```
+
+gold set 50개 중 **49개만 그래프에 있다.** 나머지 하나는
+`900 Archive/Mind Compiler/_Insights.md`이고, D3이 900을 그래프에서 뺐다.
+**누락이 아니라 설계다** — 그리고 그 문서가 gold set에 들어간 이유(C17이 지목)는
+Phase 18의 질의가 900을 어떻게 다룰지의 문제로 남는다.
+
+gold set에 걸린 다섯 건은 전부 **알고 있던 부채**다.
+
+```
+violation 1   0429_tdd_plan… 에 summary 가 없다        Python lint 의 22건 중 하나
+warning 2     experience 두 건                        의도된 값
+warning 2     _개발 규율집 · Decision Node 에 근거 없음   C04 가 잰 그 부채
+```
+
+**새로 만들어 낸 오탐이 0건이다.** 다섯 건 모두 이미 다른 자리에서 세어 둔 것을
+다시 가리킨다.
+
+### 세션 도중 vault가 움직였다
+
+Step 1에서 `PrincipleDocument` 위반을 59/94로 쟀는데, Step 5에서 43/94가 나왔다.
+`derived_from`이 69에서 160으로, `experience`가 2에서 17로 늘었다. **내가 쓴 것이
+아니다 — vault 쪽에서 작업이 돌고 있었다.**
+
+숫자를 현재값으로 고쳤고, 고치면서 확인한 것이 하나 있다. **이 저장소의 모든 실측은
+스냅숏이고, 날짜가 붙어 있어야 한다.** `.vault.ttl`을 디스크에서 읽는 코드와 새로
+빌드하는 코드가 서로 다른 답을 내는 것을 실제로 봤고, `vault validate`가 매번
+새로 빌드하는 이유가 그것이다.
+
+## 완료 판정 (2026-08-31)
+
+| | |
+|---|---|
+| 초기 shape가 gold set의 기대 위반과 일치 | 5건 전부 이미 세어 둔 부채. **새 오탐 0** |
+| 기존 lint와 겹치는 규칙은 결과가 일치 | **22 = 22** |
+| OWA 추론과 닫힌 세계 검증이 분리 | `vault-ontology.ttl` / `vault-shapes.ttl`. 합치지 않는다 |
+| 위반에서 원문 위치로 | `경로#제목`. `section_path` 왕복 |
+| 기존 부채가 신규 assertion을 안 막는다 | 종료 코드는 violation 에만 걸린다. warning 90건은 0 |
+
 ## 산출물
 
 - SHACL shapes 5개 이상
