@@ -33,7 +33,24 @@ vault 경로는 두 Mac 모두 같다.
 
 **Phase 1~9 완료. 테스트 241개 통과. Phase 10~20 계획 수립.**
 
-재개 지점은 **Phase 18 — 의미 질의와 설명 계층**이다.
+**3부의 구현이 끝났다.** 남은 것은 [`phase18.md`](phases/phase18.md) Step 5의
+**2주 실사용**이고, 그것이 Phase 19·20을 할지와 **디렉토리를 개편할지**를 함께 정한다.
+
+```bash
+uv run python -m vault rdf                      # 그래프를 만든다
+uv run python -m vault validate                 # 계약을 검사한다 (--audit 로 warning 까지)
+uv run python -m vault ask lineage "<문서>"      # 이 판단 뒤의 근거 사슬
+uv run python -m vault ask evidence "<문서>"     # 바로 앞의 근거
+uv run python -m vault ask affected "<문서>"     # 이걸 고치면 뭐가 영향받나
+uv run python -m vault ask together             # 같은 근거를 공유하는 것들
+uv run python -m vault ask crossing             # 삶과 일 사이를 오간 사슬
+uv run python -m vault ask review               # 무효화된 근거에 선 것
+```
+
+> **2주 동안 눈여겨볼 것 하나.** `ask crossing`이 지금 **0건**이다. 의미 관계를
+> 가진 문서 148개 중 **개인 대역이 4개**뿐이라, C09·C15(개인 경험이 기술 판단에)가
+> 답할 데이터를 못 가졌다. 라벨링이 기술 쪽에만 붙었다는 뜻이고, 그걸 메울지가
+> 실사용에서 나올 판단이다.
 Phase 15 가 gold 답안 33건을 전부 재현했고 (`uv run python -m tools.measure_phase15`),
 `.vault.ttl` 은 28,380 트리플이다 — 섹션 324 · `v:Insight` 121 · `v:Question` 56 · 의미 관계 78.
 
@@ -62,7 +79,7 @@ Phase 15 가 gold 답안 33건을 전부 재현했고 (`uv run python -m tools.m
 | 15 | 의미 사실 그래프 빌더 | ✅ **완료** — gold 답안 33/33 재현 |
 | 16 | SHACL 의미 계약 | ✅ **완료** — shape 6개 · parity 22=22 |
 | 17 | 목적 제한 추론 | ✅ **완료** — 규칙 4개 · 물질화 안 함 |
-| 18 | 의미 질의 — **3부 종착점** | 계획 |
+| 18 | 의미 질의 — **3부 종착점** | ✅ **구현 완료** — `vault ask` 6개 · gold 33/33. **2주 실사용만 남음** |
 | 19~20 | 제안·승인 · 제한 운영 | **보류** — Phase 18 실사용 뒤 판단 |
 
 `vault/`에는 파서·검증·SQLite 그래프·RDF·SPARQL·추론 구현이 모두 들어 있다.

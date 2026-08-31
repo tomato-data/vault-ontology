@@ -24,6 +24,25 @@ cross-domain  경험·철학·개발·커리어 사이의 근거 있는 접점
 명령 이름은 구현 시 기존 CLI와 충돌 여부를 확인해 확정한다. 범용 SPARQL 실행보다
 반복 사용하는 질문을 안정된 계약으로 먼저 제공한다.
 
+### 확정 — `ask` 여섯 개 (2026-08-31)
+
+기존 `q`(문서 그래프)와 나란히 `ask`(의미 그래프)를 둔다. 충돌 없음.
+
+```
+vault ask lineage  <note>    이 판단 뒤의 근거 사슬 전부      C02 · C04 · C09 · C15
+vault ask evidence <note>    바로 앞의 근거 한 홉             C02
+vault ask affected <note>    이걸 고치면 무엇이 영향받나        C21 · C29
+vault ask review             무효화된 근거에 선 것             C03 · C30
+vault ask crossing           삶과 일 사이를 오간 사슬          C07 · C09 · C15
+vault ask together           같은 근거를 공유하는 것들          C05 · C06
+```
+
+`explain`은 별도 명령으로 안 만들었다. **모든 답이 이미 경로다** — Phase 17이 규칙을
+endpoint가 아니라 path를 돌려주게 만들었으므로, 설명을 따로 물을 자리가 없다.
+
+`lineage`와 `evidence`를 나눈 이유 — 「무엇에 기대고 있나」의 답은 **이웃**이고,
+3홉 사슬을 돌려주면 그 답이 더 긴 답 안에 묻힌다.
+
 ## Step 2 — 답의 구조를 고정한다
 
 각 결과에는 다음을 포함한다.
@@ -45,6 +64,39 @@ cross-domain  경험·철학·개발·커리어 사이의 근거 있는 접점
 경로와 양쪽 원문을 제시한다. 의미 유사 후보만 있으면 확정 답이 아니라 별도 후보로
 표시한다.
 
+### 「없음」과 「아직 안 적힘」을 넷으로 갈랐다
+
+이 모듈이 SPARQL 문자열 대신 존재하는 이유다. 질의가 0행을 돌려주는 것과 사실이
+없는 것은 다르고, **`status`가 그 차이를 말한다.**
+
+| status | 뜻 | 실측 |
+|---|---|---|
+| `answered` | 적혀 있다 | 문서 138 |
+| `lived` | 출처가 문서가 아니라 겪은 일이다 | 문서 16 |
+| `unrecorded` | **아직 안 적혔다 — 없다는 뜻이 아니다** | 문서 4,896 |
+| `searched` | 찾아봤고 없었다 | **0** — 어휘만 있다 |
+
+`lived`가 따로 있는 이유가 이 절의 전부다. `derived_from: experience`는 **대답**이다.
+「출처가 문서가 아니다」라고 말하고 있는데, 이걸 `unrecorded`로 접으면 **한 말이
+침묵으로 바뀐다.**
+
+`searched`는 `v:source_unknown`이 갈 자리인데 vault에 0건이고 빌더도 안 내보낸다.
+**어휘만 두고 값은 안 만든다** — 데이터가 생기는 날 앉을 자리다.
+
+### 답은 rdflib 을 안 흘린다
+
+`Answer`와 `Hop`이 전부 `str`이다. Step 4가 요구하는 「저장 엔진을 숨긴다」를
+**약속이 아니라 타입으로** 지불했다.
+
+```python
+Hop(source="400 …/Decision Node - JWT vs Session.md", source_heading="",
+    relation="derived_from",
+    target="400 …/Trade-offs - JWT vs Session.md", target_heading="")
+```
+
+`target_heading`이 따로 있어서, 답이 「이 파일 어딘가」가 아니라
+`_Insights.md#인사이트 20`까지 가리킨다.
+
 ## Step 3 — gold answer 회귀 테스트를 만든다
 
 Phase 12의 50개 문서와 Phase 10의 기대 답을 연결한다.
@@ -57,11 +109,66 @@ Phase 12의 50개 문서와 Phase 10의 기대 답을 연결한다.
 
 텍스트 출력 전체 snapshot보다 구조화된 answer object를 먼저 테스트한다.
 
+### 실측 (2026-08-31 · `tools/measure_phase18.py`)
+
+```
+gold answer 회귀   33 되찾음 · 0 놓침
+
+질문별
+  together    14 경로   answered
+  review       0 경로   unrecorded
+  crossing     0 경로   unrecorded
+
+문서 5,050개에 전부 물어보기
+  lineage    answered 138 · lived 16 · unrecorded 4,896   0.10s
+  affected   answered 143 · unrecorded 4,907              0.04s
+```
+
+**Phase 12가 손으로 쓴 관계 33건을 `ask evidence`가 하나도 안 놓친다.**
+
+### 이 Phase의 큰 발견 — 교차 영역 사슬이 0건이다
+
+```
+의미 관계를 가진 문서, 대역별
+   120  200 Dev Knowledge Base    기술
+    21  400 Logic Forge           기술
+     7  300 Runtime               기술
+     3  100 Private Log           개인
+     1  500 Mind Compiler         개인
+
+개인 ↔ 기술 사슬   0
+```
+
+**C09(개인 기준이 기술 결정에)와 C15(반응이 성찰이나 창작으로)는 데이터가 없다.**
+Phase 10이 3부의 정당성을 「문서보다 작은 단위가 필요한가」에 걸었고, Phase 12~17이
+그걸 다 만들었는데, **정작 교차 영역은 라벨링이 기술 쪽에만 붙었다.**
+
+`crossing`을 「아무 두 대역」으로 두면 163개 사슬 중 145개가 걸린다. 그 중 103개가
+200↔300, 즉 **기술에서 기술로** 간다. 이 Phase가 스스로 「연결 수를 많이 보여주는
+것이 목표가 아니다」라고 적었으므로, **개인 대역과 기술 대역을 이름으로 갈라 놓고**
+둘 다 닿는 사슬만 센다. 그랬더니 0이다.
+
+**0이 실패가 아니다.** `unrecorded`가 「아직 안 적혔다」라고 말하고, 그것이 Step 5의
+2주 동안 무엇을 라벨링해야 하는지를 가리킨다.
+
 ## Step 4 — 저장 엔진을 숨긴다
 
 질문 API가 rdflib 구현 세부에 직접 묶이지 않도록 한다. SQLite·SPARQL·Python rule 중
 어느 경로가 적합한지는 질문별 실측으로 결정한다. 모든 것을 RDF 엔진으로 옮기는 것이
 목표가 아니다.
+
+### 세 층이 각자 다른 것을 답한다
+
+```
+SQLite (q)      문서 그래프 — 어디에 있나, 무엇에 링크하나        상시 운용 (2부 결정)
+rdflib (ask)    의미 그래프 — 무엇에 기대고 있나                Phase 15~18
+Python (rules)  경로 — 어떻게 거기까지 왔나                     Phase 17
+```
+
+**아무것도 옮기지 않았다.** `q`는 SQLite 위에서 그대로 돌고, `ask`는 그 옆에 섰다.
+2부의 결론(「상시 운용은 SQLite」)이 유지되고, 의미 질의만 RDF를 쓴다.
+
+경계는 답의 타입이 지킨다 — `ask`가 `str`만 돌려주므로 아래를 바꿔도 위가 모른다.
 
 ## Step 5 — 실제 사용 시험을 한다
 
@@ -144,3 +251,16 @@ Vector 점수는 검색 신호이며 asserted graph에 들어가지 않는다.
 SPARQL이 정답을 반환해도 사람이 이유를 이해하지 못하면 사용할 수 없다. 반대로
 자연어 설명이 매끄러워도 근거 경로가 틀리면 위험하다. 구조화된 답을 정본으로 두고
 자연어는 그 위의 표현 계층으로만 만든다.
+
+## 완료 판정 (2026-08-31)
+
+| | |
+|---|---|
+| 역량 질문을 CLI에서 실행한다 | `vault ask` 여섯 개 |
+| 답에 관계 경로와 원문 근거가 붙는다 | 모든 답이 경로다. `경로#제목`까지 |
+| 「없음」과 「아직 안 적힘」을 구분한다 | `answered` · `lived` · `unrecorded` (+`searched` 예약) |
+| gold answer 회귀 | **33 / 33** |
+| 저장 엔진이 안 새어 나온다 | `Answer`·`Hop`이 전부 `str` |
+| 실사용 시험 | **Step 5. 2주. 아직 안 함** |
+
+**3부의 구현은 여기서 끝난다.** 남은 것은 쓰는 일이고, 그것이 Step 5다.

@@ -20,6 +20,7 @@ from vault.graph import (
     orphans,
     stats,
 )
+from vault.ask import affected, crossing, evidence, lineage, render, review, together
 from vault.lint import lint_vault
 from vault.rdf import TTL_NAME, build_graph
 from vault.shacl import findings, format_finding, shapes_graph, summarise
@@ -65,6 +66,18 @@ def _parser():
     new.add_argument("--body")
     new.add_argument("--created")
     new.add_argument("--mkdir", action="store_true")
+
+    # `q` asks the document graph — where a note sits, what it links to.
+    # `ask` asks the semantic one — what a judgement rests on, and why.
+    # Two groups because the answers have different shapes: `q` returns
+    # paths, `ask` returns paths WITH the relation chain that found them.
+    asks = commands.add_parser("ask", help="ask the semantic graph").add_subparsers(
+        dest="question", required=True
+    )
+    for name in ("lineage", "evidence", "affected"):
+        asks.add_parser(name, parents=[common]).add_argument("note")
+    for name in ("review", "crossing", "together"):
+        asks.add_parser(name, parents=[common])
 
     queries = commands.add_parser("q", help="ask the graph").add_subparsers(
         dest="query", required=True
@@ -140,6 +153,9 @@ def main(argv=None):
             print("--audit 으로 warning 까지 본다", file=sys.stderr)
         return 1 if severities.get("violation") else 0
 
+    if args.command == "ask":
+        return _ask(args)
+
     if args.command == "tags":
         for tag, count in tag_vocabulary(args.vault):
             print(f"{count:6,}  {tag}")
@@ -153,6 +169,46 @@ def main(argv=None):
         print(f"vault: {DB_NAME} not found. run `vault build` first.", file=sys.stderr)
         return 2
     return _query(sqlite3.connect(database), args)
+
+
+def _ask(args):
+    """Answer a competency question. 0 answered · 1 nothing written yet.
+
+    The graph is built here rather than read off disk, for the reason
+    `validate` builds it: an answer from a stale file is worse than none.
+    """
+    graph = build_graph(args.vault)
+    whole = {"review": review, "crossing": crossing, "together": together}
+    if args.question in whole:
+        answer = whole[args.question](graph)
+    else:
+        node = _resolve(graph, args.vault, args.note)
+        if node is None:
+            print(f"vault: no such document: {args.note}", file=sys.stderr)
+            return 2
+        answer = {"lineage": lineage, "evidence": evidence, "affected": affected}[
+            args.question
+        ](graph, node)
+
+    header = f"{answer.question}  {answer.subject}".strip()
+    print(header + "\n")
+    for line in render(answer):
+        print(line)
+    print(f"{len(answer.paths)} 경로 · {answer.status}", file=sys.stderr)
+    return 0 if answer else 1
+
+
+def _resolve(graph, root, name):
+    """Turn what a person typed into the node the graph knows."""
+    from vault.rdf import doc_iri
+    from vault.scan import resolve_link, scan_vault
+
+    _, index, targets = scan_vault(root)
+    landed = resolve_link(nfc(name), index, targets)
+    if landed is None or not landed.endswith(".md"):
+        return None
+    node = doc_iri(landed)
+    return node if (node, None, None) in graph else None
 
 
 def _query(connection, args):
