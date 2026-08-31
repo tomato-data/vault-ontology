@@ -3,13 +3,14 @@
 Identity is decided in `doc_iri` and nowhere else - see docs/iri-policy.md.
 """
 
-from rdflib import Graph, Literal, Namespace
+from rdflib import Graph, Literal, Namespace, URIRef
 from rdflib.namespace import DCTERMS, RDF, SKOS, XSD
 
 from vault.frontmatter import fm_get, fm_list, split_frontmatter
 from vault.graph import in_graph
-from vault.links import iter_links, link_target
+from vault.links import link_target
 from vault.scan import folder_note, resolve_link, scan_vault
+from vault.sections import item_date, item_headings, item_prefix, iter_links_by_item
 
 BASE = "https://tomato.vault/"
 V = Namespace(BASE + "schema/")
@@ -56,6 +57,13 @@ def doc_iri(relative):
     return DOC[relative.removesuffix(".md").translate(ESCAPES)]
 
 
+def _unescape(encoded):
+    """Undo `ESCAPES`. Reversible only because escaping was one pass."""
+    for code, char in UNESCAPES.items():
+        encoded = encoded.replace(code, char)
+    return encoded
+
+
 def doc_path(iri):
     """Turn a document IRI back into its vault path. The inverse of `doc_iri`.
 
@@ -63,10 +71,29 @@ def doc_path(iri):
     with SQLite, which answers in paths. Reversible only because the escape
     was a single `translate` pass - see `doc_iri`.
     """
-    encoded = str(iri).removeprefix(DOC)
-    for code, char in UNESCAPES.items():
-        encoded = encoded.replace(code, char)
-    return encoded + ".md"
+    return _unescape(str(iri).removeprefix(DOC)) + ".md"
+
+
+def section_iri(relative, heading):
+    """Mint the IRI for one item inside a document.
+
+    A fragment on the document's own IRI, so the section is visibly part of
+    it and no second namespace is needed. `#` is the separator and the ONLY
+    unescaped one: a heading may hold its own `#` (Obsidian writes a nested
+    anchor as `doc#outer#inner`) and that one is escaped like any other
+    character. So the raw `#` in a section IRI always means the same thing.
+    """
+    return URIRef(f"{doc_iri(relative)}#{heading.translate(ESCAPES)}")
+
+
+def section_path(iri):
+    """Turn a section IRI back into (vault path, heading written in full).
+
+    Step 5 asks for the round trip: a semantic fact has to lead back to the
+    line it was read from, and that line is a heading in a file.
+    """
+    document, _, heading = str(iri).partition("#")
+    return doc_path(document), _unescape(heading)
 
 
 def folder_iri(path):
@@ -107,6 +134,22 @@ def _class_name(type_):
     return ("Project" if stem == "ProjectDoc" else stem) + "Document"
 
 
+# Only 인사이트 has a class. Phase 14 declared v:Insight and v:Question and
+# stopped there: `패턴` is the vault's most common item - 150 of them - and no
+# competency question asks for one, so it stays a section with no class. A
+# recorded hole, not an oversight.
+#
+# The type is ASSERTED, never inferred. Nothing in the data implies that a
+# heading beginning `인사이트` is a belief; only the prefix says so, and the
+# ontology says as much in its own comment.
+ENTITY_CLASS = {"인사이트": "Insight"}
+
+# The vault's 2026-08-31 alignment decided this: a `By Subquestion/` document
+# keeps `type: reflection` and the builder reads the question off the path.
+# A fact you can derive is not written into frontmatter twice.
+SUBQUESTION = "By Subquestion/"
+
+
 def node_triples(relative, text):
     """Yield (subject, predicate, object) for one note's own facts.
 
@@ -115,7 +158,7 @@ def node_triples(relative, text):
     at the very first step.
     """
     subject = doc_iri(relative)
-    fm, _ = split_frontmatter(text)
+    fm, body = split_frontmatter(text)
 
     type_ = fm_get(fm, "type")
     if type_:
@@ -139,6 +182,26 @@ def node_triples(relative, text):
         # serialises happily. Phase 4's lint is what refuses; the model
         # only states. That gap is the subject of Phase 9.
         yield subject, DCTERMS.created, Literal(created, datatype=XSD.date)
+
+    if SUBQUESTION in relative:
+        yield subject, RDF.type, V.Question
+
+    for heading in item_headings(body):
+        section = section_iri(relative, heading)
+        # No `a v:Section` here. `dcterms:hasPart rdfs:range v:Section`
+        # types it, the way isPartOf's range types folders - and Step 5
+        # forbids stating what the graph already yields.
+        yield subject, DCTERMS.hasPart, section
+
+        entity = ENTITY_CLASS.get(item_prefix(heading))
+        if entity:
+            yield section, RDF.type, V[entity]
+
+        # When the belief held, which the file's `created` cannot say:
+        # 24 insights share one file date.
+        as_of = item_date(heading)
+        if as_of:
+            yield section, V.as_of, Literal(as_of, datatype=XSD.date)
 
 
 # The frontmatter relations, in the order the schema of record names them.
@@ -182,8 +245,13 @@ def edge_triples(relative, text, resolve):
         for item in fm_list(fm, kind):
             yield from _edge(subject, kind, link_target(item), resolve)
 
-    for target in iter_links(body):
-        yield from _edge(subject, "links_to", target, resolve)
+    # A link written under an item belongs to the ITEM. The gold set
+    # measured why: 500's documents carry no relation of their own because
+    # each insight links for itself, and hanging all of them off the file
+    # is what made that band unlabelable.
+    for item, target, _ in iter_links_by_item(body):
+        source = section_iri(relative, item) if item else subject
+        yield from _edge(source, "links_to", target, resolve)
 
     # Derived from the path, and the target is the FOLDER — not the note
     # that happens to represent it. That note is a sibling, not a container.

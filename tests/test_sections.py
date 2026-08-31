@@ -1,3 +1,4 @@
+from vault.links import iter_links
 from vault.sections import (
     item_date,
     item_headings,
@@ -194,3 +195,35 @@ def test_deleting_one_item_costs_only_that_item():
 def test_merging_two_carriers_keeps_every_item():
     merged = SIX[: SIX.index("### 인사이트 4")] + SIX[SIX.index("### 인사이트 4") :]
     assert len(item_headings(merged)) == 6
+
+
+def test_a_link_in_an_item_heading_belongs_to_that_item():
+    # 13 documents write a link inside a heading. Skipping heading lines
+    # dropped every one of them from the graph.
+    body = "### 규칙 1 — 수치는 [[SSOT]]에서만 가져온다\n본문\n"
+    assert list(iter_links_by_item(body)) == [
+        ("규칙 1 — 수치는 [[SSOT]]에서만 가져온다", "SSOT", "")
+    ]
+
+
+def test_a_link_in_a_plain_heading_is_kept_by_the_document():
+    body = "## 대부분 [[class]]에서 배운 내용\n본문\n"
+    assert list(iter_links_by_item(body)) == [(None, "class", "")]
+
+
+def test_a_plain_heading_ends_the_item_before_its_own_link_is_read():
+    body = "### 인사이트 1: 하나\n### 마치며 [[바깥]]\n"
+    assert list(iter_links_by_item(body)) == [(None, "바깥", "")]
+
+
+def test_the_item_walk_finds_exactly_what_the_plain_walk_finds():
+    # How the dropped-heading bug was caught: `iter_links` and this one
+    # must see the same links, and only disagree on who owns them.
+    body = (
+        "머리말 [[하나]]\n"
+        "### 인사이트 1: [[제목 속]]\n"
+        "[[본문 속]]\n"
+        "## 평범한 제목 [[제목 속 둘]]\n"
+        "`[[코드]]`\n"
+    )
+    assert [d for _, d, _ in iter_links_by_item(body)] == list(iter_links(body))

@@ -11,6 +11,8 @@ from vault.rdf import (
     folder_iri,
     folder_triples,
     node_triples,
+    section_iri,
+    section_path,
     tag_iri,
     tag_triples,
 )
@@ -19,10 +21,12 @@ NOTE = "---\ntype: concept\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n"
 
 
 def facts(relative, text):
-    """Predicate -> object.
+    """Predicate -> object, for a note that holds no items.
 
-    Folding the triples like this only works because the subject is always
-    the document itself, which the last test in this file is there to guard.
+    Folding the triples drops the subject, which is safe only while the
+    subject is the document itself. Since Phase 15 that holds for a note
+    with no numbered items; `test_a_subject_is_the_document_or_one_of_its
+    _own_sections` is what guards the general case.
     """
     return {p: o for _, p, o in node_triples(relative, text)}
 
@@ -69,7 +73,7 @@ def test_a_missing_field_makes_no_triple():
     assert DCTERMS.abstract not in facts("a.md", bare)
 
 
-def test_every_triple_shares_the_document_as_subject():
+def test_a_note_with_no_items_states_only_itself():
     subjects = {s for s, _, _ in node_triples("200 Dev/CIDR.md", NOTE)}
     assert subjects == {doc_iri("200 Dev/CIDR.md")}
 
@@ -135,7 +139,7 @@ def test_a_note_at_the_root_is_part_of_nothing():
     assert edges("CIDR.md", NOTE) == []
 
 
-def test_every_edge_shares_the_document_as_subject():
+def test_an_edge_from_a_note_with_no_items_leaves_the_note():
     text = with_field("builds_on", "CIDR", body="[[CIDR]] 참조")
     subjects = {s for s, _, _ in edge_triples("a.md", text, RESOLVE)}
     assert subjects == {doc_iri("a.md")}
@@ -334,3 +338,124 @@ def test_the_graph_can_be_thrown_away_and_remade(tmp_path):
     out.unlink()
     build_graph(root).serialize(destination=out, format="turtle")
     assert Graph().parse(out, format="turtle").isomorphic(kept)
+
+
+# Phase 15 Step 5. Sections enter the graph. `links_to` moves for the 40
+# body links that sit under an item — a correction, not a regression.
+
+ITEMS = (
+    "---\ntype: reflection\ncreated: 2026-08-10\n---\n"
+    "머리말에서 [[CIDR]]\n\n"
+    "### 인사이트 1: 첫 번째 (2026-03-22)\n"
+    "[[Network]] 참조\n\n"
+    "### 패턴 2: 두 번째\n"
+)
+ITEM_FILES = {**SMALL, "500 Mind/Q1. Better/_Insights.md": ITEMS}
+INSIGHT = "인사이트 1: 첫 번째 (2026-03-22)"
+INSIGHTS_DOC = "500 Mind/Q1. Better/_Insights.md"
+
+
+def test_a_section_hangs_off_its_document():
+    assert str(section_iri(INSIGHTS_DOC, INSIGHT)).startswith(
+        str(doc_iri(INSIGHTS_DOC)) + "#"
+    )
+
+
+def test_only_the_separator_hash_stays_raw():
+    # The heading's own `#` — Obsidian's nested anchor — is escaped, so the
+    # one unescaped `#` in the IRI is always the separator.
+    iri = str(section_iri(INSIGHTS_DOC, "패턴 2#안쪽"))
+    assert iri.count("#") == 1
+    assert iri.endswith("#패턴%202%23안쪽")
+
+
+def test_a_section_iri_goes_back_to_a_document_and_a_heading():
+    assert section_path(section_iri(INSIGHTS_DOC, INSIGHT)) == (INSIGHTS_DOC, INSIGHT)
+
+
+def test_a_nested_heading_survives_the_round_trip():
+    assert section_path(section_iri(INSIGHTS_DOC, "패턴 2#안쪽"))[1] == "패턴 2#안쪽"
+
+
+def test_a_document_states_the_items_it_holds(tmp_path):
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (
+        doc_iri(INSIGHTS_DOC),
+        DCTERMS.hasPart,
+        section_iri(INSIGHTS_DOC, INSIGHT),
+    ) in g
+
+
+def test_a_section_is_never_typed_v_section_by_hand(tmp_path):
+    # `dcterms:hasPart rdfs:range v:Section` types it, exactly as isPartOf's
+    # range types folders. Asserting it here would be the duplicate Step 5
+    # forbids. `v:Insight` is different — see the next test — because no
+    # range can produce it.
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (section_iri(INSIGHTS_DOC, INSIGHT), RDF.type, V.Section) not in g
+    assert (section_iri(INSIGHTS_DOC, "패턴 2: 두 번째"), RDF.type, V.Section) not in g
+
+
+def test_an_insight_is_typed_because_it_cannot_be_inferred(tmp_path):
+    # The ontology says so in as many words: a parser writes v:Insight from
+    # the heading prefix. Nothing in the data implies it.
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (section_iri(INSIGHTS_DOC, INSIGHT), RDF.type, V.Insight) in g
+
+
+def test_an_item_with_no_class_stays_a_bare_section(tmp_path):
+    # `패턴` is the vault's most common item and no competency question
+    # asks for it, so Phase 14 declared no class. A recorded hole.
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (section_iri(INSIGHTS_DOC, "패턴 2: 두 번째"), RDF.type, None) not in g
+
+
+def test_a_dated_item_states_when_it_held(tmp_path):
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (
+        section_iri(INSIGHTS_DOC, INSIGHT),
+        V.as_of,
+        Literal("2026-03-22", datatype=XSD.date),
+    ) in g
+
+
+def test_a_link_under_an_item_leaves_the_item(tmp_path):
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    network = doc_iri("200 Dev/Network/Network.md")
+    assert (section_iri(INSIGHTS_DOC, INSIGHT), V.links_to, network) in g
+    assert (doc_iri(INSIGHTS_DOC), V.links_to, network) not in g
+
+
+def test_a_link_above_every_item_still_leaves_the_document(tmp_path):
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (doc_iri(INSIGHTS_DOC), V.links_to, doc_iri("200 Dev/Network/CIDR.md")) in g
+
+
+def test_a_subquestion_document_is_a_question(tmp_path):
+    # The vault keeps `type: reflection` and the builder reads the question
+    # off the path — a fact you can derive is not written down twice.
+    files = {**SMALL, "500 Mind/Q1. Better/By Subquestion/무엇인가.md": NOTE}
+    g = build_graph(make(tmp_path, files))
+    subject = doc_iri("500 Mind/Q1. Better/By Subquestion/무엇인가.md")
+    assert (subject, RDF.type, V.Question) in g
+    assert (subject, RDF.type, V.ConceptDocument) in g
+
+
+def test_a_document_outside_by_subquestion_is_not_a_question(tmp_path):
+    g = build_graph(make(tmp_path, ITEM_FILES))
+    assert (doc_iri(INSIGHTS_DOC), RDF.type, V.Question) not in g
+
+
+def test_a_subject_is_the_document_or_one_of_its_own_sections():
+    # The invariant Phase 15 replaced "every subject is the document" with.
+    # A section subject must belong to the very document being read, or the
+    # builder is writing facts about a file it did not open.
+    subjects = set()
+    for triples in (
+        node_triples(INSIGHTS_DOC, ITEMS),
+        edge_triples(INSIGHTS_DOC, ITEMS, RESOLVE),
+    ):
+        subjects |= {s for s, _, _ in triples}
+    assert subjects - {doc_iri(INSIGHTS_DOC)}
+    for subject in subjects:
+        assert section_path(subject)[0] == INSIGHTS_DOC

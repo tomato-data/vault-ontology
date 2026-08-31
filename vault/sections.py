@@ -84,6 +84,16 @@ def resolve_anchor(headings, anchor):
     return None
 
 
+def item_prefix(heading):
+    """The item noun a heading opens with — `인사이트`, `패턴`, … — or None.
+
+    The caller decides what it means. This module knows what the vault
+    writes; the vocabulary of classes lives with the vocabulary.
+    """
+    match = ITEM.match(heading)
+    return match.group(1) if match else None
+
+
 def item_date(heading):
     """The date an item states for itself, or None.
 
@@ -123,7 +133,10 @@ def iter_links_by_item(body):
                 current = (level, text)
             elif current and level <= current[0]:
                 current = None
-            continue
+        # A heading line is scanned too, and only AFTER the context above
+        # is updated. 13 documents write a link inside a heading, and the
+        # link in an item's own heading belongs to that item. Skipping the
+        # line dropped them from the graph entirely.
         for found in LINK.finditer(line):
             document, heading = link_parts(found.group(1))
             if document:
