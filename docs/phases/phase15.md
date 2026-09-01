@@ -623,7 +623,7 @@ gold set 33/33                  불변
 ```
 000 Index/Templates                        9   ⚠ {{date}} 있음      ← 제외함
 400 Logic Forge/499 Logic Forge Templates  3     case·decision·tradeoff
-200 …/209 Principles/templates             2     reference
+200 …/299 Principles/templates             2     reference
 300 …/320.4. Applications/_Template        5     project-doc
 그 밖 _template · 0000-template 등          3     project-doc
 ```

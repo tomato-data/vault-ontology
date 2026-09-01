@@ -43,7 +43,7 @@
 
 | | |
 |---|---|
-| 문서 | `200 Dev Knowledge Base/209 Principles/Frontend/Frontend 테스트는 환경 부팅 비용을 먼저 측정하라.md` |
+| 문서 | `200 Dev Knowledge Base/299 Principles/Frontend/Frontend 테스트는 환경 부팅 비용을 먼저 측정하라.md` |
 | 시험 | `derivedFrom` · `sourceUnknown` |
 | 난점 | **밖에서 16회 인용되는데 근거 사건 링크가 없다.** 209에서 가장 많이 쓰이는 원칙 중 하나 |
 
@@ -61,7 +61,7 @@
 
 | | |
 |---|---|
-| 문서 | `200 Dev Knowledge Base/209 Principles/Software Design/웹 개발자를 위한 소프트웨어 설계 원칙 (Ousterhout).md` |
+| 문서 | `200 Dev Knowledge Base/299 Principles/Software Design/웹 개발자를 위한 소프트웨어 설계 원칙 (Ousterhout).md` |
 | 시험 | `derivedFrom` · `divergesFrom` |
 | 난점 | 저자의 주장을 그대로 옮긴 부분과 바꾼 부분이 섞여 있다 |
 
@@ -103,7 +103,7 @@
 
 | | |
 |---|---|
-| 문서 | `100 Private Log/103 Debugger/103.1 self/모든 정답은 일시적이다.md` (100줄, 2026-03-22) |
+| 문서 | `100 Private Log/103 Debugger/103.1 Self/모든 정답은 일시적이다.md` (100줄, 2026-03-22) |
 | 시험 | `asOf` · `expresses` |
 | 난점 | **제목 자체가 「믿음은 일시적이다」**다. 시점 없는 사실로 적으면 그 자체가 틀린 기록이 된다 |
 
@@ -113,7 +113,7 @@
 
 | | |
 |---|---|
-| 문서 | `100 Private Log/103 Debugger/103.1 self/시라트를 본 후 정호와의 대화.md` (96줄, 2026-02-23) |
+| 문서 | `100 Private Log/103 Debugger/103.1 Self/시라트를 본 후 정호와의 대화.md` (96줄, 2026-02-23) |
 | 시험 | `informs` · `derivedFrom` |
 | 난점 | 영화 한 편이 대화와 성찰로 이어진 기록. `600 → 100 → 500` 흐름의 실물 |
 
@@ -122,7 +122,7 @@
 
 ### 예비 — 극단 사례
 
-`100 Private Log/103 Debugger/103.4 stack/BNV 솔루션.md` (331줄, 제목 33개).
+`100 Private Log/103 Debugger/103.4 Work/BNV 솔루션.md` (331줄, 제목 33개).
 100 대역에서 **밖에서 가장 많이 인용된다** — 300에서 14회. 개인 성찰이 프로젝트
 판단에 닿는 사례이므로 C09에 딱 맞지만, 331줄이라 이 문서 하나가 시간 측정을
 지배할 수 있다. **먼저 열 개를 끝낸 뒤, 여유가 있으면 붙인다.**

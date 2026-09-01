@@ -42,17 +42,17 @@ case           1
 | | `type` | 문서 | 왜 뽑았나 |
 |---|---|---|---|
 | 1 | `principle` | `000 Index/Maintenance/디렉토리 철학/400 Logic Forge.md` | 메타 원칙. 「필드가 없어서가 아니라 안 채운 것」 |
-| 2 | `procedure` | `000 Index/Maintenance/가이드라인/209 Principles 가이드라인.md` | C04 가 요구하는 규칙의 원본 |
+| 2 | `procedure` | `000 Index/Maintenance/가이드라인/299 Principles 가이드라인.md` | C04 가 요구하는 규칙의 원본 |
 | 3 | `concept` | `000 Index/Dots/0429_tdd_plan_go_post_e2e_분석.md` | 패턴 7항목 — 섹션 앵커 대상 |
 
 ## 100 Private Log — 6
 
 | | `type` | 문서 | 왜 뽑았나 |
 |---|---|---|---|
-| 1 | `reflection` | `100 Private Log/103 Debugger/103.1 self/모든 정답은 일시적이다.md` | 파일럿 10번. expresses · 대상이 항목 |
-| 2 | `reflection` | `100 Private Log/103 Debugger/103.1 self/이방인의 뫼르소와 나.md` | 600 ↔ 100 교차 |
-| 3 | `reflection` | `100 Private Log/103 Debugger/103.1 self/2026-05-20 본질주의와 우월감 회로 자기 점검.md` | 같은 경험의 재해석 |
-| 4 | `reflection` | `100 Private Log/103 Debugger/103.4 stack/BNV 솔루션.md` | 개인 가치가 커리어 판단에 |
+| 1 | `reflection` | `100 Private Log/103 Debugger/103.1 Self/모든 정답은 일시적이다.md` | 파일럿 10번. expresses · 대상이 항목 |
+| 2 | `reflection` | `100 Private Log/103 Debugger/103.1 Self/이방인의 뫼르소와 나.md` | 600 ↔ 100 교차 |
+| 3 | `reflection` | `100 Private Log/103 Debugger/103.1 Self/본질주의와 우월감 회로 자기 점검.md` | 같은 경험의 재해석 |
+| 4 | `reflection` | `100 Private Log/103 Debugger/103.4 Work/BNV 솔루션.md` | 개인 가치가 커리어 판단에 |
 | 5 | `reflection` | `100 Private Log/104 Affinity/책.md` | 600 과 짝 |
 | 6 | `reflection` | `100 Private Log/104 Affinity/영상.md` | 600 과 짝 |
 
@@ -60,17 +60,17 @@ case           1
 
 | | `type` | 문서 | 왜 뽑았나 |
 |---|---|---|---|
-| 1 | `principle` | `200 Dev Knowledge Base/209 Principles/Backend/FastAPI 테스트에서 TestClient를 with로 감싸지 마라.md` | 원본 있음 — derived_from 명시 |
-| 2 | `principle` | `200 Dev Knowledge Base/209 Principles/Backend/JWT 기반 다중 로그인 제한 패턴.md` | 원본 있음 |
-| 3 | `principle` | `200 Dev Knowledge Base/209 Principles/Backend/DB Connection Pool은 85%까지만, 나머지는 headroom.md` | 원본 없음 — source_unknown 후보 |
-| 4 | `principle` | `200 Dev Knowledge Base/209 Principles/Backend/IO-bound 서비스는 asyncio를 우선하라.md` | 원본 없음 |
+| 1 | `principle` | `200 Dev Knowledge Base/299 Principles/Backend/FastAPI 테스트에서 TestClient를 with로 감싸지 마라.md` | 원본 있음 — derived_from 명시 |
+| 2 | `principle` | `200 Dev Knowledge Base/299 Principles/Backend/JWT 기반 다중 로그인 제한 패턴.md` | 원본 있음 |
+| 3 | `principle` | `200 Dev Knowledge Base/299 Principles/Backend/DB Connection Pool은 85%까지만, 나머지는 headroom.md` | 원본 없음 — source_unknown 후보 |
+| 4 | `principle` | `200 Dev Knowledge Base/299 Principles/Backend/IO-bound 서비스는 asyncio를 우선하라.md` | 원본 없음 |
 | 5 | `concept` | `200 Dev Knowledge Base/205 DB/Stacks/PostgreSQL/PostgreSQL 스키마 설계 전략 (public 비우기, 커스텀 스키마 활용).md` | supersedes 실물 |
 | 6 | `concept` | `200 Dev Knowledge Base/207 DevOps/Ansible/Ansible 인벤토리 — 호스트 그룹과 -i 옵션.md` | supersedes 2건 |
 | 7 | `concept` | `200 Dev Knowledge Base/207 DevOps/AWS/Cost Optimization/08 FinOps 실천 — 가시화·약정 관리·자동화.md` | 600 을 builds_on — 대역 교차 |
 | 8 | `concept` | `200 Dev Knowledge Base/201 CS Foundations/Data Structures/Heap (힙) — 자료구조.md` | 동음이의 쌍 |
 | 9 | `concept` | `200 Dev Knowledge Base/201 CS Foundations/Data Structures/Heap (힙) — 메모리 영역.md` | 동음이의 쌍 |
 | 10 | `concept` | `200 Dev Knowledge Base/203 Backend/Concurrency/Race Condition.md` | 사례 4항목 |
-| 11 | `principle` | `200 Dev Knowledge Base/209 Principles/_개발 규율집 (Project Discipline Bible).md` | 원칙 묶음 |
+| 11 | `principle` | `200 Dev Knowledge Base/299 Principles/_개발 규율집 (Project Discipline Bible).md` | 원칙 묶음 |
 | 12 | `procedure` | `200 Dev Knowledge Base/202 Languages/Python/FastAPI/Basics/FastAPI - Swagger UI에서 Bearer 토큰 사용하기.md` | procedure 대조군 |
 
 ## 300 Runtime — 8
@@ -83,7 +83,7 @@ case           1
 | 4 | `project-doc` | `300 Runtime/302 BNV Solutions/302.5 bnvsglobal/302.5.4. Learnings/Domain/bnvsglobal 인프라 진화.md` | elevate verdict: promoted |
 | 5 | `project-doc` | `300 Runtime/302 BNV Solutions/302.7 E-Project/302.7.4. Learnings/Code Architecture/Best Practices 감사 및 개선 (2026-04).md` | elevate verdict: skip |
 | 6 | `log` | `300 Runtime/301 Day Notes/2026-08-26.md` | Day Note — 관계를 안 붙이는 대조군 |
-| 7 | `log` | `300 Runtime/320 Career/320.4. Applications/Levit/커피챗 기록 — 레브잇 2026-08.md` | log · 최근 |
+| 7 | `log` | ~~`300 Runtime/320 Career/320.4. Applications/Levit/커피챗 기록 — 레브잇 2026-08.md`~~ | log · 최근 — **2026-09-01 토마토가 원본 삭제** (커리어 문서 정리). gold 라벨은 관계 0건이라 재현에 영향 없음 |
 | 8 | `project-doc` | `300 Runtime/320 Career/320.7. Blog/A. 실무 사건 — 겪은 일/01 post — 콘솔에서 IaC까지.md` | 경험 → 글 |
 
 ## 400 Logic Forge — 10
@@ -118,7 +118,7 @@ case           1
 |---|---|---|---|
 | 1 | `review` | `600 Content Observatory/602 Frames/영화/기생충.md` | review — 새 type 의 첫 gold |
 | 2 | `review` | `600 Content Observatory/603 Game/Valheim.md` | review — 게임 대표 노트 |
-| 3 | `source-note` | `600 Content Observatory/604 YouTube/개발/The Passionate Programmer/3. Abstract Factory — Strategy에 일관성을 부여하는 패턴.md` | source-note — 화자의 주장 |
+| 3 | `source-note` | `600 Content Observatory/605 YouTube/개발/The Passionate Programmer/3. Abstract Factory — Strategy에 일관성을 부여하는 패턴.md` | source-note — 화자의 주장 |
 | 4 | `source-note` | `600 Content Observatory/601 Books/개발/AWS 비용 최적화 바이블/KAO 방법론.md` | source-note — 08 FinOps 와 쌍 |
 
 ## 900 Archive — 1
@@ -143,7 +143,7 @@ case           1
 | 문서 이동·이름 변경 이력 | `900 Archive/Mind Compiler/_Insights` — 경로가 바뀌었고 결론은 살아 있다 |
 | 같은 개념 다른 용어 | `Heap (힙) — 자료구조` ↔ `Heap (힙) — 메모리 영역` (동음이의) |
 | 한국어·영어 혼재 | `Best Practices 감사 및 개선` · `Abstract Factory — Strategy에…` |
-| 같은 경험을 다르게 해석 | `2026-05-20 본질주의와 우월감 회로 자기 점검` · `Q7 _Patterns` |
+| 같은 경험을 다르게 해석 | `본질주의와 우월감 회로 자기 점검` · `Q7 _Patterns` |
 | 개인 가치가 개발·커리어 결정에 | `BNV 솔루션` · `01 post — 콘솔에서 IaC까지` |
 | 기술 원칙과 삶의 철학의 긴장 | `Ousterhout의 TDD 비판` · `_개발 규율집` |
 

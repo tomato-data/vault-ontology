@@ -166,7 +166,7 @@ D3에서 900을 「폐기된 것」으로 읽었는데 틀렸다. 이 vault는 *
 
 ### 조사에서 확인한 것 — 규칙은 이미 있다
 
-`000 Index/Maintenance/가이드라인/209 Principles 가이드라인.md`
+`000 Index/Maintenance/가이드라인/299 Principles 가이드라인.md`
 
 > 적용 사례에 원본 Learnings 역링크
 > 원본 출처를 `> 원본:` 블록에 명시
@@ -211,7 +211,7 @@ C01·C26의 「어긋남」은 규칙의 부재가 아니라 **실행의 지연*
 
 ### C04 · 이 원칙은 어떤 사건에 근거하는가?
 
-- **근거 [A]** — `200 Dev Knowledge Base/209 Principles/`의 문서들이 전부 명령문이다. 「재현되지 않는 이슈는 추측으로 닫지 말고 관측 장치를 심어 장기 추적하라」 같은 문장은 **그런 일이 있었음을 함의**한다. 사건은 `400 Logic Forge/403 Case Studies/`와 `300 Runtime/`에 있다.
+- **근거 [A]** — `200 Dev Knowledge Base/299 Principles/`의 문서들이 전부 명령문이다. 「재현되지 않는 이슈는 추측으로 닫지 말고 관측 장치를 심어 장기 추적하라」 같은 문장은 **그런 일이 있었음을 함의**한다. 사건은 `400 Logic Forge/403 Case Studies/`와 `300 Runtime/`에 있다.
 - **최소 입력** — 원칙 문서 경로
 - **기대 답의 형태** — 사건 문서 목록 · 각 사건이 원칙의 어느 부분을 지지하는가 · 근거 위치
 
@@ -243,7 +243,7 @@ principle 이 다른 문서에서 인용됨   81/94  (86%, hub 발 링크 제외
 - **근거 [B]** — 실측하니 `principle` 94개, `case` 31개다. **원칙이 사례의 3배**이고, 둘을 잇는 링크는 1건뿐이다(C04 실측). 검증되지 않은 원칙이 섞여 있을 가능성이 구조적으로 있다.
 - **최소 입력** — 없음 (전수)
 - **기대 답의 형태** — 원칙 목록 · 각각에 연결된 사례 수 · 0인 것들
-- **처음 셈이 틀렸다** — 「209 Principles 20개 이상 vs Case Studies 5개」로 적었는데, 폴더 목록 앞부분만 본 수였다. vault 전체로는 94 대 31이다.
+- **처음 셈이 틀렸다** — 「299 Principles 20개 이상 vs Case Studies 5개」로 적었는데, 폴더 목록 앞부분만 본 수였다. vault 전체로는 94 대 31이다.
 
 ### C06 · 서로 긴장하는 원칙이 있는가?
 
@@ -345,7 +345,7 @@ node 테이블의 상태 컬럼         없음   path·name·zone·dir·type·su
 
 | | 인용됨 / 전체 | |
 |---|---|---|
-| 604 YouTube | 61 / 86 | **70.9%** |
+| 605 YouTube | 61 / 86 | **70.9%** |
 | 699 Satellite Feeds | 4 / 8 | 50.0% |
 | 602 Frames (영화·시리즈·애니) | 37 / 120 | 30.8% |
 | 603 Game | 22 / 126 | 17.5% |
@@ -387,7 +387,7 @@ Phase 14가 「기술적 `Claim`과 개인적 `Belief`의 진리 조건이 다�
 |---|---|
 | 601 Books 챕터 914개 | **3부 대상 아님.** 저자의 말이지 사용자의 주장이 아니다 |
 | 601 Books 대표노트 138개 | 경계. 사용자의 평가·해석이 있을 수 있다 |
-| 604 YouTube · 602 Frames | **광맥.** 인용률이 높고 다른 대역의 판단에 실제로 쓰인다 |
+| 605 YouTube · 602 Frames | **광맥.** 인용률이 높고 다른 대역의 판단에 실제로 쓰인다 |
 
 ---
 
@@ -397,7 +397,7 @@ Phase 14가 「기술적 `Claim`과 개인적 `Belief`의 진리 조건이 다�
 
 - **근거 [A]** — 계보가 실제로 이어져 있다.
   - `600 Content Observatory/601 Books/개발/A Philosophy of Software Design/`
-  - `200 Dev Knowledge Base/209 Principles/웹 개발자를 위한 소프트웨어 설계 원칙 (Ousterhout).md`
+  - `200 Dev Knowledge Base/299 Principles/웹 개발자를 위한 소프트웨어 설계 원칙 (Ousterhout).md`
   - `400 Logic Forge/403 Case Studies/Case Study - Ousterhout의 TDD 비판과 ODP 통합 TDD의 대응.md` — 저자와 **어긋난 지점**을 다룬다
 - **최소 입력** — 원칙 문서 경로
 - **기대 답의 형태** — 원 주장 · 내 진술 · **두 진술의 차이** · 차이를 만든 사건
@@ -580,7 +580,7 @@ supersedes       5    전부 미해결 — 대상 문서가 없다
 
 ### C21 · 이 원칙을 실제로 적용한 결정은 무엇인가?
 
-- **근거 [A]** — principle(94) ↔ decision(45) 사이 링크가 양방향 합 **2건**. `200 Dev Knowledge Base/209 Principles/`와 `400 Logic Forge/401 Architecture Playbook/`이 각각 큰 corpus인데 서로를 모른다.
+- **근거 [A]** — principle(94) ↔ decision(45) 사이 링크가 양방향 합 **2건**. `200 Dev Knowledge Base/299 Principles/`와 `400 Logic Forge/401 Architecture Playbook/`이 각각 큰 corpus인데 서로를 모른다.
 - **기대 답의 형태** — 결정 목록 · 원칙의 어느 조항이 적용됐는가 · 적용 시점
 
 ### C22 · 이 tradeoff의 판단 기준이 된 원칙은 무엇인가?

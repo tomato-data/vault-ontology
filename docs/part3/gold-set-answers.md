@@ -30,7 +30,7 @@ derived_from:
   - experience
 ```
 
-- `209 Principles 가이드라인` · `procedure` — **관계 없음**
+- `299 Principles 가이드라인` · `procedure` — **관계 없음**
 - `0429_tdd_plan_go_post_e2e_분석` · `concept` — **관계 없음**
 
 
@@ -55,13 +55,13 @@ derived_from:
   - "[[2026.01.25 다양한 가능성과 변화]]"
 ```
 
-**`2026-05-20 본질주의와 우월감 회로 자기 점검`** · `reflection`
+**`본질주의와 우월감 회로 자기 점검`** · `reflection`
 
 ```yaml
 informed_by:
   - "[[나를 피곤하게 만드는 것들에 반응하지 않는 연습]]"
 diverges_from:
-  - "[[2026-01-26 뫼르소와 나에 대한 성찰 대화]]"
+  - "[[뫼르소와 나에 대한 성찰 대화]]"
 ```
 
 - `BNV 솔루션` · `reflection` — **관계 없음**

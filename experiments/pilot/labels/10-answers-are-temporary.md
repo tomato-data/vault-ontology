@@ -1,6 +1,6 @@
 # 10 · 100 Private Log — 모든 정답은 일시적이다
 
-문서: `100 Private Log/103 Debugger/103.1 self/모든 정답은 일시적이다.md` (100줄)
+문서: `100 Private Log/103 Debugger/103.1 Self/모든 정답은 일시적이다.md` (100줄)
 형식: C (sidecar) · 파일럿 임시 표기
 
 > **상태: 전부 `proposed`.** Claude 가 조사해서 썼고 확인받지 않았다.
@@ -30,7 +30,7 @@
 ## 들어오는 관계
 
 `600 Content Observatory`의 **10개 문서**가 이 성찰을 역참조한다 —
-`602 Frames` 2 · `601 Books` 7 · `604 YouTube` 1.
+`602 Frames` 2 · `601 Books` 7 · `605 YouTube` 1.
 
 방향이 양쪽이다. 앞서 잰 `100 → 600` 160건의 반대편이 여기 있다.
 
