@@ -23,6 +23,9 @@ V = Namespace(BASE + "schema/")
 DOC = Namespace(BASE + "doc/")
 FOLDER = Namespace(BASE + "folder/")
 TAG = Namespace(BASE + "tag/")
+# Outside the vault. A namespace of its own, because these resolve to no
+# file here and sharing `doc/` would make `doc_path` name one.
+EXTERNAL = Namespace(BASE + "external/")
 TTL_NAME = ".vault.ttl"
 
 # An IRI carries most of Unicode, so Korean goes in as it is - that is what
@@ -155,6 +158,19 @@ ENTITY_CLASS = {"인사이트": "Insight"}
 # A fact you can derive is not written into frontmatter twice.
 SUBQUESTION = "By Subquestion/"
 
+# Sources that are not documents. The authoring reference table names
+# these, and before 2026-09-01 the builder honoured none of them - they
+# fell through to `_raw`, the same predicate a broken link lands on. A
+# deliberate value and a mistake were indistinguishable.
+#
+#   experience         it came out of work I did       -> v:experience
+#   ext:repo/path      it lives outside the vault      -> external:repo/path
+#
+# Intercepted BEFORE resolution: `experience` is not a note name to look
+# up, and looking it up is what put it on `_raw` in the first place.
+EXPERIENCE = "experience"
+EXTERNAL_PREFIX = "ext:"
+
 
 def node_triples(relative, text):
     """Yield (subject, predicate, object) for one note's own facts.
@@ -191,6 +207,13 @@ def node_triples(relative, text):
 
     if SUBQUESTION in relative:
         yield subject, RDF.type, V.Question
+
+    # "I looked and found nothing", which is a different fact from saying
+    # nothing at all. The ontology has carried this term since Phase 14
+    # and the builder never emitted it; 0 documents write it today, so
+    # this is the emitter waiting for the first one.
+    if fm_get(fm, "source_unknown") in ("true", "True", "yes"):
+        yield subject, V.source_unknown, Literal(True)
 
     for heading in item_headings(body):
         section = section_iri(relative, heading)
@@ -286,6 +309,21 @@ def edge_triples(relative, text, resolve, headings):
         yield subject, DCTERMS.isPartOf, folder_iri(directory)
 
 
+def _sentinel(target):
+    """The resource a non-document source names, or None.
+
+    None means "this is a note name, go and resolve it". Returning a
+    resource here is what keeps `_raw` meaning BROKEN rather than
+    "anything the resolver could not place".
+    """
+    if target == EXPERIENCE:
+        return V.experience
+    if target.startswith(EXTERNAL_PREFIX):
+        outside = target[len(EXTERNAL_PREFIX) :].strip()
+        return EXTERNAL[outside.translate(ESCAPES)] if outside else None
+    return None
+
+
 def _edge(subject, kind, target, heading, resolve, headings):
     """One relation, as a resource when it lands and as text when it does not.
 
@@ -303,6 +341,12 @@ def _edge(subject, kind, target, heading, resolve, headings):
     an item that is not there is a claim about nothing, and filing it
     against the whole document would hide that.
     """
+    # A source that is not a document, before anything is looked up.
+    outside = _sentinel(target)
+    if outside is not None:
+        yield subject, RESOLVED[kind], outside
+        return
+
     landed = resolve(target)
     # Kept whole so lint can report what was MEANT, not just which file
     # went missing.

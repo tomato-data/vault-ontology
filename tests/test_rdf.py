@@ -541,9 +541,63 @@ def test_an_unresolved_relation_keeps_the_anchor_it_was_given():
     assert sem_edges(text) == [(str(V.derived_from_raw), "없는 문서#인사이트 1")]
 
 
-def test_a_source_that_is_not_a_document_stays_as_written():
-    # `derived_from: experience` says the source is lived, not written.
-    # It is not a broken link, and `v:supersedes_raw` set the precedent
-    # for a raw form that is the normal case.
-    text = "---\ntype: case\nderived_from:\n  - experience\ncreated: 2026-08-10\n---\n본문\n"
-    assert sem_edges(text) == [(str(V.derived_from_raw), "experience")]
+# A source that is not a document. Until 2026-09-01 all three of these
+# fell through to `_raw` — the predicate a BROKEN link lands on — so a
+# deliberate value and a mistake looked the same. Measured then: 16
+# `experience` and zero broken semantic links, which made the shape that
+# warns about `_raw` wrong every single time it fired.
+
+
+def sem_note(field, value):
+    return f"---\ntype: case\n{field}:\n  - {value}\ncreated: 2026-08-10\n---\n본문\n"
+
+
+def test_experience_is_a_resource_not_a_broken_link():
+    assert sem_edges(sem_note("derived_from", "experience")) == [
+        (str(V.derived_from), str(V.experience))
+    ]
+
+
+def test_a_source_outside_the_vault_gets_its_own_namespace():
+    # Not under `doc/`: these resolve to no file here, and sharing that
+    # namespace would make `doc_path` claim one exists.
+    text = sem_note("derived_from", '"ext:ai-ops-skills/2-verification/tdd"')
+    assert sem_edges(text) == [
+        (
+            str(V.derived_from),
+            "https://tomato.vault/external/ai-ops-skills/2-verification/tdd",
+        )
+    ]
+
+
+def test_an_external_path_is_escaped_like_any_other():
+    text = sem_note("derived_from", '"ext:some repo/a path"')
+    assert sem_edges(text)[0][1].endswith("/some%20repo/a%20path")
+
+
+def test_a_bare_ext_prefix_names_nothing():
+    assert sem_edges(sem_note("derived_from", '"ext:"')) == [
+        (str(V.derived_from_raw), "ext:")
+    ]
+
+
+def test_a_broken_link_still_lands_on_raw():
+    # The whole point: `_raw` goes back to meaning broken, so the warning
+    # about it means something again.
+    assert sem_edges(sem_note("derived_from", '"[[없는 문서]]"')) == [
+        (str(V.derived_from_raw), "없는 문서")
+    ]
+
+
+def test_searched_and_absent_is_a_fact_of_its_own():
+    # `source_unknown: true` says "I looked and found nothing", which is
+    # not the same as saying nothing. 0 documents write it today; this is
+    # the emitter waiting for the first.
+    text = "---\ntype: case\nsource_unknown: true\ncreated: 2026-08-10\n---\n본문\n"
+    assert (doc_iri("a.md"), V.source_unknown, Literal(True)) in list(
+        node_triples("a.md", text)
+    )
+
+
+def test_a_document_that_says_nothing_makes_no_source_unknown_triple():
+    assert V.source_unknown not in facts("a.md", NOTE)

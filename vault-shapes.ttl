@@ -126,11 +126,14 @@ v:DecisionNeedsGround a sh:NodeShape ;
     sh:severity sh:Warning ;
     sh:message "결정에 근거가 안 적혀 있다 — tradeoff 나 출처를 derived_from 으로" .
 
-# 17건 (2026-08-31). 전부 `derived_from: experience` 이고 깨진 게 아니라
-# 문서가 아닌 출처를 가리키는 의도된 값이다. 이 Warning 은 고치라는 뜻이
-# 아니라 **개수를 보이게 하는 것**이다: Phase 16 을 쓰는 동안 2 에서 17 로
-# 늘었고, 그 속도가 곧 `experience` 에 별도 값이 필요하다는 신호다.
-# Phase 15 Round 6 이 남긴 미결이 이 숫자로 판정된다.
+# 0건 (2026-09-01). 하루 전엔 17건이었고 **전부 오탐이었다** — 모두
+# `derived_from: experience`, 즉 「출처가 문서가 아니다」라는 의도된 값인데
+# 파서가 깨진 링크와 같은 `_raw` 에 놓고 있었다. 이 shape 는 매번 틀렸고,
+# 아무것도 안 잡는 규칙의 거울상이었다.
+#
+# 2026-09-01 에 `experience` 와 `ext:` 가 리소스가 되면서 `_raw` 는 다시
+# 「깨졌다」만 뜻하게 됐고, 이 Warning 도 말이 되게 됐다. 지금 0건인 것은
+# **깨진 의미 링크가 실제로 없다**는 뜻이다.
 v:SemanticLinkShouldResolve a sh:NodeShape ;
     sh:targetSubjectsOf v:derived_from_raw, v:contradicts_raw,
         v:diverges_from_raw, v:applies_raw, v:informed_by_raw,

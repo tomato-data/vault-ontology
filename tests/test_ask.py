@@ -8,7 +8,10 @@ from rdflib import Graph, Literal
 
 from vault.ask import (
     ANSWERED,
+    BROKEN,
+    EXTERNAL,
     LIVED,
+    SEARCHED,
     UNRECORDED,
     affected,
     crossing,
@@ -103,21 +106,44 @@ def test_a_document_with_nothing_written_is_unrecorded_not_empty():
     assert not answer
 
 
-def test_a_ground_that_is_lived_is_not_unrecorded():
+def test_a_lived_ground_is_not_unrecorded():
     # `derived_from: experience` is an answer — it says the source is not
     # a document. Reporting it as "nothing written" loses what was said.
-    g = graph((PRINCIPLE, V.derived_from_raw, Literal("experience")))
+    g = graph((PRINCIPLE, V.derived_from, V.experience))
     answer = evidence(g, PRINCIPLE)
     assert answer.status == LIVED
     assert "겪은 일" in answer.note
 
 
-def test_a_broken_link_reads_as_lived_too():
-    # Both land on `_raw`, and the shape `v:SemanticLinkShouldResolve`
-    # is what tells them apart — the answer layer says only "the graph
-    # cannot follow this", which is true of both.
+def test_a_broken_link_does_not_read_as_lived():
+    # Until 2026-09-01 it did. Both landed on `_raw`, so `ask` told the
+    # author their broken name was a lived source — a false statement the
+    # graph could not correct, because the parser had thrown the
+    # difference away before the graph existed.
     g = graph((PRINCIPLE, V.derived_from_raw, Literal("없는 문서")))
-    assert evidence(g, PRINCIPLE).status == LIVED
+    answer = evidence(g, PRINCIPLE)
+    assert answer.status == BROKEN
+    assert "고쳐야 한다" in answer.note
+
+
+def test_a_source_outside_the_vault_says_so():
+    from vault.rdf import EXTERNAL as EXTERNAL_NS
+
+    g = graph((PRINCIPLE, V.derived_from, EXTERNAL_NS["ai-ops-skills/tdd"]))
+    answer = evidence(g, PRINCIPLE)
+    assert answer.status == EXTERNAL
+    assert answer.paths[0][0].target == "ext:ai-ops-skills/tdd"
+
+
+def test_searched_and_absent_is_its_own_answer():
+    # The status Phase 18 reserved and could not reach. `source_unknown`
+    # says "I looked", which is a fact; `unrecorded` says nothing at all.
+    from rdflib import Literal as L
+
+    g = graph((PRINCIPLE, V.source_unknown, L(True)))
+    answer = evidence(g, PRINCIPLE)
+    assert answer.status == SEARCHED
+    assert "찾아봤고" in answer.note
 
 
 # ── affected ────────────────────────────────────────────────────────
@@ -247,7 +273,7 @@ def test_a_group_renders_from_its_source_outward():
 def test_a_lived_ground_is_shown_and_not_only_named():
     # The status said `lived` while the paths were empty, so the answer
     # said "the source is experience" without showing where it says so.
-    g = graph((PRINCIPLE, V.derived_from_raw, Literal("experience")))
+    g = graph((PRINCIPLE, V.derived_from, V.experience))
     answer = evidence(g, PRINCIPLE)
-    assert answer.paths[0][0].relation == "derived_from_raw"
+    assert answer.paths[0][0].relation == "derived_from"
     assert answer.paths[0][0].target == "experience"

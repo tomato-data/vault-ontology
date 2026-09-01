@@ -11,17 +11,23 @@ at exactly this line, and `status` is where it is spelled out.
 
 from typing import NamedTuple
 
+from vault.rdf import EXTERNAL as EXTERNAL_NS
 from vault.rdf import V, doc_path, section_path
 from vault.rules import SEMANTIC, genealogy, impact, invalidated, shared_ground
 
-# The four bands of meaning, in a person's terms. `SEARCHED` is declared and
-# never returned: the ontology has `v:source_unknown` for "I looked and found
-# nothing", the builder does not emit it, and no document carries it. It is
-# written down so the day it has data there is a place for it.
-ANSWERED = "answered"
-LIVED = "lived"  # the source is experience, not a document
+# Why an empty answer is empty, in a person's terms. Six, not one, because
+# a query returning zero rows says only the last of them.
+#
+# The split between LIVED, EXTERNAL and BROKEN arrived on 2026-09-01. Until
+# then all three landed on `_raw` and `ask` reported a broken link as
+# "the source is lived" — a false statement the graph could not correct,
+# because the parser had already thrown the difference away.
+ANSWERED = "answered"  # a document, in the vault
+LIVED = "lived"  # v:experience — it came out of work I did
+EXTERNAL = "external"  # ext: — outside the vault
+SEARCHED = "searched"  # source_unknown — looked for and absent
+BROKEN = "broken"  # `_raw` — a name that lands nowhere. an error
 UNRECORDED = "unrecorded"  # nothing is written — NOT "there is none"
-SEARCHED = "searched"  # looked for and absent. 0 today
 
 # The bands, split the way the questions split. C09 asks whether a personal
 # criterion surfaced in a technical decision, and that only means something
@@ -29,13 +35,13 @@ SEARCHED = "searched"  # looked for and absent. 0 today
 PERSONAL = ("100 Private Log", "500 Mind Compiler", "700 Life Stack")
 TECHNICAL = ("200 Dev Knowledge Base", "300 Runtime", "400 Logic Forge")
 
-RESOLVED_NAMES = frozenset(str(p).rsplit("/", 1)[-1] for p in SEMANTIC)
-
 STATUS_NOTE = {
     ANSWERED: "적혀 있다",
     LIVED: "출처가 문서가 아니라 겪은 일이다",
-    UNRECORDED: "아직 안 적혔다 — 없다는 뜻이 아니다",
+    EXTERNAL: "출처가 vault 밖에 있다",
     SEARCHED: "찾아봤고 없었다",
+    BROKEN: "적힌 이름이 아무 데도 안 닿는다 — 고쳐야 한다",
+    UNRECORDED: "아직 안 적혔다 — 없다는 뜻이 아니다",
 }
 
 
@@ -78,8 +84,16 @@ class Answer(NamedTuple):
 
 
 def _name(node):
-    """Split a node IRI into (vault path, heading)."""
+    """Split a node IRI into (name a person opens, heading).
+
+    A sentinel is not a file. `doc_path` would hand back
+    `schema/experience.md`, which names nothing and reads as if it did.
+    """
     text = str(node)
+    if node == V.experience:
+        return "experience", ""
+    if text.startswith(str(EXTERNAL_NS)):
+        return "ext:" + text[len(str(EXTERNAL_NS)) :], ""
     if "#" in text:
         return section_path(node)
     return doc_path(node), ""
@@ -99,26 +113,34 @@ def _hop(triple):
 
 
 def _status(graph, node):
-    """Why an empty answer is empty.
+    """Why an answer reads the way it does.
 
-    The distinction the phase asks for. A document with no relation has
-    said nothing about its grounds; a document naming `experience` has
-    said something the graph cannot follow. Collapsing the two into "no
-    result" turns a recorded fact into a silence.
+    A document with no relation has said nothing about its grounds; one
+    naming `experience` has said something the graph cannot follow to
+    another file; one with a broken name has made a mistake. Collapsing
+    those turns a recorded fact into a silence, or an error into a fact.
     """
-    for predicate in SEMANTIC:
-        if any(graph.objects(node, predicate)):
-            return ANSWERED
+    grounds = [
+        target for predicate in SEMANTIC for target in graph.objects(node, predicate)
+    ]
+    if any(target == V.experience for target in grounds):
+        return LIVED
+    if any(str(target).startswith(str(EXTERNAL_NS)) for target in grounds):
+        return EXTERNAL
+    if grounds:
+        return ANSWERED
+    if any(graph.objects(node, V.source_unknown)):
+        return SEARCHED
     for predicate in SEMANTIC:
         if any(graph.objects(node, V[str(predicate).rsplit("/", 1)[-1] + "_raw"])):
-            return LIVED
+            return BROKEN
     return UNRECORDED
 
 
 def lineage(graph, node):
     """Every chain of grounds behind this document. C02 · C04 · C09 · C15."""
     paths = [[_hop(triple) for triple in path] for path in genealogy(graph, node)]
-    status = ANSWERED if paths else _status(graph, node)
+    status = _status(graph, node)
     return Answer("lineage", _name(node)[0], status, paths, STATUS_NOTE[status])
 
 
@@ -145,11 +167,7 @@ def evidence(graph, node):
     ]
     paths.extend([hop] for hop in raw)
     paths.sort(key=lambda path: (path[0].relation, path[0].target))
-    status = (
-        ANSWERED
-        if any(p[0].relation in RESOLVED_NAMES for p in paths)
-        else (LIVED if paths else _status(graph, node))
-    )
+    status = _status(graph, node)
     return Answer("evidence", _name(node)[0], status, paths, STATUS_NOTE[status])
 
 

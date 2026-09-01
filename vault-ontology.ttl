@@ -241,6 +241,35 @@ v:archived a owl:Thing ;
 v:source_unknown a owl:DatatypeProperty ;
     rdfs:comment "I looked and found nothing. Query: past documents whose source cannot be recovered (C02, C13). In RDF a missing triple means UNKNOWN; this one says SEARCHED AND ABSENT, which is a different fact and the open world assumption's whole point." .
 
+#################################################################
+# Sources that are not documents.
+#
+# The authoring reference table names three, and until 2026-09-01 the
+# builder honoured none of them: `experience` landed on the `_raw`
+# predicate beside a broken link, and `ext:` and `source_unknown` never
+# reached the graph at all.
+#
+#   derived_from: experience         it came out of work I did
+#   derived_from: "ext:repo/path"    it is outside the vault
+#   source_unknown: true             I looked and found nothing
+#
+# Measured 2026-09-01: 16 `experience`, and ZERO broken semantic links.
+# So `v:SemanticLinkShouldResolve` was warning 16 times and every one was
+# deliberate - a rule wrong 100% of the time, which is the mirror of the
+# rule that catches nothing. Making the sentinel a RESOURCE fixes both
+# ends at once: `derived_from` stays the predicate, the object becomes
+# something a query can name, and `_raw` goes back to meaning broken.
+#################################################################
+
+v:experience a owl:Thing ;
+    rdfs:comment "The source is work I did, not a document. NOT source_unknown - that one says I searched and found nothing, this one says there was never a file to find. Query: principles whose ground is lived rather than cited (C04)." .
+
+# `ext:ai-ops-skills/2-verification/tdd` becomes
+# <https://tomato.vault/external/ai-ops-skills/2-verification/tdd>.
+# A separate namespace from doc/ on purpose: these resolve to nothing in
+# this vault, and letting them share doc/ would make `doc_path` claim a
+# file exists.
+
 v:as_of a owl:DatatypeProperty ;
     rdfs:subPropertyOf dcterms:date ;
     rdfs:comment "When the thing described happened - dcterms:created is when I wrote it down. Query: a belief's state at each point in time (C08)." .
