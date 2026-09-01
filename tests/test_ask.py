@@ -27,7 +27,7 @@ DECISION = doc_iri("400 Logic Forge/Decision.md")
 TRADEOFF = doc_iri("400 Logic Forge/Trade-offs.md")
 SOURCE = doc_iri("600 Content/벤치마크.md")
 DIARY = doc_iri("100 Private Log/2026.01.25.md")
-PRINCIPLE = doc_iri("200 Dev Knowledge Base/209 Principles/원칙.md")
+PRINCIPLE = doc_iri("200 Dev Knowledge Base/299 Principles/원칙.md")
 
 
 def graph(*triples):

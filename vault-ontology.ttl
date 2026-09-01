@@ -87,7 +87,13 @@ v:TradeoffDocument   rdfs:subClassOf v:Content .
 # thinking - was missing 141 documents. Measured 2026-08-26: 602 Frames 116
 # with a 감상평 section, 603 Game 25 game notes with a 리뷰 section.
 # 601 Books and 604 YouTube stay v:Imported: they are transcription, and
-# 604 has a 감상 section in exactly ZERO of its 90 notes.
+# 604 had a 감상 section in exactly ZERO of its 90 notes.
+#
+# 2026-09-01: the vault renumbered 600. YouTube moved to 605 and 604 is now
+# Music, where a listening note IS a review. The MEASUREMENT above stands as
+# of its date; the band numbers in it do not. What the classes mean did not
+# change - transcription is v:Imported, a note carrying my own reaction is
+# v:Content - and that is what this comment is here to say.
 v:ReviewDocument     rdfs:subClassOf v:Content .
 
 # Imported — one type.

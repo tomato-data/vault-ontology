@@ -631,10 +631,12 @@ gold set 33/33                  불변
 **「frontmatter가 데이터가 아니다」는 근거가 나머지에는 안 걸린다.** 저들의 날짜와
 type은 진짜다.
 
-> **남은 미결.** `q type decision`이 아직
-> `499 Logic Forge Templates/Decision Node Template.md`를 답한다. 자리표시자
-> 문제는 아니고 **「템플릿이 자기가 낳을 문서의 type을 단다」**는 문제이며, 이건
-> vault 쪽 정합화의 사안이다. 여기서 정하지 않는다.
+> **남은 미결이었고, 2026-09-01에 닫혔다.** `q type decision`이
+> `499 Logic Forge Templates/Decision Node Template.md`를 답하고 있었다.
+> 자리표시자 문제가 아니라 **「템플릿이 자기가 낳을 문서의 type을 단다」**는
+> 문제였고, vault 쪽 정합화가 **499를 폐지하는 것**으로 풀었다 — 템플릿 정본을
+> Claude 경로(스킬 rules)와 사람 경로(`000 Index/Templates`)로 이원화했다.
+> 여기서 정하지 않은 것이 맞았다.
 
 ## 산출물
 

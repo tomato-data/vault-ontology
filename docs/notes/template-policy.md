@@ -75,6 +75,12 @@ Forces Analysis     tradeoff 43개 중 18개
 남긴 쪽에 `supersedes`를 적는다. 그러면 `499 Logic Forge Templates/`가 비고
 400 대역의 템플릿 문제가 사라진다.
 
+> **2026-09-01에 실행됐다.** vault가 499를 폐지하고 템플릿 정본을 이원화했다 —
+> Claude 경로는 `logic-forge` 스킬의 rules, 사람 경로는 `000 Index/Templates`.
+> 이 문서의 제안이 그대로 갔고, **Phase 16이 남긴 미결(「`q type decision`이
+> `499 Logic Forge Templates/Decision Node Template.md`를 답한다」)도 함께
+> 닫혔다.**
+
 ## 파일을 안 옮기고도 되는 것
 
 ```python
