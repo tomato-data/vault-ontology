@@ -25,7 +25,7 @@ from vault.lint import lint_vault
 from vault.rdf import TTL_NAME, build_graph
 from vault.shacl import findings, format_finding, shapes_graph, summarise
 from vault.scan import nfc
-from vault.tags import tag_vocabulary
+from vault.tags import FREE, judge, tag_health, tag_vocabulary
 
 DEFAULT_VAULT = Path.home() / (
     "Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian Vault"
@@ -51,8 +51,14 @@ def _parser():
         action="store_true",
         help="report warnings too, not just violations",
     )
-    commands.add_parser(
+    tags = commands.add_parser(
         "tags", parents=[common], help="list the tag vocabulary (whitelist)"
+    )
+    tags.add_argument(
+        "--health", action="store_true", help="diagnose the axes instead of listing"
+    )
+    tags.add_argument(
+        "--judge", metavar="TAG", help="may this tag be added, and on what terms"
     )
     new = commands.add_parser(
         "new", parents=[common], help="create a document only if it passes"
@@ -157,9 +163,7 @@ def main(argv=None):
         return _ask(args)
 
     if args.command == "tags":
-        for tag, count in tag_vocabulary(args.vault):
-            print(f"{count:6,}  {tag}")
-        return 0
+        return _tags(args)
 
     if args.command == "new":
         return _new(args)
@@ -169,6 +173,35 @@ def main(argv=None):
         print(f"vault: {DB_NAME} not found. run `vault build` first.", file=sys.stderr)
         return 2
     return _query(sqlite3.connect(database), args)
+
+
+def _tags(args):
+    """List the vocabulary, diagnose it, or rule on one proposed tag."""
+    if args.judge:
+        vocabulary = dict(tag_vocabulary(args.vault))
+        verdict, reason = judge(vocabulary, args.judge)
+        print(f"{args.judge}\n  [{verdict}] {reason}")
+        # 0 when it may be added as it stands, 1 when a person has to
+        # decide. `known` is 1 too: nothing needs adding.
+        return 0 if verdict == FREE else 1
+
+    if args.health:
+        for row in tag_health(args.vault):
+            if not row["axis"]:
+                for _, detail in row["signals"]:
+                    print(f"\n{detail}")
+                continue
+            marks = "  ".join(f"[{kind}] {detail}" for kind, detail in row["signals"])
+            print(
+                f"{row['axis']:16} {row['kind']}  값 {row['values']:3} ·"
+                f" 부착 {row['uses']:5,} · 고름 {row['spread']:.2f}"
+                + (f"   {marks}" if marks else "")
+            )
+        return 0
+
+    for tag, count in tag_vocabulary(args.vault):
+        print(f"{count:6,}  {tag}")
+    return 0
 
 
 def _ask(args):

@@ -223,6 +223,8 @@ frontmatter 필드를 늘리면 **기존 SQLite가 그대로 답한다**(실증)
 
 - 생성 계열 명령 이관: [`cli-roadmap.md`](backlog/cli-roadmap.md)
 - vault 운영 백로그: [`vault-backlog.md`](backlog/vault-backlog.md)
+- 태그 어휘가 언제 늘어도 되는가: [`tag-policy.md`](notes/tag-policy.md)
+  (`vault tags --health` · `--judge`. 정본의 「새 축을 만들지 않는다」를 축과 값으로 갈랐다)
 - 스키마 정본에 3역할 계층과 최종 결론 반영
 - 실제로 두 코퍼스를 함께 물어야 하는 질의가 생기면 RDF 병합 재검토
 - VectorDB·임베딩 검색: [`retrieval-architecture.md`](notes/retrieval-architecture.md). 3부에서는
