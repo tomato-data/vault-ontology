@@ -11,8 +11,44 @@
 git clone git@github.com:tomato-data/vault-ontology.git ~/Desktop/Code/vault-ontology
 cd ~/Desktop/Code/vault-ontology
 uv sync
-uv run pytest -v          # 2026-08-26 기준 255개 통과해야 정상 출발점
+uv run pytest -q          # 2026-09-01 기준 433개 통과해야 정상 출발점
 ```
+
+### 전역 `vault` 명령
+
+`uv run python -m vault …` 로도 전부 되지만, 매일 쓰려면 설치해 두는 편이 낫다.
+
+```bash
+uv tool install --force --with pyshacl .
+```
+
+**`--with pyshacl` 이 필요하다.** `vault validate` 가 SHACL 을 쓰는데 그것만 선택
+의존성이라, 빼고 설치하면 `validate` 하나가 죽는다 (2026-09-01 에 실제로 겪었다 —
+그때는 최상위 import 라 `vault lint` 까지 함께 죽었고, 그래서 import 를 게으르게
+바꿨다).
+
+저장소를 고친 뒤 전역 명령이 옛 동작을 하면 uv 가 휠을 캐시한 것이다.
+
+```bash
+uv tool install --force --reinstall --with pyshacl .
+```
+
+### 셸 히스토리는 기본으로 안 남는다
+
+이 기계에서 확인했다 — `SAVEHIST=0`, `~/.zshrc` 에 히스토리 설정이 없고
+`~/.zsh_history` 의 마지막 기록이 **2025-06-15**였다. 무엇을 언제 실행했는지가
+필요하면 먼저 켠다.
+
+```bash
+# ~/.zshrc
+export HISTFILE=~/.zsh_history
+export HISTSIZE=50000
+export SAVEHIST=50000
+setopt EXTENDED_HISTORY INC_APPEND_HISTORY
+```
+
+**2주 실사용 관측이 이걸 쓴다** — 켜 두면 「무엇을 언제 물었나」를 손으로 안 적어도
+된다. 안 켜도 관측은 되고, 날짜를 손으로 적을 뿐이다.
 
 ### 답안지
 
