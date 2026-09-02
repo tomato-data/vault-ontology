@@ -15,7 +15,7 @@ concept   → v:ConceptDocument      log         → v:LogDocument
 procedure → v:ProcedureDocument    reflection  → v:ReflectionDocument
 reference → v:ReferenceDocument    project-doc → v:ProjectDocument    ← 예외
 principle → v:PrincipleDocument    tradeoff    → v:TradeoffDocument
-decision  → v:DecisionDocument     source-note → v:SourceNoteDocument
+decision  → v:DecisionDocument     capture → v:CaptureDocument
 case      → v:CaseDocument         hub         → v:HubDocument
                                    review      → v:ReviewDocument
 ```

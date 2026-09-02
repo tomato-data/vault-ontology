@@ -41,7 +41,7 @@ from vault.scan import scan_vault
 REFERENTIAL = ("Person", "Projects", "Source", "Stack")
 
 # A value covering this much of its axis has stopped telling anything apart
-# inside it. `review` was born exactly here: `source-note` held 1,252 of
+# inside it. `review` was born exactly here: `capture` held 1,252 of
 # 1,258 documents in 600 until it was split.
 DOMINANT = 0.5
 

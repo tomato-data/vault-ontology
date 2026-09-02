@@ -35,7 +35,7 @@ def nfc(s):
 
 TYPES = {
     "concept", "procedure", "principle", "decision", "tradeoff", "case",
-    "source-note", "reflection", "project-doc", "reference", "log", "hub",
+    "capture", "reflection", "project-doc", "reference", "log", "hub",
     "template",
 }
 SUMMARY_MAX = 80
@@ -180,14 +180,14 @@ def skill_names(vault):
 #
 # 값은 볼트의 실제 분포로 뽑았다 (2026-08-11).
 #   500 Mind Compiler     reflection 94 / 95
-#   600 Content Observatory  source-note 1248 · hub 144 / 1393
+#   600 Content Observatory  capture 1248 · hub 144 / 1393
 #   300 Runtime           project-doc 712 · log 334 / 1055
 ZONE_TYPES = {
     "100 Private Log": {"log", "reflection", "reference", "principle"},
     "300 Runtime": {"project-doc", "log", "template", "case", "procedure"},
     "400 Logic Forge": {"tradeoff", "decision", "hub", "case", "template", "procedure"},
     "500 Mind Compiler": {"reflection", "hub", "procedure"},
-    "600 Content Observatory": {"source-note", "hub", "procedure"},
+    "600 Content Observatory": {"capture", "hub", "procedure"},
 }
 # 구역 안의 특정 디렉토리는 더 좁다.
 SUBDIR_TYPES = {
@@ -680,7 +680,7 @@ TEMPLATE_HINT = {
     "decision": "무엇을 골랐고 왜인가. Trade-offs 문서와 쌍으로 만든다.",
     "tradeoff": "선택지를 축으로 비교한다. Decision Node와 쌍으로 만든다.",
     "case": "시간 서사로 적는다. 무엇을 시도했고 무엇이 틀렸는지.",
-    "source-note": "남의 콘텐츠에서 온 것. 출처를 먼저 밝힌다.",
+    "capture": "남의 콘텐츠에서 온 것. 출처를 먼저 밝힌다.",
     "reflection": "자기 성찰. 결론보다 과정을 남긴다.",
     "project-doc": "프로젝트 진행 문서.",
     "reference": "찾아보는 용도. 설명하지 말고 나열한다.",

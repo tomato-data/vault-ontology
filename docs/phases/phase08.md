@@ -59,7 +59,7 @@ v:Procedure     a rdfs:Class ; rdfs:subClassOf v:Document .
 이해가 목적          concept · procedure · reference
 지키는 규칙          principle
 특정 시점의 기록      decision · case · log · reflection
-남에게서 온 것        source-note
+남에게서 온 것        capture
 구조                 hub · template
 프로젝트             project-doc · tradeoff
 ```

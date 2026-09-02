@@ -60,7 +60,7 @@ def c02(onto):
     source = doc_iri("600 Content/FastAPI Pragmatic vs Clean.md")
     g.add((decision, RDF.type, V.DecisionDocument))
     g.add((tradeoff, RDF.type, V.TradeoffDocument))
-    g.add((source, RDF.type, V.SourceNoteDocument))
+    g.add((source, RDF.type, V.CaptureDocument))
     g.add((decision, V.derived_from, tradeoff))
     g.add((decision, V.derived_from, source))
     g.add((source, V.status, V.archived))
@@ -71,7 +71,7 @@ def test_c02_one_relation_still_tells_the_two_apart(c02):
     closed, _, tradeoff, source = c02
     rows = {(r[0], r[1]) for r in closed.query(C02_QUERY, initNs=NS)}
     assert (tradeoff, V.TradeoffDocument) in rows
-    assert (source, V.SourceNoteDocument) in rows
+    assert (source, V.CaptureDocument) in rows
 
 
 def test_c02_the_source_carries_its_current_state(c02):
@@ -83,7 +83,7 @@ def test_c02_the_source_carries_its_current_state(c02):
 def test_c02_the_source_is_not_typed_mine(c02):
     """The negative half of the same question.
 
-    `derived_from` points at a source-note here. If it carried a range the
+    `derived_from` points at a capture here. If it carried a range the
     way `builds_on` used to, this book note would come back as something I
     wrote - which is the 27-document fault Phase 14 Step 3 removed.
     """
@@ -177,7 +177,7 @@ def c27(onto):
     evidence = doc_iri("600 Content/이동진 평론가의 인간관계 철학.md")
     g.add((answered, RDF.type, V.ReflectionDocument))
     g.add((unanswered, RDF.type, V.ReflectionDocument))
-    g.add((evidence, RDF.type, V.SourceNoteDocument))
+    g.add((evidence, RDF.type, V.CaptureDocument))
     g.add((answered, V.answered_by, evidence))
     g.add((unanswered, RDF.type, V.Question))  # no answer yet
     return close(g, onto, owl=True), answered, unanswered, evidence

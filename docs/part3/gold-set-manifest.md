@@ -31,7 +31,7 @@ procedure      2
 log            2
 tradeoff       2
 review         2
-source-note    2
+capture    2
 case           1
 —              1
 ```
@@ -118,8 +118,8 @@ case           1
 |---|---|---|---|
 | 1 | `review` | `600 Content Observatory/602 Frames/영화/기생충.md` | review — 새 type 의 첫 gold |
 | 2 | `review` | `600 Content Observatory/603 Game/Valheim.md` | review — 게임 대표 노트 |
-| 3 | `source-note` | `600 Content Observatory/605 YouTube/개발/The Passionate Programmer/3. Abstract Factory — Strategy에 일관성을 부여하는 패턴.md` | source-note — 화자의 주장 |
-| 4 | `source-note` | `600 Content Observatory/601 Books/개발/AWS 비용 최적화 바이블/KAO 방법론.md` | source-note — 08 FinOps 와 쌍 |
+| 3 | `capture` | `600 Content Observatory/605 YouTube/개발/The Passionate Programmer/3. Abstract Factory — Strategy에 일관성을 부여하는 패턴.md` | capture — 화자의 주장 |
+| 4 | `capture` | `600 Content Observatory/601 Books/개발/AWS 비용 최적화 바이블/KAO 방법론.md` | capture — 08 FinOps 와 쌍 |
 
 ## 900 Archive — 1
 

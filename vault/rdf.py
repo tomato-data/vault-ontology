@@ -128,7 +128,7 @@ def tag_iri(tag):
 
 
 def _class_name(type_):
-    """`source-note` becomes `SourceNoteDocument`.
+    """`capture` becomes `CaptureDocument`.
 
     RDF names classes UpperCamelCase and properties lowerCamelCase, so the
     shape of a name says which of the two it is.

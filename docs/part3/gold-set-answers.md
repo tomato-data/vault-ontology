@@ -226,8 +226,8 @@ informed_by:
 
 - `기생충` · `review` — **관계 없음**
 - `Valheim` · `review` — **관계 없음**
-- `3. Abstract Factory — Strategy에 일관성을 부여하는 패턴` · `source-note` — **관계 없음**
-- `KAO 방법론` · `source-note` — **관계 없음**
+- `3. Abstract Factory — Strategy에 일관성을 부여하는 패턴` · `capture` — **관계 없음**
+- `KAO 방법론` · `capture` — **관계 없음**
 
 
 ## 900 Archive — 0 / 1

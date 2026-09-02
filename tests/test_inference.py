@@ -110,12 +110,12 @@ ACROSS_ROLES = {
         "---\ntype: concept\nbuilds_on:\n  - [[KAO]]\n  - [[Hub]]\n"
         "summary: ok\ncreated: 2026-08-10\n---\n[[KAO]]\n"
     ),
-    # A source-note that itself builds on something. Also ordinary.
+    # A capture that itself builds on something. Also ordinary.
     "600 Content/KAO.md": (
-        "---\ntype: source-note\nbuilds_on:\n  - [[공고]]\n"
+        "---\ntype: capture\nbuilds_on:\n  - [[공고]]\n"
         "summary: ok\ncreated: 2026-08-10\n---\n본문\n"
     ),
-    "600 Content/공고.md": "---\ntype: source-note\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n",
+    "600 Content/공고.md": "---\ntype: capture\nsummary: ok\ncreated: 2026-08-10\n---\n본문\n",
     # A hub, pointed at from a note of mine.
     "200 Dev/Hub.md": "---\ntype: hub\ncreated: 2026-08-10\n---\n[[FinOps]]\n",
 }
@@ -134,7 +134,7 @@ def test_a_source_note_never_becomes_content(roles):
     Both directions used to leak: `rdfs:range v:Content` typed the TARGET of
     builds_on as mine, and `rdfs:domain v:Content` typed the SOURCE. On the
     real vault that put 27 documents in two roles at once, so the query
-    v:Content exists to answer - my own thinking, source-notes excluded - was
+    v:Content exists to answer - my own thinking, captures excluded - was
     wrong by 27 and said nothing about it.
     """
     kao = doc_iri("600 Content/KAO.md")
@@ -162,7 +162,7 @@ def test_nothing_reaches_document_by_inference_alone(roles):
         V.ConceptDocument, V.ProcedureDocument, V.ReferenceDocument,
         V.PrincipleDocument, V.DecisionDocument, V.CaseDocument,
         V.LogDocument, V.ReflectionDocument, V.ProjectDocument,
-        V.TradeoffDocument, V.SourceNoteDocument, V.HubDocument,
+        V.TradeoffDocument, V.CaptureDocument, V.HubDocument,
         V.TemplateDocument,
     ]
     declared = {s for leaf in leaves for s in roles.subjects(RDF.type, leaf)}

@@ -334,7 +334,7 @@ node 테이블의 상태 컬럼         없음   path·name·zone·dir·type·su
 
 ```
 600 전체                    1,393   vault의 33%
-  type: source-note         1,248
+  type: capture         1,248
   type: hub                   144
 
 다른 대역 → 600               456개 링크가 220개 문서에 도달
@@ -597,7 +597,7 @@ supersedes       5    전부 미해결 — 대상 문서가 없다
 
 - **근거 [A]** — 실측. `000 Index/Templates/`의 9개 문서가 **자기가 만들 문서의 type을 달고 있다.** `Decision Node Template.md`는 `type: decision`, `Daily Template.md`는 `type: log`다. 템플릿은 Phase 8의 역할 계층에서 `v:Structural`인데 `v:Content`로 들어가 있다.
 - **기대 답의 형태** — 오분류 문서 목록 · 왜 그렇게 판단했는가
-- **통계 영향** — 작다. decision 45 중 1, tradeoff 44 중 1, source-note 1,256 중 7. 위의 실측 결론은 그대로 유효하다.
+- **통계 영향** — 작다. decision 45 중 1, tradeoff 44 중 1, capture 1,256 중 7. 위의 실측 결론은 그대로 유효하다.
 - **예상 판정** — SHACL 또는 기존 lint 확장. 온톨로지가 아니다.
 
 ### C25 · 이 개념을 이해하려면 무엇을 먼저 읽어야 하는가?

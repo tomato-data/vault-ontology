@@ -122,7 +122,7 @@ TEMPLATE_PATH = re.compile(r"(^|/)_?[Tt]emplates?/|(^|/)(_|\d{4}-)?template\.md$
 1. **`template`을 13값에 남기나?** 관례 B 후 이 값을 쓰는 문서가 0이 된다. 빼면 12값이 되고 스키마 정본·`vault.py:39`·`vault/schema.py:24`를 함께 고쳐야 한다.
 2. **본문 품기형(3·4·12·13·14)에 관례 B를 적용하나?** (a) 적용하고 질의에서 경로로 뺀다 (b) 직접 인스턴스화형으로 개조한다 (c) 이 부류만 `procedure`로 둔다.
 3. **ADR의 진짜 `type`.** 실물 16개가 `project-doc`인 것은 300 일괄 규칙의 결과지 판정이 아니다. `decision`으로 재판정하면 라우팅 경고 16건이 뜬다.
-4. **`공고`는 `project-doc`인가 `source-note`인가.** 같은 폴더의 외부 콘텐츠 둘은 `source-note`인데 `Levit/공고.md` 실물은 `project-doc`이다.
+4. **`공고`는 `project-doc`인가 `capture`인가.** 같은 폴더의 외부 콘텐츠 둘은 `capture`인데 `Levit/공고.md` 실물은 `project-doc`이다.
 5. **209의 둘을 `reference`로 하면** `SUBDIR_TYPES`에 걸려 경고가 뜬다. 표를 넓히든, 다른 type을 고르든, 209 밖으로 옮기든.
 6. **중복 2쌍을 어디에 남기나.** core Templates 플러그인으로 실제로 꽂아 쓰는지에 따라 갈린다.
 7. **폴더 이동을 지금 하나?** 정규식만 고치면 이동 없이 14/14가 잡힌다.

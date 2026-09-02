@@ -67,7 +67,7 @@ concept  → ConceptDocument      log         → LogDocument
 procedure→ ProcedureDocument    reflection  → ReflectionDocument
 reference→ ReferenceDocument    project-doc → ProjectDocument   ← 예외
 principle→ PrincipleDocument    tradeoff    → TradeoffDocument
-decision → DecisionDocument     source-note → SourceNoteDocument
+decision → DecisionDocument     capture → CaptureDocument
 case     → CaseDocument         hub         → HubDocument
                                 template    → TemplateDocument
 

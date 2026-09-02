@@ -15,7 +15,7 @@ TYPES = {
     "decision",
     "tradeoff",
     "case",
-    "source-note",
+    "capture",
     "review",
     "reflection",
     "project-doc",

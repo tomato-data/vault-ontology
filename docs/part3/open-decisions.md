@@ -168,7 +168,7 @@ C16·C24·C26은 **의미 그래프 없이 지금 검사할 수 있습니다.** 
 템플릿이 자기가 만들 문서의 type을 달고 있습니다. `Decision Node Template.md`가
 `type: decision`, `Daily Template.md`가 `type: log`입니다.
 
-통계 영향은 작습니다 (decision 45 중 1, source-note 1,256 중 7). 다만 Phase 8의
+통계 영향은 작습니다 (decision 45 중 1, capture 1,256 중 7). 다만 Phase 8의
 역할 계층에서 `v:Structural`이어야 할 것이 `v:Content`로 들어가 있습니다.
 
 → ~~**권장: 고친다.** 9개 파일의 `type`을 `template`으로.~~

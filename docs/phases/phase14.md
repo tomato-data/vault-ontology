@@ -251,7 +251,7 @@ v:Question   schema:Question 이 있다.       안 쓴다 — Q&A 사이트 모�
 #### 설계가 아니라 실물이었다
 
 ```
-Content ∩ Imported     10        source-note 가 「내가 쓴 것」으로도 타입돼 있었다
+Content ∩ Imported     10        capture 가 「내가 쓴 것」으로도 타입돼 있었다
 Content ∩ Structural   17
                        ──
                        27
@@ -259,7 +259,7 @@ Content ∩ Structural   17
 
 ```
 600 Content Observatory/601 Books/개발/AWS 비용 최적화 바이블/KAO 방법론.md
-   type: source-note                      ← 책 필사. 저자의 말
+   type: capture                      ← 책 필사. 저자의 말
 
 200 Dev Knowledge Base/207 DevOps/AWS/Cost Optimization/08 FinOps 실천.md
    type: concept
@@ -277,10 +277,10 @@ v:builds_on  rdfs:range   v:Content         스키마
 <KAO 방법론>  a  v:Content                   ← 거짓
 ```
 
-domain 쪽으로도 샜다. `CEO Talk — 강재윤 대표.md`는 `type: source-note`인데 자기
+domain 쪽으로도 샜다. `CEO Talk — 강재윤 대표.md`는 `type: capture`인데 자기
 `builds_on`을 갖고 있어 `rdfs:domain v:Content`가 그것을 내 글로 만들었다.
 
-`v:Content`의 주석이 약속한 질의가 **「my own thinking, source-notes and
+`v:Content`의 주석이 약속한 질의가 **「my own thinking, captures and
 scaffolding excluded」**인데, 그 질의가 27개 틀린 채로 돌고 있었다. **에러도 경고도
 없었다.** 「두 역할에 동시에 든 것이 있나」를 일부러 물어서 나왔다.
 
@@ -325,7 +325,7 @@ skos:Concept          245       245        0
 #### 부정 테스트 4개 (`tests/test_inference.py`)
 
 ```
-source-note 는 절대 Content 가 되지 않는다
+capture 는 절대 Content 가 되지 않는다
 세 역할은 서로소다                          Content ∩ Imported · ∩ Structural
 추론만으로 v:Document 가 되는 자원이 없다
 섹션은 v:Document 가 아니다                 ← 앞당겨 건 방어
@@ -465,7 +465,7 @@ SELECT ?target ?kind ?status WHERE {
 ```
 
 **이 패턴이 `derived_from`의 흡수 판단을 증명한다.** 관계 하나로 tradeoff와
-source-note를 구분한다 — `?kind`가 대상의 `type`에서 오기 때문이다. 관계를 다섯으로
+capture를 구분한다 — `?kind`가 대상의 `type`에서 오기 때문이다. 관계를 다섯으로
 쪼갤 필요가 없었다는 것이 여기서 확인된다.
 
 ```sparql

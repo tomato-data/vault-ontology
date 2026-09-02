@@ -78,7 +78,7 @@ def test_a_deeper_value_still_belongs_to_its_axis():
 def test_a_value_that_swallowed_its_axis_is_a_split_signal():
     # Measured in the vault: `Log/Daily-Note` is 347 of 467. It stopped
     # telling anything apart inside `Log`, which is the shape `review`
-    # was born from — `source-note` held 1,252 of 1,258 in 600.
+    # was born from — `capture` held 1,252 of 1,258 in 600.
     rows = {row["axis"]: row for row in health(VOCABULARY)}
     assert ("split", "Topic/Mathematics 이 74/75 (99%)") in rows["Topic"]["signals"]
 

@@ -45,14 +45,14 @@ v:builds_on  rdfs:subPropertyOf  dcterms:references .
 대부분 구현 결과를 사후에 설명하기 위한 묶음이었다. concept·procedure·reference를
 한꺼번에 조회할 실제 요구가 없었기 때문이다.
 
-진짜 구분선은 의미가 아니라 **역할**이었다. `source-note`가 전체의 31%라는
+진짜 구분선은 의미가 아니라 **역할**이었다. `capture`가 전체의 31%라는
 게 실마리였다.
 
 ```
 v:Document                          최상위
   v:Content     내가 쓴 실제 내용    concept·procedure·reference·principle·
                                     decision·case·log·reflection·project-doc·tradeoff
-  v:Imported    남에게서 온 것        source-note
+  v:Imported    남에게서 온 것        capture
   v:Structural  뼈대, 내용 아님       hub·template
 ```
 

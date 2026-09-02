@@ -63,7 +63,7 @@ v:Document   a rdfs:Class ;
     rdfs:comment "Any note that is a node in the graph." .
 
 v:Content    a rdfs:Class ; rdfs:subClassOf v:Document ;
-    rdfs:comment "A note I authored. Query: my own thinking, source-notes and scaffolding excluded." .
+    rdfs:comment "A note I authored. Query: my own thinking, captures and scaffolding excluded." .
 v:Imported   a rdfs:Class ; rdfs:subClassOf v:Document ;
     rdfs:comment "A note that came from elsewhere. Query: what did I take in versus write." .
 v:Structural a rdfs:Class ; rdfs:subClassOf v:Document ;
@@ -82,7 +82,7 @@ v:ProjectDocument    rdfs:subClassOf v:Content .
 v:TradeoffDocument   rdfs:subClassOf v:Content .
 
 # A note ABOUT someone else's work that is nonetheless MINE: the film, game
-# and show notes whose body is a review I wrote. They sat under source-note
+# and show notes whose body is a review I wrote. They sat under capture
 # and therefore under v:Imported, so the query v:Content answers - my own
 # thinking - was missing 141 documents. Measured 2026-08-26: 602 Frames 116
 # with a 감상평 section, 603 Game 25 game notes with a 리뷰 section.
@@ -97,7 +97,7 @@ v:TradeoffDocument   rdfs:subClassOf v:Content .
 v:ReviewDocument     rdfs:subClassOf v:Content .
 
 # Imported — one type.
-v:SourceNoteDocument rdfs:subClassOf v:Imported .
+v:CaptureDocument rdfs:subClassOf v:Imported .
 
 # Structural — one type. `template` was dropped 2026-08-26: a blank form
 # now carries the type of the document it produces, so nothing is left here
@@ -145,10 +145,10 @@ v:Question a rdfs:Class ;
 #################################################################
 
 # NO domain, NO range. Both said "whatever builds_on touches is something I
-# wrote" - and that is false: a note of mine can build on a source-note I only
+# wrote" - and that is false: a note of mine can build on a capture I only
 # transcribed. Measured 2026-08-26: the two declarations typed 27 documents
 # v:Content that are v:Imported or v:Structural, so the query v:Content exists
-# to answer - my own thinking, source-notes excluded - was wrong by 27.
+# to answer - my own thinking, captures excluded - was wrong by 27.
 v:builds_on a owl:ObjectProperty, owl:TransitiveProperty ;
     rdfs:subPropertyOf dcterms:references ;
     rdfs:comment "Curated prerequisites. Query: what must I read before this note (q path). Declared transitive; the closure is NOT materialised until Phase 9." .

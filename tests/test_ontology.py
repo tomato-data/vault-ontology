@@ -28,7 +28,7 @@ def test_the_ontology_is_valid_turtle(onto):
 def test_a_type_is_a_role_subclass(onto):
     # Step 2's judgment, as an axiom: a leaf type sits under a role.
     assert (V.ConceptDocument, RDFS.subClassOf, V.Content) in onto
-    assert (V.SourceNoteDocument, RDFS.subClassOf, V.Imported) in onto
+    assert (V.CaptureDocument, RDFS.subClassOf, V.Imported) in onto
     assert (V.HubDocument, RDFS.subClassOf, V.Structural) in onto
 
 

@@ -592,7 +592,7 @@ ValueError: Invalid isoformat string: '{{date:YYYY-MM-DD}}'
 
 ```
 Decision Node Template.md      type: decision      ← q type decision 이 이걸 답한다
-Book Template - 개발.md         type: source-note
+Book Template - 개발.md         type: capture
 Daily Template.md              type: log
 ```
 
